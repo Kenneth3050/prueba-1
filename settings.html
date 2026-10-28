@@ -8,61 +8,89 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif;padding:20px}
 h1{font-size:18px;margin:0 0 4px}
-p.s{margin:0 0 16px;color:var(--muted);font-size:12.5px;line-height:1.5}
+p.s{margin:0 0 6px;color:var(--muted);font-size:12.5px;line-height:1.5}
 h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 14px}
 .r{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
 .r:last-child{border-bottom:0}
-.r span b{color:var(--muted);font-weight:600;margin-left:6px}
+em{font-style:normal}
+.r b{color:var(--muted);font-weight:600;margin-left:6px}
 input[type=range]{width:150px;accent-color:var(--acc)}
 input[type=checkbox]{width:18px;height:18px;accent-color:var(--acc)}
 input[type=color]{width:44px;height:26px;border:1px solid var(--line);border-radius:6px;background:none;padding:0}
-input[type=number]{width:70px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+input[type=number],input[type=text],select{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px 8px;font:inherit}
+input[type=number]{width:70px}input[type=text]{width:150px}
 .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 button{font:inherit;font-weight:600;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
 button:hover{border-color:var(--acc)}
-.hint{margin-top:16px;color:var(--muted);font-size:12px;line-height:1.6}
+.hint{margin:16px 0 4px;color:var(--muted);font-size:12px;line-height:1.6}
 </style>
 </head>
 <body>
-<h1>Configuración de la isla</h1>
-<p class="s">Los cambios se aplican al instante y se guardan solos.</p>
+<h1 data-i="title"></h1>
+<p class="s" data-i="sub"></p>
 
-<h2>Apariencia</h2>
+<h2 data-i="hGen"></h2>
 <div class="card">
-  <label class="r"><span>Tamaño<b id="v-scale"></b></span><input type="range" id="scale" min="0.7" max="1.4" step="0.05"></label>
-  <label class="r"><span>Opacidad<b id="v-opacity"></b></span><input type="range" id="opacity" min="0.4" max="1" step="0.05"></label>
-  <label class="r"><span>Color de fondo</span><input type="color" id="bg"></label>
-  <label class="r"><span>Color de acento</span><input type="color" id="accent"></label>
-  <label class="r"><span>Color del texto</span><input type="color" id="fg"></label>
+  <label class="r"><em data-i="lang"></em><select id="lang"><option value="es">Español</option><option value="en">English</option></select></label>
+  <label class="r"><em data-i="login"></em><input type="checkbox" id="login"></label>
+  <label class="r"><em data-i="lock"></em><input type="checkbox" id="lock"></label>
+  <label class="r"><em data-i="hideIdle"></em><input type="checkbox" id="hideIdle"></label>
 </div>
 
-<h2>Comportamiento</h2>
+<h2 data-i="hLook"></h2>
 <div class="card">
-  <label class="r"><span>Mostrar la música que suena</span><input type="checkbox" id="autoMusic"></label>
-  <label class="r"><span>Ocultar cuando no hay actividad</span><input type="checkbox" id="hideIdle"></label>
-  <label class="r"><span>Reloj de 24 horas</span><input type="checkbox" id="h24"></label>
-  <label class="r"><span>Bloquear posición</span><input type="checkbox" id="lock"></label>
-  <label class="r"><span>Temporizador (minutos)</span><input type="number" id="timerMin" min="1" max="600"></label>
-  <label class="r"><span>Iniciar con Windows</span><input type="checkbox" id="login"></label>
+  <label class="r"><span><em data-i="size"></em><b id="v-scale"></b></span><input type="range" id="scale" min="0.7" max="1.4" step="0.05"></label>
+  <label class="r"><span><em data-i="opacity"></em><b id="v-opacity"></b></span><input type="range" id="opacity" min="0.4" max="1" step="0.05"></label>
+  <label class="r"><em data-i="bgc"></em><input type="color" id="bg"></label>
+  <label class="r"><em data-i="acc"></em><input type="color" id="accent"></label>
+  <label class="r"><em data-i="txt"></em><input type="color" id="fg"></label>
+  <label class="r"><em data-i="mascot"></em><input type="checkbox" id="mascot"></label>
+</div>
+
+<h2 data-i="hMusic"></h2>
+<div class="card">
+  <label class="r"><em data-i="autoMusic"></em><input type="checkbox" id="autoMusic"></label>
+  <label class="r"><em data-i="coverMode"></em><select id="coverMode"><option value="accent" data-i="cmA"></option><option value="bg" data-i="cmB"></option><option value="off" data-i="cmO"></option></select></label>
+  <label class="r"><em data-i="calls"></em><input type="checkbox" id="calls"></label>
+</div>
+
+<h2 data-i="hInfo"></h2>
+<div class="card">
+  <label class="r"><em data-i="h24"></em><input type="checkbox" id="h24"></label>
+  <label class="r"><em data-i="weather"></em><input type="checkbox" id="weather"></label>
+  <label class="r"><em data-i="unit"></em><select id="unit"><option value="C">°C</option><option value="F">°F</option></select></label>
+  <label class="r"><em data-i="city"></em><input type="text" id="city" data-ph="auto"></label>
+  <label class="r"><em data-i="timerMin"></em><input type="number" id="timerMin" min="1" max="600"></label>
 </div>
 
 <div class="btns">
-  <button id="test">Probar notificación</button>
-  <button id="rpos">Restablecer posición</button>
-  <button id="rall">Restablecer todo</button>
+  <button id="test" data-i="test"></button>
+  <button id="rpos" data-i="rpos"></button>
+  <button id="rall" data-i="rall"></button>
 </div>
-<div class="hint">Arrastra la isla con el ratón para moverla donde quieras. Clic para expandirla y clic derecho para abrir esta ventana.<br>
-Atajos: Ctrl+Alt+1 música · 2 temporizador · 3 notificación de prueba · 0 reposo · S configuración.</div>
+<div class="hint" data-i="hint"></div>
 
 <script>
-const ranges=['scale','opacity'],colors=['bg','accent','fg'],checks=['autoMusic','hideIdle','h24','lock','login'];
+const D={
+es:{title:'Configuración de la isla',sub:'Los cambios se aplican al instante y se guardan solos.',hGen:'General',hLook:'Apariencia',hMusic:'Música y llamadas',hInfo:'Hora, clima y temporizador',lang:'Idioma',login:'Iniciar con Windows',lock:'Bloquear posición',hideIdle:'Ocultar cuando no hay actividad',size:'Tamaño',opacity:'Opacidad',bgc:'Color de fondo',acc:'Color de acento',txt:'Color del texto',mascot:'Mostrar muñequito',autoMusic:'Mostrar la música que suena',coverMode:'Color de la portada',cmA:'Detalles',cmB:'Fondo y detalles',cmO:'Desactivado',calls:'Detectar llamadas (Discord, WhatsApp, Teams…)',h24:'Reloj de 24 horas',weather:'Mostrar temperatura',unit:'Unidad',city:'Ciudad',auto:'Automática',timerMin:'Temporizador (minutos)',test:'Probar notificación',rpos:'Restablecer posición',rall:'Restablecer todo',hint:'Arrastra la isla con el ratón para moverla. Clic para expandirla y clic derecho para abrir esta ventana.<br>Atajos: Ctrl+Alt+1 música · 2 temporizador · 3 notificación de prueba · 0 reposo · S configuración.'},
+en:{title:'Island settings',sub:'Changes apply instantly and are saved automatically.',hGen:'General',hLook:'Appearance',hMusic:'Music and calls',hInfo:'Time, weather and timer',lang:'Language',login:'Start with Windows',lock:'Lock position',hideIdle:'Hide when there is no activity',size:'Size',opacity:'Opacity',bgc:'Background color',acc:'Accent color',txt:'Text color',mascot:'Show mascot',autoMusic:'Show the music that is playing',coverMode:'Album cover color',cmA:'Details',cmB:'Background and details',cmO:'Off',calls:'Detect calls (Discord, WhatsApp, Teams…)',h24:'24-hour clock',weather:'Show temperature',unit:'Unit',city:'City',auto:'Automatic',timerMin:'Timer (minutes)',test:'Test notification',rpos:'Reset position',rall:'Reset everything',hint:'Drag the island with the mouse to move it. Click to expand it and right-click to open this window.<br>Shortcuts: Ctrl+Alt+1 music · 2 timer · 3 test notification · 0 idle · S settings.'}};
 const $=id=>document.getElementById(id);
+const ranges=['scale','opacity'],colors=['bg','accent','fg'],checks=['autoMusic','hideIdle','h24','lock','login','mascot','calls','weather'],selects=['lang','unit','coverMode'];
+function tr(l){
+  const d=D[l]||D.es;
+  document.querySelectorAll('[data-i]').forEach(e=>e.innerHTML=d[e.dataset.i]);
+  document.querySelectorAll('[data-ph]').forEach(e=>e.placeholder=d[e.dataset.ph]);
+  document.title=d.title;document.documentElement.lang=l;
+}
 function fill(c){
   ranges.forEach(k=>{$(k).value=c[k];$('v-'+k).textContent=Math.round(c[k]*100)+' %'});
   colors.forEach(k=>$(k).value=c[k]);
   checks.forEach(k=>$(k).checked=!!c[k]);
+  selects.forEach(k=>$(k).value=c[k]);
   $('timerMin').value=c.timerMin;
+  if(document.activeElement!==$('city'))$('city').value=c.city||'';
+  tr(c.lang);
 }
 [...ranges,...colors].forEach(k=>$(k).addEventListener('input',e=>{
   const v=ranges.includes(k)?parseFloat(e.target.value):e.target.value;
@@ -70,7 +98,9 @@ function fill(c){
   api.setSettings({[k]:v});
 }));
 checks.forEach(k=>$(k).addEventListener('change',e=>api.setSettings({[k]:e.target.checked})));
+selects.forEach(k=>$(k).addEventListener('change',e=>api.setSettings({[k]:e.target.value})));
 $('timerMin').addEventListener('change',e=>api.setSettings({timerMin:parseInt(e.target.value)||5}));
+$('city').addEventListener('change',e=>api.setSettings({city:e.target.value}));
 $('test').onclick=()=>api.testNotify();
 $('rpos').onclick=()=>api.resetPos();
 $('rall').onclick=()=>api.resetAll();

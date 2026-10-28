@@ -6,9 +6,11 @@ const W = 620, H = 300;
 const DEF = {
   scale: 1, bg: '#000000', accent: '#32d74b', fg: '#ffffff', opacity: 1,
   autoMusic: true, hideIdle: false, h24: true, lock: false, timerMin: 5, x: null, y: null,
+  lang: null, weather: true, unit: 'C', city: '', mascot: true, calls: true, coverMode: 'accent',
 };
 let cfg = { ...DEF }, win, setWin, tray, cfgFile, drag = null;
-let mp, kp, mBuf = '', retries = 0, quitting = false;
+let kp, wx = null, quitting = false;
+const procs = {};
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -18,7 +20,10 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 /* ---------- ajustes ---------- */
-function load() { try { cfg = { ...DEF, ...JSON.parse(fs.readFileSync(cfgFile, 'utf8')) }; } catch (e) {} }
+function load() {
+  try { cfg = { ...DEF, ...JSON.parse(fs.readFileSync(cfgFile, 'utf8')) }; } catch (e) {}
+  if (cfg.lang !== 'es' && cfg.lang !== 'en') cfg.lang = app.getLocale().toLowerCase().startsWith('es') ? 'es' : 'en';
+}
 function save() { try { fs.writeFileSync(cfgFile, JSON.stringify(cfg)); } catch (e) {} }
 const pub = () => ({ ...cfg, login: app.getLoginItemSettings().openAtLogin });
 function broadcast() {
@@ -32,7 +37,11 @@ function sanitize(p) {
   if ('opacity' in p) o.opacity = num(p.opacity, 0.2, 1, 1);
   if ('timerMin' in p) o.timerMin = Math.round(num(p.timerMin, 1, 600, 5));
   ['bg', 'accent', 'fg'].forEach((k) => { if (k in p) o[k] = col(p[k], DEF[k]); });
-  ['autoMusic', 'hideIdle', 'h24', 'lock'].forEach((k) => { if (k in p) o[k] = !!p[k]; });
+  ['autoMusic', 'hideIdle', 'h24', 'lock', 'weather', 'mascot', 'calls'].forEach((k) => { if (k in p) o[k] = !!p[k]; });
+  if ('lang' in p) o.lang = p.lang === 'en' ? 'en' : 'es';
+  if ('unit' in p) o.unit = p.unit === 'F' ? 'F' : 'C';
+  if ('city' in p) o.city = String(p.city).slice(0, 60);
+  if ('coverMode' in p) o.coverMode = ['accent', 'bg', 'off'].includes(p.coverMode) ? p.coverMode : 'accent';
   return o;
 }
 
@@ -68,7 +77,7 @@ const send = (k) => win && win.webContents.send('show', k);
 function openSettings() {
   if (setWin && !setWin.isDestroyed()) { setWin.show(); setWin.focus(); return; }
   setWin = new BrowserWindow({
-    width: 400, height: 680, resizable: false, minimizable: false, maximizable: false,
+    width: 420, height: 800, resizable: false, minimizable: false, maximizable: false,
     title: 'Configuración de la isla', autoHideMenuBar: true, backgroundColor: '#14162b',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true },
   });
@@ -85,11 +94,13 @@ function wireIpc() {
     p = p || {};
     if ('login' in p) app.setLoginItemSettings({ openAtLogin: !!p.login });
     Object.assign(cfg, sanitize(p));
-    save(); broadcast();
+    save(); broadcast(); makeTray();
+    if ('city' in p || 'lang' in p) getWeather();
   });
-  ipcMain.on('settings:reset', () => { cfg = { ...DEF }; save(); place(); broadcast(); });
+  ipcMain.on('settings:reset', () => { const l = cfg.lang; cfg = { ...DEF, lang: l }; save(); place(); broadcast(); makeTray(); getWeather(); });
+  ipcMain.handle('weather:get', () => wx);
   ipcMain.on('pos:reset', () => { cfg.x = null; cfg.y = null; save(); place(); });
-  ipcMain.on('test', () => win.webContents.send('notify', 'Notificación de prueba', 'Así se verá un aviso en tu isla'));
+  ipcMain.on('test', () => send('test'));
   ipcMain.on('open-settings', openSettings);
   ipcMain.on('drag-start', (_e, sx, sy) => { if (cfg.lock) return; const [x, y] = win.getPosition(); drag = { sx, sy, x, y }; });
   ipcMain.on('drag-move', (_e, sx, sy) => {
@@ -104,35 +115,71 @@ function wireIpc() {
   });
 }
 
-/* ---------- música real (controles multimedia de Windows) ---------- */
+/* ---------- scripts de Windows: música, micrófono (llamadas) y teclas multimedia ---------- */
 function psDir() {
   const d = path.join(app.getPath('userData'), 'ps');
   fs.mkdirSync(d, { recursive: true });
-  ['media.ps1', 'keys.ps1'].forEach((f) => fs.writeFileSync(path.join(d, f), fs.readFileSync(path.join(__dirname, 'ps', f))));
+  ['media.ps1', 'keys.ps1', 'mic.ps1'].forEach((f) => fs.writeFileSync(path.join(d, f), fs.readFileSync(path.join(__dirname, 'ps', f))));
   return d;
 }
 const runPS = (d, f) => spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(d, f)], { windowsHide: true });
-function startMedia() {
+function startPS(f, onLine) {
   if (process.platform !== 'win32') return;
   const d = psDir();
-  mp = runPS(d, 'media.ps1');
-  mp.stdout.setEncoding('utf8');
-  mp.stdout.on('data', (chunk) => {
-    mBuf += chunk;
-    let i;
-    while ((i = mBuf.indexOf('\n')) >= 0) {
-      const line = mBuf.slice(0, i).replace(/^\uFEFF/, '').trim();
-      mBuf = mBuf.slice(i + 1);
-      if (line[0] === '{') { try { win && win.webContents.send('media', JSON.parse(line)); } catch (e) {} }
-    }
-  });
-  mp.on('exit', () => { mp = null; if (!quitting && retries++ < 5) setTimeout(startMedia, 4000); });
+  let buf = '', tries = 0;
+  const go = () => {
+    const p = runPS(d, f); procs[f] = p;
+    p.stdout.setEncoding('utf8');
+    p.stdout.on('data', (chunk) => {
+      buf += chunk;
+      let i;
+      while ((i = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, i).replace(/^\uFEFF/, '').trim();
+        buf = buf.slice(i + 1);
+        if (line[0] === '{') { try { onLine(JSON.parse(line)); } catch (e) {} }
+      }
+    });
+    p.on('exit', () => { if (!quitting && tries++ < 5) setTimeout(go, 4000); });
+  };
+  go();
 }
 function startKeys() {
   if (process.platform !== 'win32') return;
   kp = runPS(psDir(), 'keys.ps1');
   kp.on('exit', () => { kp = null; });
   kp.stdin.on('error', () => {});
+}
+function startScripts() {
+  startPS('media.ps1', (j) => {
+    if (!win) return;
+    const img = j.img; delete j.img;
+    win.webContents.send('media', j);
+    if (img !== undefined) win.webContents.send('cover', img);
+  });
+  startPS('mic.ps1', (j) => {
+    if (!win) return;
+    win.webContents.send('mic', [].concat(j.apps || []).map((n) => String(n).split('#').pop()));
+  });
+  startKeys();
+}
+
+/* ---------- clima (Open-Meteo; ubicación por ciudad o por IP) ---------- */
+async function getWeather() {
+  try {
+    let lat, lon, city = (cfg.city || '').trim();
+    if (city) {
+      const g = await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=' + cfg.lang + '&name=' + encodeURIComponent(city))).json();
+      const r = g.results && g.results[0];
+      if (!r) throw new Error('ciudad no encontrada');
+      lat = r.latitude; lon = r.longitude; city = r.name;
+    } else {
+      const g = await (await fetch('https://ipwho.is/')).json();
+      lat = g.latitude; lon = g.longitude; city = g.city || '';
+    }
+    const w = await (await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,weather_code,is_day&timezone=auto')).json();
+    wx = { t: w.current.temperature_2m, code: w.current.weather_code, day: w.current.is_day, city };
+    if (win) win.webContents.send('weather', wx);
+  } catch (e) {}
 }
 
 /* ---------- avisos desde otros programas: http://127.0.0.1:47821/notify?title=..&body=.. ---------- */
@@ -147,34 +194,43 @@ function startServer() {
 }
 
 /* ---------- atajos y bandeja ---------- */
-const ACTIONS = [['Música', 'music', '1'], ['Temporizador', 'timer', '2'], ['Probar notificación', 'test', '3'], ['Reposo', 'idle', '0']];
+const L = {
+  es: { music: 'Música', timer: 'Temporizador', test: 'Probar notificación', idle: 'Reposo', settings: 'Configuración…', rpos: 'Restablecer posición', login: 'Iniciar con Windows', quit: 'Salir' },
+  en: { music: 'Music', timer: 'Timer', test: 'Test notification', idle: 'Idle', settings: 'Settings…', rpos: 'Reset position', login: 'Start with Windows', quit: 'Quit' },
+};
+const ACTIONS = [['music', '1'], ['timer', '2'], ['test', '3'], ['idle', '0']];
 function hotkeys() {
-  ACTIONS.forEach(([, k, n]) => globalShortcut.register('CommandOrControl+Alt+' + n, () => send(k)));
+  ACTIONS.forEach(([k, n]) => globalShortcut.register('CommandOrControl+Alt+' + n, () => send(k)));
   globalShortcut.register('CommandOrControl+Alt+S', openSettings);
 }
 function makeTray() {
-  tray = new Tray(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icon.png')));
-  tray.setToolTip('Isla dinámica');
-  const menu = () => Menu.buildFromTemplate([
-    ...ACTIONS.map(([label, k, n]) => ({ label, accelerator: 'Ctrl+Alt+' + n, click: () => k === 'test' ? win.webContents.send('notify', 'Notificación de prueba', 'Así se verá un aviso en tu isla') : send(k) })),
+  if (!tray) {
+    tray = new Tray(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icon.png')));
+    tray.setToolTip('Isla dinámica');
+  }
+  const t = L[cfg.lang] || L.es;
+  const menu = Menu.buildFromTemplate([
+    ...ACTIONS.map(([k, n]) => ({ label: t[k], accelerator: 'Ctrl+Alt+' + n, click: () => send(k) })),
     { type: 'separator' },
-    { label: 'Configuración…', accelerator: 'Ctrl+Alt+S', click: openSettings },
-    { label: 'Restablecer posición', click: () => { cfg.x = null; cfg.y = null; save(); place(); } },
-    { label: 'Iniciar con Windows', type: 'checkbox', checked: app.getLoginItemSettings().openAtLogin, click: (i) => { app.setLoginItemSettings({ openAtLogin: i.checked }); broadcast(); } },
+    { label: t.settings, accelerator: 'Ctrl+Alt+S', click: openSettings },
+    { label: t.rpos, click: () => { cfg.x = null; cfg.y = null; save(); place(); } },
+    { label: t.login, type: 'checkbox', checked: app.getLoginItemSettings().openAtLogin, click: (i) => { app.setLoginItemSettings({ openAtLogin: i.checked }); broadcast(); } },
     { type: 'separator' },
-    { label: 'Salir', click: () => app.quit() },
+    { label: t.quit, click: () => app.quit() },
   ]);
-  tray.on('click', () => tray.popUpContextMenu(menu()));
-  tray.setContextMenu(menu());
+  tray.removeAllListeners('click');
+  tray.on('click', () => tray.popUpContextMenu(menu));
+  tray.setContextMenu(menu);
 }
 
 function init() {
   cfgFile = path.join(app.getPath('userData'), 'settings.json');
   load();
-  createWindow(); wireIpc(); hotkeys(); makeTray(); startMedia(); startKeys(); startServer();
+  createWindow(); wireIpc(); hotkeys(); makeTray(); startScripts(); startServer();
+  getWeather(); setInterval(getWeather, 20 * 60 * 1000);
 }
 app.on('will-quit', () => {
   quitting = true; globalShortcut.unregisterAll();
-  [mp, kp].forEach((p) => { try { p && p.kill(); } catch (e) {} });
+  [kp, ...Object.values(procs)].forEach((p) => { try { p && p.kill(); } catch (e) {} });
 });
 app.on('window-all-closed', () => {});

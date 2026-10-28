@@ -1,27 +1,25 @@
-# Isla dinámica para Windows (v1.1)
+# Isla dinámica para Windows (v1.2)
 
-Isla flotante siempre encima de tus apps.
+Isla flotante siempre encima de tus apps. Arrástrala, clic para expandir, clic derecho para configurar.
 
-## Qué hace
-- **Música real**: cuando suena algo (Spotify, YouTube en el navegador, reproductor de Windows, etc.)
-  la isla se expande unos segundos con el título y el artista, y queda en modo compacto mientras suena.
-  Clic para expandir: pausa, anterior y siguiente.
-- **Mover**: arrastra la isla con el ratón a cualquier parte de la pantalla; recuerda su posición.
-- **Configuración** (clic derecho en la isla, Ctrl+Alt+S o menú de la bandeja):
-  tamaño, opacidad, colores de fondo/acento/texto, música automática, ocultar en reposo,
-  reloj 24 h, bloquear posición, minutos del temporizador, iniciar con Windows.
-- **Temporizador** real (Ctrl+Alt+2) y **batería** real (aviso al conectar el cargador y batería baja).
+## Novedades 1.2
+- Portada del álbum en la isla y color de la isla según la canción (detalles, fondo o desactivado).
+- Detección de llamadas por uso del micrófono (Discord, WhatsApp, Teams, Zoom, Telegram, Skype, Slack,
+  Webex, Signal, Viber y navegadores) con nombre de la app y contador.
+- En reposo muestra hora y temperatura (clic para ver fecha, clima y ciudad).
+- Muñequito animado: se pone los audífonos solo cuando suena música y baila; sin música está tranquilo.
+- Idioma español / inglés en toda la interfaz y en el menú de la bandeja.
+- Opciones nuevas: unidad °C/°F, ciudad (o automática), mostrar/ocultar muñequito y llamadas.
 
 ## Atajos globales
 Ctrl+Alt+1 música · 2 temporizador · 3 notificación de prueba · 0 reposo · S configuración
 
-## Enviar avisos a la isla desde otros programas
-Con la isla abierta, desde PowerShell:
-   Invoke-RestMethod "http://127.0.0.1:47821/notify?title=Hola&body=Mensaje de prueba"
+## Privacidad del clima
+Para la temperatura se consulta Open-Meteo. Si no pones una ciudad, la ubicación se estima por tu IP
+con ipwho.is. Si prefieres no usarlo, escribe una ciudad en Configuración o desactiva "Mostrar temperatura".
 
-## Nota sobre notificaciones de Windows
-Windows no permite que una app de escritorio como esta lea las notificaciones de otros programas
-(WhatsApp, Discord, etc.) sin un permiso especial de apps empaquetadas, por eso no se muestran solas.
+## Avisos desde otros programas
+   Invoke-RestMethod "http://127.0.0.1:47821/notify?title=Hola&body=Mensaje de prueba"
 
 ## Instalador (.exe)
 Sube estos archivos a GitHub y la acción "Crear instalador de Windows" genera `Isla-Dinamica-Setup.exe`.
