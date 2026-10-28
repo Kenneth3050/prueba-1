@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, globalShortcut, screen, nativeImage, ipcMain } = require('electron');
+const { app, BrowserWindow, Tray, Menu, globalShortcut, screen, nativeImage, ipcMain, shell } = require('electron');
 const path = require('path'), fs = require('fs'), http = require('http');
 const { spawn } = require('child_process');
 
@@ -6,7 +6,7 @@ const W = 620, H = 300;
 const DEF = {
   scale: 1, bg: '#000000', accent: '#32d74b', fg: '#ffffff', opacity: 1,
   autoMusic: true, hideIdle: false, h24: true, lock: false, timerMin: 5, x: null, y: null,
-  lang: null, weather: true, unit: 'C', city: '', mascot: true, calls: true, coverMode: 'accent',
+  lang: null, weather: true, unit: 'C', city: '', mascot: true, calls: true, coverMode: 'bg',
 };
 let cfg = { ...DEF }, win, setWin, tray, cfgFile, drag = null;
 let kp, wx = null, quitting = false;
@@ -18,6 +18,8 @@ if (!app.requestSingleInstanceLock()) {
   app.on('second-instance', () => openSettings());
   app.whenReady().then(init);
 }
+
+const log = (msg) => { try { fs.appendFileSync(path.join(app.getPath('userData'), 'isla.log'), new Date().toISOString() + ' ' + msg + '\n'); } catch (e) {} };
 
 /* ---------- ajustes ---------- */
 function load() {
@@ -130,6 +132,7 @@ function startPS(f, onLine) {
   const go = () => {
     const p = runPS(d, f); procs[f] = p;
     p.stdout.setEncoding('utf8');
+    p.stderr.on('data', (d) => log(f + ': ' + String(d).slice(0, 400)));
     p.stdout.on('data', (chunk) => {
       buf += chunk;
       let i;
@@ -152,6 +155,7 @@ function startKeys() {
 function startScripts() {
   startPS('media.ps1', (j) => {
     if (!win) return;
+    if (j.dbg) { log(j.dbg); delete j.dbg; }
     const img = j.img; delete j.img;
     win.webContents.send('media', j);
     if (img !== undefined) win.webContents.send('cover', img);
@@ -195,8 +199,8 @@ function startServer() {
 
 /* ---------- atajos y bandeja ---------- */
 const L = {
-  es: { music: 'Música', timer: 'Temporizador', test: 'Probar notificación', idle: 'Reposo', settings: 'Configuración…', rpos: 'Restablecer posición', login: 'Iniciar con Windows', quit: 'Salir' },
-  en: { music: 'Music', timer: 'Timer', test: 'Test notification', idle: 'Idle', settings: 'Settings…', rpos: 'Reset position', login: 'Start with Windows', quit: 'Quit' },
+  es: { music: 'Música', timer: 'Temporizador', test: 'Probar notificación', idle: 'Reposo', settings: 'Configuración…', rpos: 'Restablecer posición', login: 'Iniciar con Windows', dataf: 'Abrir carpeta de datos', quit: 'Salir' },
+  en: { music: 'Music', timer: 'Timer', test: 'Test notification', idle: 'Idle', settings: 'Settings…', rpos: 'Reset position', login: 'Start with Windows', dataf: 'Open data folder', quit: 'Quit' },
 };
 const ACTIONS = [['music', '1'], ['timer', '2'], ['test', '3'], ['idle', '0']];
 function hotkeys() {
@@ -215,6 +219,7 @@ function makeTray() {
     { label: t.settings, accelerator: 'Ctrl+Alt+S', click: openSettings },
     { label: t.rpos, click: () => { cfg.x = null; cfg.y = null; save(); place(); } },
     { label: t.login, type: 'checkbox', checked: app.getLoginItemSettings().openAtLogin, click: (i) => { app.setLoginItemSettings({ openAtLogin: i.checked }); broadcast(); } },
+    { label: t.dataf, click: () => shell.openPath(app.getPath('userData')) },
     { type: 'separator' },
     { label: t.quit, click: () => app.quit() },
   ]);

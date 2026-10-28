@@ -12,14 +12,14 @@ transition:width .55s cubic-bezier(.34,1.35,.5,1),height .55s cubic-bezier(.34,1
 #isl.ghost{opacity:0}#isl.ghost:hover{opacity:.55}
 #c{position:absolute;inset:0;padding:0 14px;display:flex;align-items:center;gap:10px;transition:opacity .16s,filter .16s,transform .16s;white-space:nowrap}
 #c.out{opacity:0;filter:blur(6px);transform:scale(.96)}
-.col{flex-direction:column;align-items:stretch;justify-content:center;gap:8px;padding:14px 18px!important}
-.row{display:flex;align-items:center;gap:12px}
+#c.col{flex-direction:column;align-items:stretch;justify-content:center;gap:8px;padding:14px 18px!important}
+.row{display:flex;align-items:center;gap:12px;min-width:0}
 .sp{flex:1}
 .num{font-variant-numeric:tabular-nums;font-weight:600}
 .cov{width:30px;height:30px;border-radius:8px;flex:none;background-size:cover}
 .cov.l{width:62px;height:62px;border-radius:14px}
-.t1{font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis}
-.t2{font-size:12px;opacity:.65;overflow:hidden;text-overflow:ellipsis}
+.t1{font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t2{font-size:12px;opacity:.65;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .big{font-size:38px;font-weight:800;letter-spacing:-1px}
 .bars{display:flex;gap:2px;align-items:center;height:16px;flex:none}
 .bars i{width:3px;background:var(--acc);border-radius:2px;height:4px;transition:background .6s}
@@ -36,24 +36,41 @@ svg{width:16px;height:16px;fill:currentColor}
 @keyframes p{50%{opacity:.35}}
 .batt{width:34px;height:16px;border:2px solid #ffffff80;border-radius:5px;padding:1px;box-sizing:border-box;flex:none}
 .batt b{display:block;height:100%;background:var(--acc);border-radius:2px}
-/* muñequito */
+/* olas de la canción */
+#wv{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .7s;overflow:hidden}
+#isl.wv #wv{opacity:1}
+#wv svg{position:absolute;left:0;bottom:0;width:200%;fill:var(--wv1);stroke:none}
+#wv .w2{height:70%;opacity:.4;animation:wv 9s linear infinite reverse}
+#wv .w1{height:60%;animation:wv 6s linear infinite}
+#isl:not(.play) #wv svg{animation-play-state:paused}
+@keyframes wv{to{transform:translateX(-50%)}}
+#c{z-index:1}
+#isl.wv .prog{background:#ffffff40}#isl.wv .prog b{background:var(--fg)}
+#isl.wv .bars i{background:var(--fg)}
+/* pingüino */
 .mas{flex:none;overflow:visible}
-.mas .bd{fill:var(--fg)}.mas .eye{fill:var(--isl)}
+.mas .pb{fill:#2b2f55;stroke:#6a70b8;stroke-width:.8}
+.mas .pw{fill:#f4f4ff}.mas .pk{fill:#ffb340}.mas .pe{fill:#14162b}
 .mas .band{stroke:var(--acc)}.mas .cup{fill:var(--acc)}
 .mas .body{transform-box:fill-box;transform-origin:50% 100%;animation:fl 3.2s ease-in-out infinite}
 .mas .eyes{transform-box:fill-box;transform-origin:50% 50%;animation:bl 4.5s infinite}
 .mas .hp{opacity:0;transform:translateY(-6px);transition:opacity .35s,transform .35s}
 .mas.on .hp{opacity:1;transform:none}
 .mas .mic{display:none}.mas.call .mic{display:inline}
+.mas .wl,.mas .wr{transform-box:fill-box}
 .mas.dance .body{animation:dn .55s ease-in-out infinite alternate}
+.mas.dance .wl{transform-origin:100% 0;animation:wl .3s ease-in-out infinite alternate}
+.mas.dance .wr{transform-origin:0 0;animation:wr .3s ease-in-out infinite alternate}
 @keyframes fl{50%{transform:translateY(-1.2px)}}
 @keyframes bl{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
 @keyframes dn{from{transform:rotate(-9deg)}to{transform:rotate(9deg) translateY(-1px)}}
-@media (prefers-reduced-motion:reduce){#isl,#c{transition:none}.bars.on i,.dot,.mas .body,.mas .eyes{animation:none!important}}
+@keyframes wl{to{transform:rotate(28deg)}}
+@keyframes wr{to{transform:rotate(-28deg)}}
+@media (prefers-reduced-motion:reduce){#isl,#c{transition:none}.bars.on i,.dot,.mas .body,.mas .eyes,.mas .wl,.mas .wr,#wv svg{animation:none!important}}
 </style>
 </head>
 <body>
-<div id="isl"><div id="c"></div></div>
+<div id="isl"><div id="wv"><svg class="w2" viewBox="0 0 800 100" preserveAspectRatio="none"><path d="M0 30Q50 5 100 30T200 30T300 30T400 30T500 30T600 30T700 30T800 30V100H0Z"/></svg><svg class="w1" viewBox="0 0 800 100" preserveAspectRatio="none"><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--wv1)"/><stop offset="1" style="stop-color:var(--wv2)"/></linearGradient></defs><path style="fill:url(#g1)" d="M0 40Q50 15 100 40T200 40T300 40T400 40T500 40T600 40T700 40T800 40V100H0Z"/></svg></div><div id="c"></div></div>
 <script>
 const $=s=>document.querySelector(s),isl=$('#isl'),c=$('#c'),root=document.documentElement;
 const esc=s=>String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
@@ -68,12 +85,13 @@ const hue=s=>{let h=0;for(const ch of String(s))h=(h*31+ch.charCodeAt(0))%360;re
 const cover=s=>`linear-gradient(135deg,hsl(${hue(s)} 80% 60%),hsl(${(hue(s)+60)%360} 80% 42%))`;
 const bars=on=>`<div class="bars ${on?'on':''}"><i></i><i></i><i></i><i></i></div>`;
 
-let C={scale:1,bg:'#000000',accent:'#32d74b',fg:'#ffffff',opacity:1,autoMusic:true,hideIdle:false,h24:true,lock:false,timerMin:5,lang:'es',weather:true,unit:'C',city:'',mascot:true,calls:true,coverMode:'accent'};
+let C={scale:1,bg:'#000000',accent:'#32d74b',fg:'#ffffff',opacity:1,autoMusic:true,hideIdle:false,h24:true,lock:false,timerMin:5,lang:'es',weather:true,unit:'C',city:'',mascot:true,calls:true,coverMode:'bg'};
 const S={cur:'idle',exp:false,manual:false,prev:null,msg:{t:'',b:''},batt:100,tLeft:300,tRun:false};
 let M=null,W=null,lastKey='',curKey='',dismissKey='',pausedAt=0,autoT,msgT,callT,rt;
-let coverImg='',hasCol=false,coverAcc='#e8e8f0',coverBg='#1c1c1c';
+let coverImg='',hasCol=false,coverAcc='#e8e8f0',coverW1='#8a8a96',coverW2='#4a4a54';
 let callApp=null,callStart=0;
 const clock=()=>new Date().toLocaleTimeString(tt('locale'),{hour:'2-digit',minute:'2-digit',hour12:!C.h24});
+const shortDate=()=>new Date().toLocaleDateString(tt('locale'),{weekday:'short',day:'numeric'}).replace('.','');
 const dateStr=()=>new Date().toLocaleDateString(tt('locale'),{weekday:'long',day:'numeric',month:'long'});
 const rgba=(h,a)=>{const n=parseInt(h.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`};
 const hex=(r,g,b)=>'#'+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
@@ -83,14 +101,18 @@ const rgb2hsl=(r,g,b)=>{r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.mi
 /* colores según la portada */
 function setCol(h,s){
   hasCol=true;
-  if(s<.12){coverAcc='#e8e8f0';coverBg='#1c1c1c';return}
+  if(s<.12){coverAcc='#e8e8f0';coverW1='#8a8a96';coverW2='#4a4a54';return}
+  const sat=Math.max(s,.5);
   coverAcc=hex(...hsl2rgb(h,Math.max(s,.55),.62));
-  coverBg=hex(...hsl2rgb(h,Math.min(Math.max(s,.4),.7),.14));
+  coverW1=hex(...hsl2rgb(h,sat,.5));
+  coverW2=hex(...hsl2rgb(h,sat,.3));
 }
 function colors(){
   const live=S.cur==='music'&&hasCol&&C.coverMode!=='off';
   root.style.setProperty('--acc',live?coverAcc:C.accent);
-  root.style.setProperty('--isl',rgba(live&&C.coverMode==='bg'?coverBg:C.bg,C.opacity));
+  root.style.setProperty('--isl',rgba(C.bg,C.opacity));
+  root.style.setProperty('--wv1',coverW1);root.style.setProperty('--wv2',coverW2);
+  isl.classList.toggle('wv',live&&C.coverMode==='bg');
 }
 function extract(src){return new Promise(res=>{const i=new Image();i.onload=()=>{try{const cv=document.createElement('canvas');cv.width=cv.height=16;const x=cv.getContext('2d');x.drawImage(i,0,0,16,16);const d=x.getImageData(0,0,16,16).data;let r=0,g=0,b=0,w=0;for(let k=0;k<d.length;k+=4){const mx=Math.max(d[k],d[k+1],d[k+2]),mn=Math.min(d[k],d[k+1],d[k+2]),s=(mx-mn)/(mx||1),wt=.05+s*s*(mx/255);r+=d[k]*wt;g+=d[k+1]*wt;b+=d[k+2]*wt;w+=wt}res([r/w,g/w,b/w])}catch(e){res(null)}};i.onerror=()=>res(null);i.src=src})}
 const coverCss=t=>coverImg?`url('${coverImg}') center/cover no-repeat`:cover(t);
@@ -105,9 +127,10 @@ function apply(n){
 /* muñequito */
 const listening=()=>!!M&&M.s===4;
 const mcls=()=>listening()?'on dance':'';
-const mascot=(sz,cls='')=>!C.mascot?'':`<svg class="mas ${cls}" style="width:${sz}px;height:${sz}px" viewBox="0 0 32 32" aria-hidden="true"><g class="body"><path class="bd" d="M6 28V15a10 10 0 0120 0v13l-3.300-2.500L19.500 28 16 25.500 12.500 28 9.300 25.500z"/><g class="eyes"><ellipse class="eye" cx="12.500" cy="16" rx="1.700" ry="2.300"/><ellipse class="eye" cx="19.500" cy="16" rx="1.700" ry="2.300"/></g><ellipse cx="9.700" cy="20" rx="1.600" ry=".9" fill="#ff9ab5" opacity=".75"/><ellipse cx="22.300" cy="20" rx="1.600" ry=".9" fill="#ff9ab5" opacity=".75"/><g class="hp"><path class="band" d="M4.200 16A11.800 11.800 0 0127.800 16" fill="none" stroke-width="2" stroke-linecap="round"/><rect class="cup" x="2.200" y="14" width="4" height="8" rx="2"/><rect class="cup" x="25.800" y="14" width="4" height="8" rx="2"/><g class="mic"><path class="band" d="M4.200 21c.8 4.500 5 6.500 10.500 5.500" fill="none" stroke-width="1.500" stroke-linecap="round"/><circle class="cup" cx="15.300" cy="26.400" r="1.500"/></g></g></g></svg>`;
+const mascot=(sz,cls='')=>!C.mascot?'':`<svg class="mas ${cls}" style="width:${sz}px;height:${sz}px" viewBox="0 0 32 32" aria-hidden="true"><g class="body"><path class="pb wl" d="M7 14.500Q2.500 19 4.800 25Q8.200 22.800 8.600 17.500Z"/><path class="pb wr" d="M25 14.500Q29.500 19 27.200 25Q23.800 22.800 23.400 17.500Z"/><ellipse class="pk" cx="11.200" cy="29.300" rx="3.800" ry="1.700"/><ellipse class="pk" cx="20.800" cy="29.300" rx="3.800" ry="1.700"/><ellipse class="pb" cx="16" cy="17" rx="10" ry="12.500"/><ellipse class="pw" cx="16" cy="19.800" rx="6.300" ry="8.400"/><g class="eyes"><ellipse class="pw" cx="12.600" cy="11.800" rx="2.600" ry="2.800"/><ellipse class="pw" cx="19.400" cy="11.800" rx="2.600" ry="2.800"/><circle class="pe" cx="12.900" cy="12.200" r="1.200"/><circle class="pe" cx="19.100" cy="12.200" r="1.200"/></g><path class="pk" d="M13.400 14.800Q16 13.200 18.600 14.800Q16 18 13.400 14.800Z"/><g class="hp"><path class="band" d="M5.800 12A10.200 10.200 0 0126.200 12" fill="none" stroke-width="2" stroke-linecap="round"/><rect class="cup" x="3.800" y="9.500" width="4" height="6.500" rx="2"/><rect class="cup" x="24.200" y="9.500" width="4" height="6.500" rx="2"/><g class="mic"><path class="band" d="M5.800 15.500Q6.500 22 12.200 21" fill="none" stroke-width="1.500" stroke-linecap="round"/><circle class="cup" cx="12.800" cy="21" r="1.400"/></g></g></g></svg>`;
 function refreshMascot(){
   const l=listening();
+  isl.classList.toggle('play',l);
   document.querySelectorAll('#c .mas').forEach(m=>{m.classList.toggle('on',l||m.classList.contains('call'));m.classList.toggle('dance',l)});
 }
 
@@ -123,7 +146,7 @@ const V={
 idle:e=>{
   const w=wx();
   return e?{w:310,h:96,r:30,html:`<div><div class="big num" id="clk" style="font-size:30px;line-height:1">${clock()}</div><div class="t2" style="margin-top:4px">${esc(dateStr())}</div></div><span class="sp"></span>${w?`<div style="text-align:right"><div class="t1" style="font-size:22px">${w.ic} ${w.t}</div><div class="t2">${esc(w.desc)}${w.city?' · '+esc(w.city):''}</div></div>`:''}${mascot(40,mcls())}`}:
-  {w:w?208:134,h:36,r:18,html:`<span class="num" id="clk">${clock()}</span>${w?`<span class="t2" style="opacity:.9">${w.ic} ${w.t}</span>`:''}<span class="sp"></span>${mascot(28,mcls())}`};
+  {w:(w?216:162)-(C.mascot?0:38),h:36,r:18,html:`<span class="num" id="clk">${clock()}</span>${w?`<span class="t2" style="opacity:.9">${w.ic} ${w.t}</span>`:''}<span class="t2" id="dts" style="opacity:.8">${esc(shortDate())}</span><span class="sp"></span>${mascot(28,mcls())}`};
 },
 music:e=>{
   const t=M?(M.t||tt('noTitle')):tt('noMusic'),a=M?M.a:'',on=listening(),pr=M&&M.d>0?Math.min(100,M.p/M.d*100):0;
@@ -288,7 +311,7 @@ isl.addEventListener('mouseleave',()=>api.setIgnore(true));
 setInterval(()=>{
   if(S.tRun&&S.tLeft>0){S.tLeft--;if(S.tLeft===0){S.tRun=false;notify(tt('timer'),tt('timerEnd'))}}
   const set=(id,x)=>{const el=document.getElementById(id);if(el)el.textContent=x};
-  set('clk',clock());set('tm',tm(S.tLeft));
+  set('clk',clock());set('dts',shortDate());set('tm',tm(S.tLeft));
   if(callApp){const el=Math.floor((Date.now()-callStart)/1000);set('cl',S.exp?tt('inCall')+' · '+mm(el):mm(el))}
   if(M&&M.s===4){M.p++;refreshMusic()}
 },1000);

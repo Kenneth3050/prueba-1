@@ -1,4 +1,11 @@
-# Isla dinámica para Windows (v1.2)
+# Isla dinámica para Windows (v1.3)
+
+## Cambios 1.3
+- Corregido el recorte del contenido al abrir la isla con música.
+- El muñequito ahora es un pingüino.
+- Fondo de la música con olas animadas: negro arriba y el color de la canción abajo.
+- En reposo se agrega la fecha corta para que no quede espacio vacío.
+- Portada: lectura más robusta con reintentos y registro en isla.log (menú de la bandeja > Abrir carpeta de datos).
 
 Isla flotante siempre encima de tus apps. Arrástrala, clic para expandir, clic derecho para configurar.
 
