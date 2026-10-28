@@ -1,11 +1,11 @@
 {
   "name": "isla-dinamica",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Isla dinámica flotante para Windows",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --win"
+    "build": "electron-builder --win --publish never"
   },
   "devDependencies": {
     "electron": "^31.0.0",
@@ -18,6 +18,8 @@
       "main.js",
       "preload.js",
       "index.html",
+      "settings.html",
+      "ps/**",
       "assets/**"
     ],
     "win": {
@@ -29,5 +31,6 @@
       "deleteAppDataOnUninstall": true
     },
     "artifactName": "Isla-Dinamica-Setup.${ext}"
-  }
+  },
+  "author": "Isla Dinamica"
 }

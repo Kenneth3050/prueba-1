@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Configuración de la isla</title>
+<style>
+:root{color-scheme:dark;--bg:#14162b;--card:#1d2040;--line:#ffffff1f;--text:#eef0ff;--muted:#a3a8d6;--acc:#6b7bff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif;padding:20px}
+h1{font-size:18px;margin:0 0 4px}
+p.s{margin:0 0 16px;color:var(--muted);font-size:12.5px;line-height:1.5}
+h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 14px}
+.r{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.r:last-child{border-bottom:0}
+.r span b{color:var(--muted);font-weight:600;margin-left:6px}
+input[type=range]{width:150px;accent-color:var(--acc)}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--acc)}
+input[type=color]{width:44px;height:26px;border:1px solid var(--line);border-radius:6px;background:none;padding:0}
+input[type=number]{width:70px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+button{font:inherit;font-weight:600;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--acc)}
+.hint{margin-top:16px;color:var(--muted);font-size:12px;line-height:1.6}
+</style>
+</head>
+<body>
+<h1>Configuración de la isla</h1>
+<p class="s">Los cambios se aplican al instante y se guardan solos.</p>
+
+<h2>Apariencia</h2>
+<div class="card">
+  <label class="r"><span>Tamaño<b id="v-scale"></b></span><input type="range" id="scale" min="0.7" max="1.4" step="0.05"></label>
+  <label class="r"><span>Opacidad<b id="v-opacity"></b></span><input type="range" id="opacity" min="0.4" max="1" step="0.05"></label>
+  <label class="r"><span>Color de fondo</span><input type="color" id="bg"></label>
+  <label class="r"><span>Color de acento</span><input type="color" id="accent"></label>
+  <label class="r"><span>Color del texto</span><input type="color" id="fg"></label>
+</div>
+
+<h2>Comportamiento</h2>
+<div class="card">
+  <label class="r"><span>Mostrar la música que suena</span><input type="checkbox" id="autoMusic"></label>
+  <label class="r"><span>Ocultar cuando no hay actividad</span><input type="checkbox" id="hideIdle"></label>
+  <label class="r"><span>Reloj de 24 horas</span><input type="checkbox" id="h24"></label>
+  <label class="r"><span>Bloquear posición</span><input type="checkbox" id="lock"></label>
+  <label class="r"><span>Temporizador (minutos)</span><input type="number" id="timerMin" min="1" max="600"></label>
+  <label class="r"><span>Iniciar con Windows</span><input type="checkbox" id="login"></label>
+</div>
+
+<div class="btns">
+  <button id="test">Probar notificación</button>
+  <button id="rpos">Restablecer posición</button>
+  <button id="rall">Restablecer todo</button>
+</div>
+<div class="hint">Arrastra la isla con el ratón para moverla donde quieras. Clic para expandirla y clic derecho para abrir esta ventana.<br>
+Atajos: Ctrl+Alt+1 música · 2 temporizador · 3 notificación de prueba · 0 reposo · S configuración.</div>
+
+<script>
+const ranges=['scale','opacity'],colors=['bg','accent','fg'],checks=['autoMusic','hideIdle','h24','lock','login'];
+const $=id=>document.getElementById(id);
+function fill(c){
+  ranges.forEach(k=>{$(k).value=c[k];$('v-'+k).textContent=Math.round(c[k]*100)+' %'});
+  colors.forEach(k=>$(k).value=c[k]);
+  checks.forEach(k=>$(k).checked=!!c[k]);
+  $('timerMin').value=c.timerMin;
+}
+[...ranges,...colors].forEach(k=>$(k).addEventListener('input',e=>{
+  const v=ranges.includes(k)?parseFloat(e.target.value):e.target.value;
+  if(ranges.includes(k))$('v-'+k).textContent=Math.round(v*100)+' %';
+  api.setSettings({[k]:v});
+}));
+checks.forEach(k=>$(k).addEventListener('change',e=>api.setSettings({[k]:e.target.checked})));
+$('timerMin').addEventListener('change',e=>api.setSettings({timerMin:parseInt(e.target.value)||5}));
+$('test').onclick=()=>api.testNotify();
+$('rpos').onclick=()=>api.resetPos();
+$('rall').onclick=()=>api.resetAll();
+api.on('settings',fill);
+api.getSettings().then(fill);
+</script>
+</body>
+</html>
