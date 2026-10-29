@@ -148,7 +148,7 @@ function wx(){
 const V={
 idle:e=>{
   const w=wx();
-  return e?{w:310,h:96,r:30,html:`<div><div class="big num" id="clk" style="font-size:30px;line-height:1">${clock()}</div><div class="t2" style="margin-top:4px">${esc(dateStr())}</div></div><span class="sp"></span>${w?`<div style="text-align:right"><div class="t1" style="font-size:22px">${w.ic} ${w.t}</div><div class="t2">${esc(w.desc)}${w.city?' · '+esc(w.city):''}</div></div>`:''}${mascot(40,mcls())}`}:
+  return e?{w:440,h:96,r:30,html:`<div style="flex:none"><div class="big num" id="clk" style="font-size:30px;line-height:1">${clock()}</div><div class="t2" style="margin-top:4px">${esc(dateStr())}</div></div>${w?`<div style="min-width:0;flex:1;text-align:right"><div class="t1" style="font-size:22px">${w.ic} ${w.t}</div><div class="t2">${esc(w.desc)}${w.city?' · '+esc(w.city):''}</div></div>`:'<span class="sp"></span>'}${mascot(40,mcls())}`}:
   {w:(w?216:162)-(C.mascot?0:38),h:36,r:18,html:`<span class="num" id="clk">${clock()}</span>${w?`<span class="t2" style="opacity:.9">${w.ic} ${w.t}</span>`:''}<span class="t2" id="dts" style="opacity:.8">${esc(shortDate())}</span><span class="sp"></span>${mascot(28,mcls())}`};
 },
 music:e=>{
