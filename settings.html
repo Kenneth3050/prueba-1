@@ -11,7 +11,8 @@ html,body{margin:0;height:100%;overflow:hidden}
 body{background:radial-gradient(800px 500px at 85% -10%,#3a2f7a66,transparent 70%),radial-gradient(600px 400px at -5% 110%,#7c3a8f44,transparent 70%),var(--bg);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif}
 #app{display:flex;height:100%}
 aside{width:210px;flex:none;padding:18px 12px;background:#0b0d1e99;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;-webkit-app-region:drag}
-.brand{font-weight:800;font-size:18px;padding:4px 10px 16px;letter-spacing:-.3px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;padding:4px 10px 16px;letter-spacing:-.3px}
+.logo{width:30px;height:30px;border-radius:9px}
 .brand span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;color:transparent}
 .nav{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--muted);font-weight:600;-webkit-app-region:no-drag}
 .nav:hover{background:#ffffff0d;color:var(--text)}
@@ -165,11 +166,26 @@ const SECT=[
   {k:'cdDate',t:'date',l:['Cuenta regresiva: fecha','Countdown: date']},
   {t:'btn',a:'test',b:['Probar aviso','Test alert']}
  ]},
+
+ {id:'voice',ic:'🎙️',n:['Asistente de voz','Voice assistant'],items:[
+  {k:'voiceOn',t:'toggle',l:['Activar asistente','Enable assistant'],d:['Atajo: Ctrl+Alt+V o el botón 🎤 de la isla','Shortcut: Ctrl+Alt+V or the 🎤 button on the island']},
+  {k:'wakeWord',t:'toggle',l:['Palabra de activación “isla”','Wake word “isla”'],d:['Experimental: deja el micrófono escuchando','Experimental: keeps the microphone listening']},
+  {k:'voiceSpeak',t:'toggle',l:['Responder en voz alta','Speak replies']},
+  {k:'voiceTimeout',t:'range',min:4,max:15,step:1,m:1,u:' s',l:['Tiempo de escucha','Listening time']},
+  {t:'btn',a:'voice',b:['Probar asistente','Test assistant']},
+  {t:'note',x:['Habla en el idioma elegido en Sistema. Ejemplos: “sube el volumen”, “volumen al 40”, “pausa”, “siguiente”, “temporizador de 10 minutos”, “anota comprar leche”, “abre las notas”, “qué hora es”, “qué temperatura hace”, “cambia el muñequito a cono”.','Speak in the language chosen under System. Examples: “volume up”, “volume to 40”, “pause”, “next”, “timer ten minutes”, “note buy milk”, “open the notes”, “what time is it”, “what is the weather”, “change the mascot to cone”.']},
+  {t:'note',x:['Necesita el reconocimiento de voz de Windows en tu idioma (Configuración de Windows > Hora e idioma > Voz).','It needs Windows speech recognition for your language (Windows Settings > Time & language > Speech).']}
+ ]},
+ {id:'notes',ic:'📝',n:['Notas','Notes'],items:[
+  {k:'notesOnIsland',t:'toggle',l:['Mostrar la nota fijada en la isla','Show the pinned note on the island'],d:['Al expandir la hora aparece con 📌','Shown with 📌 when the clock is expanded']},
+  {t:'btn',a:'notes',b:['Abrir notas','Open notes']},
+  {t:'note',x:['Atajo: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd>. También puedes decir “anota comprar leche” al asistente de voz.','Shortcut: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd>. You can also tell the voice assistant “note buy milk”.']}
+ ]},
  {id:'sys',ic:'⚙️',n:['Sistema','System'],items:[
   {k:'lang',t:'select',l:['Idioma','Language']},
   {k:'login',t:'toggle',l:['Iniciar con Windows','Start with Windows']},
   {t:'btn',a:'rall',b:['Restablecer todo','Reset everything']},
-  {t:'note',x:['Atajos globales: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>1</kbd> música · <kbd>2</kbd> temporizador · <kbd>3</kbd> aviso de prueba · <kbd>0</kbd> reposo · <kbd>S</kbd> configuración. Clic derecho en la isla también abre esta ventana.','Global shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>1</kbd> music · <kbd>2</kbd> timer · <kbd>3</kbd> test alert · <kbd>0</kbd> idle · <kbd>S</kbd> settings. Right-click on the island also opens this window.']}
+  {t:'note',x:['Atajos globales: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>1</kbd> música · <kbd>2</kbd> temporizador · <kbd>3</kbd> aviso de prueba · <kbd>0</kbd> reposo · <kbd>V</kbd> asistente de voz · <kbd>N</kbd> notas · <kbd>S</kbd> configuración. Clic derecho en la isla también abre esta ventana.','Global shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>1</kbd> music · <kbd>2</kbd> timer · <kbd>3</kbd> test alert · <kbd>0</kbd> idle · <kbd>V</kbd> voice assistant · <kbd>N</kbd> notes · <kbd>S</kbd> settings. Right-click on the island also opens this window.']}
  ]}
 ];
 
@@ -204,7 +220,7 @@ function build(){
   $('#pvl').textContent=L(['Vista previa en vivo','Live preview']);
   document.title='Isla — '+L(['Configuración','Settings']);
   document.documentElement.lang=LANG;
-  $('#side').innerHTML=`<div class="brand">🏝️ <span>Isla</span></div>`+SECT.map(s=>`<button class="nav${s.id===active?' on':''}" data-nav="${s.id}"><i>${s.ic}</i>${L(s.n)}</button>`).join('')+`<div class="foot">${L(['Los cambios se aplican al instante y se guardan solos.','Changes apply instantly and save automatically.'])}</div>`;
+  $('#side').innerHTML=`<div class="brand"><img class="logo" src="assets/logo.png" alt=""><span>Isla</span></div>`+SECT.map(s=>`<button class="nav${s.id===active?' on':''}" data-nav="${s.id}"><i>${s.ic}</i>${L(s.n)}</button>`).join('')+`<div class="foot">${L(['Los cambios se aplican al instante y se guardan solos.','Changes apply instantly and save automatically.'])}</div>`;
   const pane=$('#pane');pane.innerHTML='';
   SECT.forEach(s=>{
     const d=document.createElement('div');d.className='sec grid'+(s.id===active?' on':'');d.id='sec-'+s.id;
@@ -250,6 +266,8 @@ function wire(){
     if(a==='rpos')api.resetPos();
     if(a==='rall')api.resetAll();
     if(a==='test')api.testNotify();
+    if(a==='voice')api.voiceTest();
+    if(a==='notes')api.openNotes();
   });
 }
 function itemOf(k){for(const s of SECT)for(const it of s.items)if(it.k===k)return it}

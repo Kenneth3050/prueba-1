@@ -1,4 +1,13 @@
-# Isla dinámica para Windows (v1.5)
+# Isla dinámica para Windows (v1.6)
+
+## Cambios 1.6
+- Logo nuevo (cubo de cristal) en el instalador, la bandeja, las ventanas y el panel.
+- Asistente de voz: Ctrl+Alt+V, botón 🎤 al expandir la hora, o palabra de activación "isla" (experimental).
+  Entiende volumen, música, temporizadores, notas, hora, fecha, clima, configuración y cambio de muñequito,
+  y responde en pantalla y en voz alta. Usa el reconocimiento de voz de Windows (debe estar instalado para tu idioma).
+- Notas: ventana propia (Ctrl+Alt+N) con agregar, editar, marcar como hecha, fijar y borrar.
+  La nota fijada aparece en la isla al expandir la hora, y el asistente puede crear notas por voz.
+
 
 ## Cambios 1.5
 - Control de volumen real: rueda del ratón sobre la isla, control deslizante en la vista de música,

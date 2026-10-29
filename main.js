@@ -11,6 +11,7 @@ const DEF = {
   volOSD: true, wheelVol: true, volSlider: true, volStep: 2,
   mascot: true, mascotType: 'penguin', mascotSize: 1, headphones: true,
   h24: true, seconds: false, weather: true, unit: 'C', city: '', timerMin: 5, msgSecs: 4.2, sound: false, cdName: '', cdDate: '',
+  voiceOn: true, wakeWord: false, voiceSpeak: true, voiceTimeout: 7, notesOnIsland: true,
   lang: null, x: null, y: null,
 };
 const SC = {
@@ -25,9 +26,12 @@ const SC = {
   mascotType: ['e', ['penguin', 'cone', 'ghost']], shape: ['e', ['round', 'soft', 'square']],
   animSpeed: ['e', ['normal', 'fast', 'off']], align: ['e', ['left', 'center', 'right']],
   font: ['e', ['Segoe UI', 'Arial', 'Consolas', 'Georgia', 'Trebuchet MS', 'Comic Sans MS']],
+  voiceOn: ['b'], wakeWord: ['b'], voiceSpeak: ['b'], notesOnIsland: ['b'], voiceTimeout: ['i', 4, 15],
   city: ['s', 60], musicIgnore: ['s', 80], cdName: ['s', 40], cdDate: ['d'],
 };
-let cfg = { ...DEF }, win, setWin, tray, cfgFile, drag = null;
+let cfg = { ...DEF }, win, setWin, notesWin, tray, cfgFile, notesFile, drag = null;
+let notes = [], wakeP = null;
+const ICON = path.join(__dirname, 'assets', 'icon.ico');
 let kp, wx = null, fsOn = false, quitting = false;
 const procs = {};
 
@@ -116,7 +120,7 @@ function openSettings() {
   if (setWin && !setWin.isDestroyed()) { setWin.show(); setWin.focus(); return; }
   setWin = new BrowserWindow({
     width: 960, height: 700, frame: false, resizable: false, maximizable: false,
-    title: 'Isla', backgroundColor: '#0e1022',
+    title: 'Isla', icon: ICON, backgroundColor: '#0e1022',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true },
   });
   setWin.setMenu(null);
@@ -124,7 +128,32 @@ function openSettings() {
   setWin.on('closed', () => { setWin = null; });
 }
 
+function openNotes() {
+  if (notesWin && !notesWin.isDestroyed()) { notesWin.show(); notesWin.focus(); return; }
+  notesWin = new BrowserWindow({
+    width: 460, height: 700, frame: false, resizable: true, minWidth: 380, minHeight: 420, maximizable: false,
+    title: 'Notas', icon: ICON, backgroundColor: '#0e1022',
+    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true },
+  });
+  notesWin.setMenu(null);
+  notesWin.loadFile('notes.html');
+  notesWin.on('closed', () => { notesWin = null; });
+}
+function loadNotes() { try { notes = JSON.parse(fs.readFileSync(notesFile, 'utf8')); } catch (e) { notes = []; } if (!Array.isArray(notes)) notes = []; }
+function saveNotes() { try { fs.writeFileSync(notesFile, JSON.stringify(notes)); } catch (e) {} }
+function cleanNotes(a) {
+  let pinned = false;
+  return (Array.isArray(a) ? a : []).slice(0, 300).map((n) => {
+    const p = !!n.p && !pinned; if (p) pinned = true;
+    return { id: String(n.id || Date.now() + '' + Math.random()).slice(0, 40), t: String(n.t || '').slice(0, 600), d: !!n.d, p, ts: Number(n.ts) || Date.now() };
+  }).filter((n) => n.t.trim() !== '');
+}
+function bcNotes(skip) {
+  [win, notesWin].forEach((w) => { if (w && !w.isDestroyed() && w.webContents !== skip) w.webContents.send('notes', notes); });
+}
+
 /* ---------- IPC ---------- */
+const vcmd = (cmd) => { const p = procs['voice.ps1']; try { p && p.stdin.write(cmd + '\n'); } catch (e) {} };
 const vsend = (cmd) => { const p = procs['vol.ps1']; try { p && p.stdin.write(cmd + '\n'); } catch (e) {} };
 function wireIpc() {
   ipcMain.on('ignore', (_e, v) => win && win.setIgnoreMouseEvents(!!v, { forward: true }));
@@ -138,6 +167,8 @@ function wireIpc() {
     if (['align', 'monitor', 'offsetY'].some((k) => k in o)) { cfg.x = null; cfg.y = null; place(); }
     if ('onTop' in o && win) win.setAlwaysOnTop(!!cfg.onTop, cfg.onTop ? 'screen-saver' : 'normal');
     if ('hideFullscreen' in o) vis();
+    if (['voiceOn', 'wakeWord', 'lang'].some((k) => k in o)) startWake();
+    if ('lang' in o) vcmd('lang ' + cfg.lang);
     save(); broadcast(); makeTray();
     if ('city' in o || 'lang' in o) getWeather();
   });
@@ -145,8 +176,21 @@ function wireIpc() {
   ipcMain.on('pos:reset', () => { cfg.x = null; cfg.y = null; save(); place(); });
   ipcMain.on('test', () => send('test'));
   ipcMain.on('open-settings', openSettings);
-  ipcMain.on('settings:close', () => setWin && setWin.close());
-  ipcMain.on('settings:min', () => setWin && setWin.minimize());
+  ipcMain.on('win:close', (e) => { const w = BrowserWindow.fromWebContents(e.sender); if (w) w.close(); });
+  ipcMain.on('win:min', (e) => { const w = BrowserWindow.fromWebContents(e.sender); if (w) w.minimize(); });
+  ipcMain.handle('notes:get', () => notes);
+  ipcMain.on('notes:set', (e, a) => { notes = cleanNotes(a); saveNotes(); bcNotes(e.sender); });
+  ipcMain.on('notes:add', (_e, t) => {
+    t = String(t || '').trim().slice(0, 600); if (!t) return;
+    notes.unshift({ id: Date.now() + '' + Math.floor(Math.random() * 1000), t, d: false, p: false, ts: Date.now() });
+    saveNotes(); bcNotes();
+  });
+  ipcMain.on('notes:open', openNotes);
+  ipcMain.on('voice:test', () => send('voice'));
+  ipcMain.on('voice:listen', () => {
+    if (!procs['voice.ps1'] || process.platform !== 'win32') { if (win) win.webContents.send('heard', { err: 'norecognizer' }); return; }
+    vcmd('listen ' + cfg.voiceTimeout);
+  });
   ipcMain.on('drag-start', (_e, sx, sy) => { if (cfg.lock) return; const [x, y] = win.getPosition(); drag = { sx, sy, x, y }; });
   ipcMain.on('drag-move', (_e, sx, sy) => {
     if (drag) win.setBounds({ x: Math.round(drag.x + sx - drag.sx), y: Math.round(drag.y + sy - drag.sy), width: W, height: H });
@@ -167,16 +211,16 @@ function wireIpc() {
 function psDir() {
   const d = path.join(app.getPath('userData'), 'ps');
   fs.mkdirSync(d, { recursive: true });
-  ['media.ps1', 'keys.ps1', 'mic.ps1', 'vol.ps1', 'fs.ps1'].forEach((f) => fs.writeFileSync(path.join(d, f), fs.readFileSync(path.join(__dirname, 'ps', f))));
+  ['media.ps1', 'keys.ps1', 'mic.ps1', 'vol.ps1', 'fs.ps1', 'voice.ps1', 'wake.ps1'].forEach((f) => fs.writeFileSync(path.join(d, f), fs.readFileSync(path.join(__dirname, 'ps', f))));
   return d;
 }
-const runPS = (d, f) => spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(d, f)], { windowsHide: true });
-function startPS(f, onLine) {
+const runPS = (d, f, args = []) => spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(d, f), ...args], { windowsHide: true });
+function startPS(f, onLine, args = []) {
   if (process.platform !== 'win32') return;
   const d = psDir();
   let buf = '', tries = 0;
   const go = () => {
-    const p = runPS(d, f); procs[f] = p;
+    const p = runPS(d, f, args); procs[f] = p;
     p.stdout.setEncoding('utf8');
     p.stderr.on('data', (x) => log(f + ': ' + String(x).slice(0, 400)));
     p.stdout.on('data', (chunk) => {
@@ -213,9 +257,28 @@ function startScripts() {
   });
   startPS('vol.ps1', (j) => { if (win && j.vol !== undefined) win.webContents.send('volume', j); });
   startPS('fs.ps1', (j) => { fsOn = !!j.fs; vis(); });
+  startPS('voice.ps1', (j) => {
+    if (!win) return;
+    if (j.ready) log('voz: reconocedor ' + j.ready + ' (idioma coincide: ' + j.match + ') instalados: ' + j.all);
+    else if (j.err) { log('voz: ' + j.err); win.webContents.send('heard', { err: j.err === 'norecognizer' ? 'norecognizer' : 'err' }); }
+    else if (j.heard !== undefined) win.webContents.send('heard', { text: j.heard });
+  }, [cfg.lang]);
   startKeys();
   setTimeout(() => vsend('get'), 1500);
   setInterval(() => vsend('get'), 1500);
+}
+
+function stopWake() { if (wakeP) { try { wakeP.kill(); } catch (e) {} wakeP = null; } }
+function startWake() {
+  stopWake();
+  if (process.platform !== 'win32' || !cfg.voiceOn || !cfg.wakeWord) return;
+  const p = runPS(psDir(), 'wake.ps1', [cfg.lang]);
+  wakeP = p;
+  p.stdout.setEncoding('utf8');
+  p.stdout.on('data', (d) => { if (d.includes('"wake"')) send('voice'); else if (d.includes('err')) log('wake: ' + d.trim()); });
+  p.stderr.on('data', (x) => log('wake.ps1: ' + String(x).slice(0, 300)));
+  p.stdin.on('error', () => {});
+  p.on('exit', () => { if (wakeP === p) wakeP = null; });
 }
 
 /* ---------- clima (Open-Meteo; ubicación por ciudad o por IP) ---------- */
@@ -251,8 +314,8 @@ function startServer() {
 
 /* ---------- atajos y bandeja ---------- */
 const L = {
-  es: { music: 'Música', timer: 'Temporizador', test: 'Probar aviso', idle: 'Reposo', settings: 'Configuración…', rpos: 'Restablecer posición', login: 'Iniciar con Windows', dataf: 'Abrir carpeta de datos', quit: 'Salir' },
-  en: { music: 'Music', timer: 'Timer', test: 'Test alert', idle: 'Idle', settings: 'Settings…', rpos: 'Reset position', login: 'Start with Windows', dataf: 'Open data folder', quit: 'Quit' },
+  es: { music: 'Música', timer: 'Temporizador', test: 'Probar aviso', idle: 'Reposo', settings: 'Configuración…', rpos: 'Restablecer posición', login: 'Iniciar con Windows', voice: 'Asistente de voz', notes: 'Notas', dataf: 'Abrir carpeta de datos', quit: 'Salir' },
+  en: { music: 'Music', timer: 'Timer', test: 'Test alert', idle: 'Idle', settings: 'Settings…', rpos: 'Reset position', login: 'Start with Windows', voice: 'Voice assistant', notes: 'Notes', dataf: 'Open data folder', quit: 'Quit' },
 };
 const ACTIONS = [['music', '1'], ['timer', '2'], ['test', '3'], ['idle', '0']];
 function hotkeys() {
@@ -261,16 +324,20 @@ function hotkeys() {
   globalShortcut.register('CommandOrControl+Alt+PageDown', () => send('voldown'));
   globalShortcut.register('CommandOrControl+Alt+M', () => send('mute'));
   globalShortcut.register('CommandOrControl+Alt+S', openSettings);
+  globalShortcut.register('CommandOrControl+Alt+V', () => send('voice'));
+  globalShortcut.register('CommandOrControl+Alt+N', openNotes);
 }
 function makeTray() {
   if (!tray) {
-    tray = new Tray(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icon.png')));
+    tray = new Tray(nativeImage.createFromPath(process.platform === 'win32' ? ICON : path.join(__dirname, 'assets', 'icon.png')));
     tray.setToolTip('Isla dinámica');
   }
   const t = L[cfg.lang] || L.es;
   const menu = Menu.buildFromTemplate([
     ...ACTIONS.map(([k, n]) => ({ label: t[k], accelerator: 'Ctrl+Alt+' + n, click: () => send(k) })),
     { type: 'separator' },
+    { label: t.voice, accelerator: 'Ctrl+Alt+V', click: () => send('voice') },
+    { label: t.notes, accelerator: 'Ctrl+Alt+N', click: openNotes },
     { label: t.settings, accelerator: 'Ctrl+Alt+S', click: openSettings },
     { label: t.rpos, click: () => { cfg.x = null; cfg.y = null; save(); place(); } },
     { label: t.login, type: 'checkbox', checked: app.getLoginItemSettings().openAtLogin, click: (i) => { app.setLoginItemSettings({ openAtLogin: i.checked }); broadcast(); } },
@@ -285,12 +352,13 @@ function makeTray() {
 
 function init() {
   cfgFile = path.join(app.getPath('userData'), 'settings.json');
-  load();
-  createWindow(); wireIpc(); hotkeys(); makeTray(); startScripts(); startServer();
+  notesFile = path.join(app.getPath('userData'), 'notes.json');
+  load(); loadNotes();
+  createWindow(); wireIpc(); hotkeys(); makeTray(); startScripts(); startServer(); startWake();
   getWeather(); setInterval(getWeather, 20 * 60 * 1000);
 }
 app.on('will-quit', () => {
-  quitting = true; globalShortcut.unregisterAll();
+  quitting = true; globalShortcut.unregisterAll(); stopWake();
   [kp, ...Object.values(procs)].forEach((p) => { try { p && p.kill(); } catch (e) {} });
 });
 app.on('window-all-closed', () => {});
