@@ -3,7 +3,8 @@ Add-Type -AssemblyName System.Runtime.WindowsRuntime
 [void][Windows.Media.Control.GlobalSystemMediaTransportControlsSessionManager,Windows.Media.Control,ContentType=WindowsRuntime]
 [void][Windows.Media.Control.GlobalSystemMediaTransportControlsSessionMediaProperties,Windows.Media.Control,ContentType=WindowsRuntime]
 [void][Windows.Storage.Streams.IRandomAccessStreamWithContentType,Windows.Storage.Streams,ContentType=WindowsRuntime]
-[void][Windows.Storage.Streams.DataReader,Windows.Storage.Streams,ContentType=WindowsRuntime]
+[void][Windows.Storage.Streams.IInputStream,Windows.Storage.Streams,ContentType=WindowsRuntime]
+[void][Windows.Storage.Streams.IRandomAccessStream,Windows.Storage.Streams,ContentType=WindowsRuntime]
 $asTask = ([System.WindowsRuntimeSystemExtensions].GetMethods() | Where-Object { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' })[0]
 function Await($op, $type) {
   $t = $asTask.MakeGenericMethod($type).Invoke($null, @($op))
@@ -11,6 +12,15 @@ function Await($op, $type) {
   $t.Result
 }
 $script:err = ''
+$ext = [System.IO.WindowsRuntimeStreamExtensions]
+$mRead = $ext.GetMethods() | Where-Object { $_.Name -eq 'AsStreamForRead' -and $_.GetParameters().Count -eq 1 } | Select-Object -First 1
+$mAs = $ext.GetMethods() | Where-Object { $_.Name -eq 'AsStream' -and $_.GetParameters().Count -eq 1 } | Select-Object -First 1
+function ReadAll($method, $rs) {
+  $st = $method.Invoke($null, @($rs))
+  $ms = New-Object System.IO.MemoryStream
+  $st.CopyTo($ms)
+  return $ms.ToArray()
+}
 function GetThumb($p) {
   try {
     $ref = $p.Thumbnail
@@ -18,24 +28,15 @@ function GetThumb($p) {
     $rs = Await ($ref.OpenReadAsync()) ([Windows.Storage.Streams.IRandomAccessStreamWithContentType])
     if ($rs -eq $null) { $script:err = 'OpenReadAsync nulo'; return '' }
     $bytes = $null
-    try {
-      $st = [System.IO.WindowsRuntimeStreamExtensions]::AsStreamForRead($rs)
-      $ms = New-Object System.IO.MemoryStream
-      $st.CopyTo($ms)
-      $bytes = $ms.ToArray()
-    } catch { $script:err = 'A:' + $_.Exception.Message }
+    try { $bytes = ReadAll $mRead $rs } catch { $script:err = 'A:' + $_.Exception.Message }
     if ($bytes -eq $null -or $bytes.Length -lt 100) {
-      try {
-        $size = [uint32]$rs.Size
-        $rd = [Windows.Storage.Streams.DataReader]::new($rs.GetInputStreamAt(0))
-        [void](Await ($rd.LoadAsync($size)) ([uint32]))
-        $bytes = New-Object byte[] $size
-        $rd.ReadBytes($bytes)
-      } catch { $script:err = $script:err + ' B:' + $_.Exception.Message }
+      try { $bytes = ReadAll $mAs $rs } catch { $script:err = $script:err + ' B:' + $_.Exception.Message }
     }
-    $mime = $rs.ContentType
     if ($bytes -eq $null -or $bytes.Length -lt 100 -or $bytes.Length -gt 3000000) { return '' }
-    if (-not $mime) { $mime = 'image/jpeg' }
+    $mime = 'image/jpeg'
+    if ($bytes[0] -eq 0x89 -and $bytes[1] -eq 0x50) { $mime = 'image/png' }
+    elseif ($bytes[0] -eq 0x52 -and $bytes[1] -eq 0x49) { $mime = 'image/webp' }
+    elseif ($bytes[0] -eq 0x47 -and $bytes[1] -eq 0x49) { $mime = 'image/gif' }
     return ('data:' + $mime + ';base64,' + [Convert]::ToBase64String($bytes))
   } catch { $script:err = 'X:' + $_.Exception.Message; return '' }
 }
