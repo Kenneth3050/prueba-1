@@ -1,10 +1,11 @@
 const { contextBridge, ipcRenderer: r } = require('electron');
-const CH = ['show', 'settings', 'media', 'cover', 'mic', 'weather', 'notify'];
+const CH = ['show', 'settings', 'media', 'cover', 'mic', 'weather', 'notify', 'volume'];
 contextBridge.exposeInMainWorld('api', {
   setIgnore: (v) => r.send('ignore', v),
   on: (ch, cb) => { if (CH.includes(ch)) r.on(ch, (_e, ...a) => cb(...a)); },
   getSettings: () => r.invoke('settings:get'),
   getWeather: () => r.invoke('weather:get'),
+  getDisplays: () => r.invoke('displays'),
   setSettings: (p) => r.send('settings:set', p),
   resetAll: () => r.send('settings:reset'),
   resetPos: () => r.send('pos:reset'),
@@ -13,5 +14,10 @@ contextBridge.exposeInMainWorld('api', {
   dragMove: (x, y) => r.send('drag-move', x, y),
   dragEnd: () => r.send('drag-end'),
   media: (k) => r.send('media-key', k),
+  volSet: (v) => r.send('vol:set', v),
+  volStep: (d) => r.send('vol:step', d),
+  volMute: () => r.send('vol:mute'),
   openSettings: () => r.send('open-settings'),
+  closeSettings: () => r.send('settings:close'),
+  minSettings: () => r.send('settings:min'),
 });

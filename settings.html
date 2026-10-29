@@ -2,111 +2,296 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Configuración de la isla</title>
+<title>Isla</title>
+<link rel="stylesheet" href="shared.css">
 <style>
-:root{color-scheme:dark;--bg:#14162b;--card:#1d2040;--line:#ffffff1f;--text:#eef0ff;--muted:#a3a8d6;--acc:#6b7bff}
+:root{color-scheme:dark;--bg:#0e1022;--panel:#171a35;--card:#1c2042;--line:#ffffff1a;--text:#eef0ff;--muted:#a3a8d6;--acc:#7c8cff;--acc2:#ff7ad9}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif;padding:20px}
-h1{font-size:18px;margin:0 0 4px}
-p.s{margin:0 0 6px;color:var(--muted);font-size:12.5px;line-height:1.5}
-h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 14px}
-.r{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
-.r:last-child{border-bottom:0}
-em{font-style:normal}
-.r b{color:var(--muted);font-weight:600;margin-left:6px}
-input[type=range]{width:150px;accent-color:var(--acc)}
-input[type=checkbox]{width:18px;height:18px;accent-color:var(--acc)}
-input[type=color]{width:44px;height:26px;border:1px solid var(--line);border-radius:6px;background:none;padding:0}
-input[type=number],input[type=text],select{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px 8px;font:inherit}
-input[type=number]{width:70px}input[type=text]{width:150px}
-.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-button{font:inherit;font-weight:600;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
-button:hover{border-color:var(--acc)}
-.hint{margin:16px 0 4px;color:var(--muted);font-size:12px;line-height:1.6}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:radial-gradient(800px 500px at 85% -10%,#3a2f7a66,transparent 70%),radial-gradient(600px 400px at -5% 110%,#7c3a8f44,transparent 70%),var(--bg);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif}
+#app{display:flex;height:100%}
+aside{width:210px;flex:none;padding:18px 12px;background:#0b0d1e99;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;-webkit-app-region:drag}
+.brand{font-weight:800;font-size:18px;padding:4px 10px 16px;letter-spacing:-.3px}
+.brand span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;color:transparent}
+.nav{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--muted);font-weight:600;-webkit-app-region:no-drag}
+.nav:hover{background:#ffffff0d;color:var(--text)}
+.nav.on{background:linear-gradient(90deg,#7c8cff33,#ff7ad922);color:var(--text);box-shadow:inset 0 0 0 1px #7c8cff55}
+.nav i{font-style:normal;width:22px;text-align:center}
+.foot{margin-top:auto;font-size:11.5px;color:var(--muted);padding:10px;line-height:1.5}
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 22px 6px;-webkit-app-region:drag}
+header h1{margin:0;font-size:20px;letter-spacing:-.3px}
+.wb{display:flex;gap:6px;-webkit-app-region:no-drag}
+.wb button{all:unset;cursor:pointer;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--muted)}
+.wb button:hover{background:#ffffff14;color:var(--text)}
+.wb .cl:hover{background:#ff453a;color:#fff}
+#pvc{margin:6px 22px 0;padding:14px 16px 18px;border-radius:18px;background:repeating-linear-gradient(45deg,#ffffff06 0 10px,transparent 10px 20px),#10132b;border:1px solid var(--line)}
+#pvc small{display:block;color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+#pv{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;min-height:56px;font-family:"Segoe UI",system-ui,sans-serif}
+.mk{position:relative;display:inline-flex;align-items:center;gap:10px;padding:0 14px;height:38px;background-color:var(--isl);color:var(--fg);overflow:hidden;white-space:nowrap;font-size:14px}
+.mk .z{position:relative;z-index:1;display:flex;align-items:center;gap:10px}
+.mk b{font-variant-numeric:tabular-nums}
+.mk .t2{font-size:12px;opacity:.7}
+.mk .cv2{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#38bdf8,#6366f1)}
+.mk .bars{display:flex;gap:2px;align-items:center;height:14px}
+.mk .bars i{width:3px;background:var(--acc2x,var(--acc));border-radius:2px;height:4px;animation:b .8s ease-in-out infinite alternate}
+.mk .bars i:nth-child(2){animation-delay:.2s}.mk .bars i:nth-child(3){animation-delay:.4s}.mk .bars i:nth-child(4){animation-delay:.1s}
+@keyframes b{to{height:14px}}
+.mk .bar{width:90px;height:4px;border-radius:2px;background:#ffffff30;overflow:hidden}
+.mk .bar i{display:block;height:100%;width:60%;background:var(--acc)}
+#pane{flex:1;overflow-y:auto;padding:14px 22px 26px}
+#pane::-webkit-scrollbar{width:10px}#pane::-webkit-scrollbar-thumb{background:#ffffff22;border-radius:6px}
+.sec{display:none}.sec.on{display:block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:1000px){.grid{grid-template-columns:1fr}}
+.r{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:14px;min-height:56px}
+.r.full{grid-column:1/-1}
+.lb b{display:block;font-weight:600}
+.lb small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;line-height:1.35}
+.rg{display:flex;align-items:center;gap:10px}
+.rg .val{width:46px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px}
+input[type=range]{width:140px;accent-color:var(--acc)}
+input[type=color]{width:46px;height:28px;border:1px solid var(--line);border-radius:8px;background:none;padding:0;cursor:pointer}
+input[type=text],input[type=number],input[type=date],select{background:#0e1022;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit;max-width:180px}
+input[type=number]{width:80px}
+.sw{position:relative;width:44px;height:24px;flex:none}
+.sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+.sw i{position:absolute;inset:0;border-radius:99px;background:#ffffff22;transition:.2s}
+.sw i::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
+.sw input:checked+i{background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.sw input:checked+i::after{transform:translateX(20px)}
+button.b{font:inherit;font-weight:600;color:var(--text);background:#ffffff12;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}
+button.b:hover{border-color:var(--acc);background:#7c8cff22}
+.themes{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-weight:600;color:#fff;border:1px solid #ffffff33;border-radius:99px;padding:7px 14px;cursor:pointer;text-shadow:0 1px 3px #000a}
+.chip:hover{transform:translateY(-1px);border-color:#fff}
+.note{grid-column:1/-1;color:var(--muted);font-size:12.5px;line-height:1.7;padding:4px 4px}
+.note kbd{background:#ffffff14;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font:inherit;font-size:11.5px;color:var(--text)}
 </style>
 </head>
 <body>
-<h1 data-i="title"></h1>
-<p class="s" data-i="sub"></p>
-
-<h2 data-i="hGen"></h2>
-<div class="card">
-  <label class="r"><em data-i="lang"></em><select id="lang"><option value="es">Español</option><option value="en">English</option></select></label>
-  <label class="r"><em data-i="login"></em><input type="checkbox" id="login"></label>
-  <label class="r"><em data-i="lock"></em><input type="checkbox" id="lock"></label>
-  <label class="r"><em data-i="hideIdle"></em><input type="checkbox" id="hideIdle"></label>
+<div id="app">
+  <aside id="side"></aside>
+  <main>
+    <header><h1 id="ttl"></h1><div class="wb"><button id="bmin" aria-label="min">—</button><button id="bcl" class="cl" aria-label="close">✕</button></div></header>
+    <div id="pvc"><small id="pvl"></small><div id="pv"></div></div>
+    <div id="pane"></div>
+  </main>
 </div>
-
-<h2 data-i="hLook"></h2>
-<div class="card">
-  <label class="r"><span><em data-i="size"></em><b id="v-scale"></b></span><input type="range" id="scale" min="0.7" max="1.4" step="0.05"></label>
-  <label class="r"><span><em data-i="opacity"></em><b id="v-opacity"></b></span><input type="range" id="opacity" min="0.4" max="1" step="0.05"></label>
-  <label class="r"><em data-i="bgc"></em><input type="color" id="bg"></label>
-  <label class="r"><em data-i="acc"></em><input type="color" id="accent"></label>
-  <label class="r"><em data-i="txt"></em><input type="color" id="fg"></label>
-  <label class="r"><em data-i="mascot"></em><input type="checkbox" id="mascot"></label>
-  <label class="r"><em data-i="mascotType"></em><select id="mascotType"><option value="penguin" data-i="mtP"></option><option value="cone" data-i="mtC"></option></select></label>
-</div>
-
-<h2 data-i="hMusic"></h2>
-<div class="card">
-  <label class="r"><em data-i="autoMusic"></em><input type="checkbox" id="autoMusic"></label>
-  <label class="r"><em data-i="coverMode"></em><select id="coverMode"><option value="accent" data-i="cmA"></option><option value="bg" data-i="cmB"></option><option value="off" data-i="cmO"></option></select></label>
-  <label class="r"><em data-i="calls"></em><input type="checkbox" id="calls"></label>
-</div>
-
-<h2 data-i="hInfo"></h2>
-<div class="card">
-  <label class="r"><em data-i="h24"></em><input type="checkbox" id="h24"></label>
-  <label class="r"><em data-i="weather"></em><input type="checkbox" id="weather"></label>
-  <label class="r"><em data-i="unit"></em><select id="unit"><option value="C">°C</option><option value="F">°F</option></select></label>
-  <label class="r"><em data-i="city"></em><input type="text" id="city" data-ph="auto"></label>
-  <label class="r"><em data-i="timerMin"></em><input type="number" id="timerMin" min="1" max="600"></label>
-</div>
-
-<div class="btns">
-  <button id="test" data-i="test"></button>
-  <button id="rpos" data-i="rpos"></button>
-  <button id="rall" data-i="rall"></button>
-</div>
-<div class="hint" data-i="hint"></div>
-
+<script src="shared.js"></script>
 <script>
-const D={
-es:{title:'Configuración de la isla',sub:'Los cambios se aplican al instante y se guardan solos.',hGen:'General',hLook:'Apariencia',hMusic:'Música y llamadas',hInfo:'Hora, clima y temporizador',lang:'Idioma',login:'Iniciar con Windows',lock:'Bloquear posición',hideIdle:'Ocultar cuando no hay actividad',size:'Tamaño',opacity:'Opacidad',bgc:'Color de fondo',acc:'Color de acento',txt:'Color del texto',mascot:'Mostrar muñequito',mascotType:'Muñequito',mtP:'Pingüino',mtC:'Cono',autoMusic:'Mostrar la música que suena',coverMode:'Color de la portada',cmA:'Solo detalles',cmB:'Fondo con olas y detalles',cmO:'Desactivado',calls:'Detectar llamadas (Discord, WhatsApp, Teams…)',h24:'Reloj de 24 horas',weather:'Mostrar temperatura',unit:'Unidad',city:'Ciudad',auto:'Automática',timerMin:'Temporizador (minutos)',test:'Probar notificación',rpos:'Restablecer posición',rall:'Restablecer todo',hint:'Arrastra la isla con el ratón para moverla. Clic para expandirla y clic derecho para abrir esta ventana.<br>Atajos: Ctrl+Alt+1 música · 2 temporizador · 3 notificación de prueba · 0 reposo · S configuración.'},
-en:{title:'Island settings',sub:'Changes apply instantly and are saved automatically.',hGen:'General',hLook:'Appearance',hMusic:'Music and calls',hInfo:'Time, weather and timer',lang:'Language',login:'Start with Windows',lock:'Lock position',hideIdle:'Hide when there is no activity',size:'Size',opacity:'Opacity',bgc:'Background color',acc:'Accent color',txt:'Text color',mascot:'Show mascot',mascotType:'Mascot',mtP:'Penguin',mtC:'Cone',autoMusic:'Show the music that is playing',coverMode:'Album cover color',cmA:'Details only',cmB:'Waves background and details',cmO:'Off',calls:'Detect calls (Discord, WhatsApp, Teams…)',h24:'24-hour clock',weather:'Show temperature',unit:'Unit',city:'City',auto:'Automatic',timerMin:'Timer (minutes)',test:'Test notification',rpos:'Reset position',rall:'Reset everything',hint:'Drag the island with the mouse to move it. Click to expand it and right-click to open this window.<br>Shortcuts: Ctrl+Alt+1 music · 2 timer · 3 test notification · 0 idle · S settings.'}};
-const $=id=>document.getElementById(id);
-const ranges=['scale','opacity'],colors=['bg','accent','fg'],checks=['autoMusic','hideIdle','h24','lock','login','mascot','calls','weather'],selects=['lang','unit','coverMode','mascotType'];
-function tr(l){
-  const d=D[l]||D.es;
-  document.querySelectorAll('[data-i]').forEach(e=>e.innerHTML=d[e.dataset.i]);
-  document.querySelectorAll('[data-ph]').forEach(e=>e.placeholder=d[e.dataset.ph]);
-  document.title=d.title;document.documentElement.lang=l;
+const $=s=>document.querySelector(s);
+let LANG='es',cfg=null,active='look',DISP=[];
+const L=a=>a[LANG==='en'?1:0];
+const THEMES=[
+ [['Oscuro','Dark'],{bg:'#000000',accent:'#32d74b',fg:'#ffffff'}],
+ [['Neón','Neon'],{bg:'#0a0014',accent:'#ff2bd6',fg:'#e9fbff'}],
+ [['Océano','Ocean'],{bg:'#02111f',accent:'#38bdf8',fg:'#e6f6ff'}],
+ [['Atardecer','Sunset'],{bg:'#1a0a05',accent:'#ff7a1a',fg:'#fff1e6'}],
+ [['Bosque','Forest'],{bg:'#04140a',accent:'#4ade80',fg:'#e9ffee'}],
+ [['Uva','Grape'],{bg:'#14062a',accent:'#a78bfa',fg:'#f3ecff'}],
+ [['Claro','Light'],{bg:'#f4f4f8',accent:'#4c6fff',fg:'#14162b'}]
+];
+const OPT={
+ lang:[['es','Español'],['en','English']],
+ shape:[['round',['Redonda','Round']],['soft',['Suave','Soft']],['square',['Cuadrada','Square']]],
+ font:['Segoe UI','Arial','Consolas','Georgia','Trebuchet MS','Comic Sans MS'].map(f=>[f,f]),
+ animSpeed:[['normal',['Normal','Normal']],['fast',['Rápida','Fast']],['off',['Sin animaciones','Off']]],
+ align:[['left',['Izquierda','Left']],['center',['Centro','Center']],['right',['Derecha','Right']]],
+ coverMode:[['accent',['Solo detalles','Details only']],['bg',['Olas y detalles','Waves and details']],['off',['Desactivado','Off']]],
+ mascotType:[['penguin',['Pingüino','Penguin']],['cone',['Cono','Cone']],['ghost',['Fantasma','Ghost']]],
+ unit:[['C','°C'],['F','°F']]
+};
+const SECT=[
+ {id:'look',ic:'🎨',n:['Apariencia','Appearance'],items:[
+  {t:'themes'},
+  {k:'scale',t:'range',min:.7,max:1.4,step:.05,m:100,u:'%',l:['Tamaño','Size']},
+  {k:'opacity',t:'range',min:.4,max:1,step:.05,m:100,u:'%',l:['Opacidad','Opacity']},
+  {k:'bg',t:'color',l:['Color de fondo','Background color']},
+  {k:'accent',t:'color',l:['Color de acento','Accent color']},
+  {k:'fg',t:'color',l:['Color del texto','Text color']},
+  {k:'shape',t:'select',l:['Forma','Shape']},
+  {k:'font',t:'select',l:['Tipo de letra','Font']},
+  {k:'borderW',t:'range',min:0,max:6,step:1,m:1,u:' px',l:['Grosor del borde','Border width']},
+  {k:'borderColor',t:'color',l:['Color del borde','Border color']},
+  {k:'shadow',t:'toggle',l:['Sombra','Shadow']},
+  {k:'animSpeed',t:'select',l:['Animaciones','Animations']}
+ ]},
+ {id:'pos',ic:'📍',n:['Posición','Position'],items:[
+  {k:'align',t:'select',l:['Alineación','Alignment'],d:['Dónde aparece en la pantalla','Where it appears on screen']},
+  {k:'monitor',t:'select',num:1,l:['Monitor','Monitor']},
+  {k:'offsetY',t:'range',min:0,max:300,step:5,m:1,u:' px',l:['Distancia desde arriba','Distance from top']},
+  {k:'lock',t:'toggle',l:['Bloquear posición','Lock position'],d:['Evita moverla por accidente','Prevents accidental moves']},
+  {k:'onTop',t:'toggle',l:['Siempre encima','Always on top']},
+  {k:'hideFullscreen',t:'toggle',l:['Ocultar en pantalla completa','Hide in fullscreen'],d:['Juegos y videos a pantalla completa','Games and fullscreen video']},
+  {k:'hideIdle',t:'toggle',l:['Ocultar sin actividad','Hide when idle'],d:['Aparece al pasar el ratón','Shows on mouse hover']},
+  {k:'hoverExpand',t:'toggle',l:['Expandir al pasar el ratón','Expand on hover']},
+  {t:'btn',a:'rpos',b:['Restablecer posición','Reset position']},
+  {t:'note',x:['Arrastra la isla con el ratón para moverla donde quieras.','Drag the island with the mouse to move it anywhere.']}
+ ]},
+ {id:'music',ic:'🎵',n:['Música','Music'],items:[
+  {k:'autoMusic',t:'toggle',l:['Mostrar la música que suena','Show the music that is playing']},
+  {k:'expandSecs',t:'range',min:1,max:10,step:.5,m:1,u:' s',l:['Tiempo expandida','Expanded time'],d:['Al cambiar de canción','When the song changes']},
+  {k:'coverMode',t:'select',l:['Color según la portada','Color from album cover']},
+  {k:'showCover',t:'toggle',l:['Mostrar portada','Show album cover']},
+  {k:'showBars',t:'toggle',l:['Barras de sonido','Sound bars']},
+  {k:'showTimes',t:'toggle',l:['Mostrar tiempos','Show times']},
+  {k:'musicIgnore',t:'text',ph:['chrome, edge','chrome, edge'],l:['Ignorar música de…','Ignore music from…'],d:['Palabras separadas por coma','Comma-separated words']},
+  {k:'calls',t:'toggle',l:['Detectar llamadas','Detect calls'],d:['Discord, WhatsApp, Teams, Zoom…','Discord, WhatsApp, Teams, Zoom…']}
+ ]},
+ {id:'vol',ic:'🔊',n:['Volumen','Volume'],items:[
+  {k:'volOSD',t:'toggle',l:['Mostrar al cambiar el volumen','Show when volume changes'],d:['También con las teclas del teclado','Also with keyboard keys']},
+  {k:'wheelVol',t:'toggle',l:['Rueda del ratón sobre la isla','Mouse wheel over the island']},
+  {k:'volSlider',t:'toggle',l:['Control deslizante con música','Slider in music view']},
+  {k:'volStep',t:'range',min:1,max:10,step:1,m:1,u:' %',l:['Paso de volumen','Volume step']},
+  {t:'note',x:['Atajos: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>AvPág</kbd> baja · <kbd>RePág</kbd> sube · <kbd>M</kbd> silencia.','Shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>PgDn</kbd> down · <kbd>PgUp</kbd> up · <kbd>M</kbd> mute.']}
+ ]},
+ {id:'mascot',ic:'🐧',n:['Muñequito','Mascot'],items:[
+  {k:'mascot',t:'toggle',l:['Mostrar muñequito','Show mascot']},
+  {k:'mascotType',t:'select',l:['Personaje','Character']},
+  {k:'mascotSize',t:'range',min:.7,max:1.25,step:.05,m:100,u:'%',l:['Tamaño del muñequito','Mascot size']},
+  {k:'headphones',t:'toggle',l:['Audífonos con la música','Headphones with music']}
+ ]},
+ {id:'info',ic:'🕒',n:['Hora y avisos','Time and alerts'],items:[
+  {k:'h24',t:'toggle',l:['Reloj de 24 horas','24-hour clock']},
+  {k:'seconds',t:'toggle',l:['Mostrar segundos','Show seconds']},
+  {k:'weather',t:'toggle',l:['Mostrar temperatura','Show temperature']},
+  {k:'unit',t:'select',l:['Unidad','Unit']},
+  {k:'city',t:'text',ph:['Automática','Automatic'],l:['Ciudad','City']},
+  {k:'timerMin',t:'number',min:1,max:600,l:['Temporizador (minutos)','Timer (minutes)']},
+  {k:'msgSecs',t:'range',min:2,max:15,step:.5,m:1,u:' s',l:['Duración de los avisos','Alert duration']},
+  {k:'sound',t:'toggle',l:['Sonido en avisos','Alert sound']},
+  {k:'cdName',t:'text',ph:['Examen, viaje…','Exam, trip…'],l:['Cuenta regresiva: nombre','Countdown: name']},
+  {k:'cdDate',t:'date',l:['Cuenta regresiva: fecha','Countdown: date']},
+  {t:'btn',a:'test',b:['Probar aviso','Test alert']}
+ ]},
+ {id:'sys',ic:'⚙️',n:['Sistema','System'],items:[
+  {k:'lang',t:'select',l:['Idioma','Language']},
+  {k:'login',t:'toggle',l:['Iniciar con Windows','Start with Windows']},
+  {t:'btn',a:'rall',b:['Restablecer todo','Reset everything']},
+  {t:'note',x:['Atajos globales: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>1</kbd> música · <kbd>2</kbd> temporizador · <kbd>3</kbd> aviso de prueba · <kbd>0</kbd> reposo · <kbd>S</kbd> configuración. Clic derecho en la isla también abre esta ventana.','Global shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>1</kbd> music · <kbd>2</kbd> timer · <kbd>3</kbd> test alert · <kbd>0</kbd> idle · <kbd>S</kbd> settings. Right-click on the island also opens this window.']}
+ ]}
+];
+
+function optsFor(it){
+  if(it.k==='monitor')return (DISP.length?DISP:[{i:0,primary:true,w:0,h:0}]).map((d,i)=>[String(i),'Monitor '+(i+1)+(d.primary?' ★':'')+(d.w?' ('+d.w+'×'+d.h+')':'')]);
+  return OPT[it.k]||[];
+}
+function mk(it){
+  const el=document.createElement('div');
+  if(it.t==='note'){el.className='note';el.innerHTML=L(it.x);return el}
+  if(it.t==='themes'){
+    el.className='r full';
+    el.innerHTML=`<div class="lb"><b>${L(['Temas listos','Ready themes'])}</b><small>${L(['Un clic cambia fondo, acento y texto','One click sets background, accent and text'])}</small></div><div class="themes">${THEMES.map((t,i)=>`<button class="chip" data-th="${i}" style="background:linear-gradient(135deg,${t[1].bg} 40%,${t[1].accent})">${L(t[0])}</button>`).join('')}</div>`;
+    return el;
+  }
+  el.className='r';
+  const lab=it.l?`<div class="lb"><b>${L(it.l)}</b>${it.d?`<small>${L(it.d)}</small>`:''}</div>`:'<div></div>';
+  let ctl='';
+  if(it.t==='range')ctl=`<div class="rg"><input type="range" data-k="${it.k}" min="${it.min}" max="${it.max}" step="${it.step}"><span class="val" data-v="${it.k}"></span></div>`;
+  else if(it.t==='color')ctl=`<input type="color" data-k="${it.k}">`;
+  else if(it.t==='toggle')ctl=`<label class="sw"><input type="checkbox" data-k="${it.k}"><i></i></label>`;
+  else if(it.t==='select')ctl=`<select data-k="${it.k}"${it.num?' data-num="1"':''}>${optsFor(it).map(o=>`<option value="${o[0]}">${typeof o[1]==='string'?o[1]:L(o[1])}</option>`).join('')}</select>`;
+  else if(it.t==='text')ctl=`<input type="text" data-k="${it.k}" placeholder="${it.ph?L(it.ph):''}">`;
+  else if(it.t==='number')ctl=`<input type="number" data-k="${it.k}" min="${it.min}" max="${it.max}">`;
+  else if(it.t==='date')ctl=`<input type="date" data-k="${it.k}">`;
+  else if(it.t==='btn'){el.className='r full';el.innerHTML=`<button class="b" data-act="${it.a}">${L(it.b)}</button>`;return el}
+  el.innerHTML=lab+ctl;
+  return el;
+}
+function build(){
+  $('#ttl').textContent=L(['Configuración','Settings']);
+  $('#pvl').textContent=L(['Vista previa en vivo','Live preview']);
+  document.title='Isla — '+L(['Configuración','Settings']);
+  document.documentElement.lang=LANG;
+  $('#side').innerHTML=`<div class="brand">🏝️ <span>Isla</span></div>`+SECT.map(s=>`<button class="nav${s.id===active?' on':''}" data-nav="${s.id}"><i>${s.ic}</i>${L(s.n)}</button>`).join('')+`<div class="foot">${L(['Los cambios se aplican al instante y se guardan solos.','Changes apply instantly and save automatically.'])}</div>`;
+  const pane=$('#pane');pane.innerHTML='';
+  SECT.forEach(s=>{
+    const d=document.createElement('div');d.className='sec grid'+(s.id===active?' on':'');d.id='sec-'+s.id;
+    s.items.forEach(it=>d.appendChild(mk(it)));
+    pane.appendChild(d);
+  });
+  wire();
+}
+function valOf(el){
+  if(el.type==='checkbox')return el.checked;
+  if(el.type==='range'||el.type==='number')return Number(el.value);
+  if(el.dataset.num)return Number(el.value);
+  return el.value;
+}
+function setVal(k,v){
+  cfg[k]=v;
+  api.setSettings({[k]:v});
+  preview();
+}
+function wire(){
+  document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{
+    active=b.dataset.nav;
+    document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n===b));
+    document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on',s.id==='sec-'+active));
+    $('#pane').scrollTop=0;
+  });
+  document.querySelectorAll('[data-k]').forEach(el=>{
+    const ev=(el.type==='range'||el.type==='color')?'input':'change';
+    el.addEventListener(ev,()=>{
+      const v=valOf(el);
+      if(el.type==='range')showVal(el.dataset.k,v);
+      setVal(el.dataset.k,v);
+    });
+  });
+  document.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{
+    const t=THEMES[b.dataset.th][1];
+    Object.assign(cfg,t,{borderColor:t.accent});
+    api.setSettings({...t,borderColor:t.accent});
+    fill(cfg);
+  });
+  document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{
+    const a=b.dataset.act;
+    if(a==='rpos')api.resetPos();
+    if(a==='rall')api.resetAll();
+    if(a==='test')api.testNotify();
+  });
+}
+function itemOf(k){for(const s of SECT)for(const it of s.items)if(it.k===k)return it}
+function showVal(k,v){
+  const it=itemOf(k),el=document.querySelector(`[data-v="${k}"]`);
+  if(it&&el)el.textContent=Math.round(v*it.m*10)/10+(it.u||'');
 }
 function fill(c){
-  ranges.forEach(k=>{$(k).value=c[k];$('v-'+k).textContent=Math.round(c[k]*100)+' %'});
-  colors.forEach(k=>$(k).value=c[k]);
-  checks.forEach(k=>$(k).checked=!!c[k]);
-  selects.forEach(k=>$(k).value=c[k]);
-  $('timerMin').value=c.timerMin;
-  if(document.activeElement!==$('city'))$('city').value=c.city||'';
-  tr(c.lang);
+  cfg=c;
+  if(c.lang!==LANG){LANG=c.lang;build()}
+  document.querySelectorAll('[data-k]').forEach(el=>{
+    const k=el.dataset.k;if(!(k in c)||document.activeElement===el)return;
+    if(el.type==='checkbox')el.checked=!!c[k];else el.value=c[k]==null?'':c[k];
+    if(el.type==='range')showVal(k,c[k]);
+  });
+  preview();
 }
-[...ranges,...colors].forEach(k=>$(k).addEventListener('input',e=>{
-  const v=ranges.includes(k)?parseFloat(e.target.value):e.target.value;
-  if(ranges.includes(k))$('v-'+k).textContent=Math.round(v*100)+' %';
-  api.setSettings({[k]:v});
-}));
-checks.forEach(k=>$(k).addEventListener('change',e=>api.setSettings({[k]:e.target.checked})));
-selects.forEach(k=>$(k).addEventListener('change',e=>api.setSettings({[k]:e.target.value})));
-$('timerMin').addEventListener('change',e=>api.setSettings({timerMin:parseInt(e.target.value)||5}));
-$('city').addEventListener('change',e=>api.setSettings({city:e.target.value}));
-$('test').onclick=()=>api.testNotify();
-$('rpos').onclick=()=>api.resetPos();
-$('rall').onclick=()=>api.resetAll();
+
+/* vista previa */
+const rgba=(h,a)=>{const n=parseInt(h.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`};
+function preview(){
+  const c=cfg;if(!c)return;
+  const pv=$('#pv');
+  pv.style.setProperty('--isl',rgba(c.bg,c.opacity));
+  pv.style.setProperty('--acc',c.accent);pv.style.setProperty('--fg',c.fg);
+  pv.style.setProperty('--wv1','#2f8fd8');pv.style.setProperty('--wv2','#1d5a8c');
+  pv.style.fontFamily=`"${c.font}","Segoe UI Emoji",system-ui,sans-serif`;
+  const rad=r=>c.shape==='square'?Math.min(r,8):c.shape==='soft'?Math.min(r,16):r;
+  const ring=c.borderW>0?`0 0 0 ${c.borderW}px ${c.borderColor}`:'0 0 0 1px #ffffff22';
+  const sty=(r,extra='')=>`style="border-radius:${rad(r)}px;box-shadow:${c.shadow?'0 6px 16px #0006,':''}${ring};zoom:${c.scale};${extra}"`;
+  const mas=(sz,cls)=>c.mascot?`<svg class="mas ${cls}" style="width:${Math.round(sz*c.mascotSize)}px;height:${Math.round(sz*c.mascotSize)}px" viewBox="0 0 32 32">${MASCOTS[c.mascotType]||MASCOTS.penguin}</svg>`:'';
+  const music=c.coverMode==='bg';
+  pv.innerHTML=
+   `<div class="mk" ${sty(18)}><div class="z"><b>20:22</b><span class="t2">⛅ 23°</span><span class="t2">mié 28</span>${mas(28,'')}</div></div>`+
+   `<div class="mk ${music?'wv':''} play" ${sty(20)}><div class="wvbox">${WAVES}</div><div class="z"><div class="cv2"></div><b style="font-size:13px">Canción</b><div class="bars"><i></i><i></i><i></i><i></i></div>${mas(28,(c.headphones?'on ':'')+'dance')}</div></div>`+
+   `<div class="mk" ${sty(19)}><div class="z"><span>🔊</span><div class="bar"><i></i></div><b style="font-size:13px">60%</b></div></div>`;
+}
+
+$('#bcl').onclick=()=>api.closeSettings();
+$('#bmin').onclick=()=>api.minSettings();
 api.on('settings',fill);
-api.getSettings().then(fill);
+Promise.all([api.getDisplays().catch(()=>[]),api.getSettings()]).then(([d,c])=>{DISP=d||[];LANG=c.lang;cfg=c;build();fill(c)});
 </script>
 </body>
 </html>

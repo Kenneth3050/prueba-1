@@ -5,11 +5,30 @@ const { spawn } = require('child_process');
 const W = 620, H = 300;
 const DEF = {
   scale: 1, bg: '#000000', accent: '#32d74b', fg: '#ffffff', opacity: 1,
-  autoMusic: true, hideIdle: false, h24: true, lock: false, timerMin: 5, x: null, y: null,
-  lang: null, weather: true, unit: 'C', city: '', mascot: true, mascotType: 'penguin', calls: true, coverMode: 'bg',
+  shape: 'round', borderW: 0, borderColor: '#7c8cff', shadow: true, animSpeed: 'normal', font: 'Segoe UI',
+  align: 'center', monitor: 0, offsetY: 0, lock: false, onTop: true, hideFullscreen: false, hideIdle: false, hoverExpand: false,
+  autoMusic: true, expandSecs: 3.5, coverMode: 'bg', showCover: true, showBars: true, showTimes: true, musicIgnore: '', calls: true,
+  volOSD: true, wheelVol: true, volSlider: true, volStep: 2,
+  mascot: true, mascotType: 'penguin', mascotSize: 1, headphones: true,
+  h24: true, seconds: false, weather: true, unit: 'C', city: '', timerMin: 5, msgSecs: 4.2, sound: false, cdName: '', cdDate: '',
+  lang: null, x: null, y: null,
+};
+const SC = {
+  scale: ['n', 0.5, 1.6], opacity: ['n', 0.2, 1], expandSecs: ['n', 1, 15], mascotSize: ['n', 0.6, 1.4], msgSecs: ['n', 2, 15],
+  borderW: ['i', 0, 6], monitor: ['i', 0, 8], offsetY: ['i', 0, 300], volStep: ['i', 1, 10], timerMin: ['i', 1, 600],
+  bg: ['c'], accent: ['c'], fg: ['c'], borderColor: ['c'],
+  lock: ['b'], onTop: ['b'], hideFullscreen: ['b'], hideIdle: ['b'], hoverExpand: ['b'], shadow: ['b'],
+  autoMusic: ['b'], showCover: ['b'], showBars: ['b'], showTimes: ['b'], calls: ['b'],
+  volOSD: ['b'], wheelVol: ['b'], volSlider: ['b'], mascot: ['b'], headphones: ['b'],
+  h24: ['b'], seconds: ['b'], weather: ['b'], sound: ['b'],
+  lang: ['e', ['es', 'en']], unit: ['e', ['C', 'F']], coverMode: ['e', ['accent', 'bg', 'off']],
+  mascotType: ['e', ['penguin', 'cone', 'ghost']], shape: ['e', ['round', 'soft', 'square']],
+  animSpeed: ['e', ['normal', 'fast', 'off']], align: ['e', ['left', 'center', 'right']],
+  font: ['e', ['Segoe UI', 'Arial', 'Consolas', 'Georgia', 'Trebuchet MS', 'Comic Sans MS']],
+  city: ['s', 60], musicIgnore: ['s', 80], cdName: ['s', 40], cdDate: ['d'],
 };
 let cfg = { ...DEF }, win, setWin, tray, cfgFile, drag = null;
-let kp, wx = null, quitting = false;
+let kp, wx = null, fsOn = false, quitting = false;
 const procs = {};
 
 if (!app.requestSingleInstanceLock()) {
@@ -31,26 +50,36 @@ const pub = () => ({ ...cfg, login: app.getLoginItemSettings().openAtLogin });
 function broadcast() {
   [win, setWin].forEach((w) => w && !w.isDestroyed() && w.webContents.send('settings', pub()));
 }
-const num = (v, a, b, d) => { v = Number(v); return isFinite(v) ? Math.min(b, Math.max(a, v)) : d; };
-const col = (v, d) => (/^#[0-9a-f]{6}$/i.test(v) ? v : d);
 function sanitize(p) {
   const o = {};
-  if ('scale' in p) o.scale = num(p.scale, 0.5, 1.6, 1);
-  if ('opacity' in p) o.opacity = num(p.opacity, 0.2, 1, 1);
-  if ('timerMin' in p) o.timerMin = Math.round(num(p.timerMin, 1, 600, 5));
-  ['bg', 'accent', 'fg'].forEach((k) => { if (k in p) o[k] = col(p[k], DEF[k]); });
-  ['autoMusic', 'hideIdle', 'h24', 'lock', 'weather', 'mascot', 'calls'].forEach((k) => { if (k in p) o[k] = !!p[k]; });
-  if ('lang' in p) o.lang = p.lang === 'en' ? 'en' : 'es';
-  if ('mascotType' in p) o.mascotType = p.mascotType === 'cone' ? 'cone' : 'penguin';
-  if ('unit' in p) o.unit = p.unit === 'F' ? 'F' : 'C';
-  if ('city' in p) o.city = String(p.city).slice(0, 60);
-  if ('coverMode' in p) o.coverMode = ['accent', 'bg', 'off'].includes(p.coverMode) ? p.coverMode : 'accent';
+  for (const k of Object.keys(p || {})) {
+    const s = SC[k]; if (!s) continue;
+    const v = p[k];
+    if (s[0] === 'n') { const n = Number(v); if (isFinite(n)) o[k] = Math.min(s[2], Math.max(s[1], n)); }
+    else if (s[0] === 'i') { const n = Math.round(Number(v)); if (isFinite(n)) o[k] = Math.min(s[2], Math.max(s[1], n)); }
+    else if (s[0] === 'c') { if (/^#[0-9a-f]{6}$/i.test(v)) o[k] = v; }
+    else if (s[0] === 'b') o[k] = !!v;
+    else if (s[0] === 'e') { if (s[1].includes(v)) o[k] = v; }
+    else if (s[0] === 's') o[k] = String(v).slice(0, s[1]);
+    else if (s[0] === 'd') o[k] = /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : '';
+  }
   return o;
 }
 
 /* ---------- ventana de la isla ---------- */
-const defPos = () => { const b = screen.getPrimaryDisplay().bounds; return { x: Math.round(b.x + (b.width - W) / 2), y: b.y }; };
+function targetDisplay() {
+  const d = screen.getAllDisplays();
+  return d[Math.min(cfg.monitor, d.length - 1)] || screen.getPrimaryDisplay();
+}
+function defPos() {
+  const b = targetDisplay().bounds;
+  let x = b.x + (b.width - W) / 2;
+  if (cfg.align === 'left') x = b.x;
+  if (cfg.align === 'right') x = b.x + b.width - W;
+  return { x: Math.round(x), y: b.y + Math.round(cfg.offsetY) };
+}
 function place() {
+  if (!win || win.isDestroyed()) return;
   let p = defPos();
   if (cfg.x != null && cfg.y != null) {
     const ok = screen.getAllDisplays().some((d) => {
@@ -61,17 +90,23 @@ function place() {
   }
   win.setBounds({ ...p, width: W, height: H });
 }
+function vis() {
+  if (!win || win.isDestroyed()) return;
+  const hide = cfg.hideFullscreen && fsOn;
+  if (hide && win.isVisible()) win.hide();
+  else if (!hide && !win.isVisible()) win.showInactive();
+}
 function createWindow() {
   win = new BrowserWindow({
     width: W, height: H, transparent: true, frame: false, resizable: false, movable: false,
     hasShadow: false, alwaysOnTop: true, skipTaskbar: true, focusable: false, show: false,
-    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true },
+    webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, autoplayPolicy: 'no-user-gesture-required' },
   });
-  win.setAlwaysOnTop(true, 'screen-saver');
+  win.setAlwaysOnTop(!!cfg.onTop, cfg.onTop ? 'screen-saver' : 'normal');
   win.setIgnoreMouseEvents(true, { forward: true });
   place();
   win.loadFile('index.html');
-  win.once('ready-to-show', () => win.showInactive());
+  win.once('ready-to-show', () => { win.showInactive(); vis(); });
   screen.on('display-metrics-changed', place);
 }
 const send = (k) => win && win.webContents.send('show', k);
@@ -80,8 +115,8 @@ const send = (k) => win && win.webContents.send('show', k);
 function openSettings() {
   if (setWin && !setWin.isDestroyed()) { setWin.show(); setWin.focus(); return; }
   setWin = new BrowserWindow({
-    width: 420, height: 800, resizable: false, minimizable: false, maximizable: false,
-    title: 'Configuración de la isla', autoHideMenuBar: true, backgroundColor: '#14162b',
+    width: 960, height: 700, frame: false, resizable: false, maximizable: false,
+    title: 'Isla', backgroundColor: '#0e1022',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true },
   });
   setWin.setMenu(null);
@@ -90,21 +125,28 @@ function openSettings() {
 }
 
 /* ---------- IPC ---------- */
+const vsend = (cmd) => { const p = procs['vol.ps1']; try { p && p.stdin.write(cmd + '\n'); } catch (e) {} };
 function wireIpc() {
   ipcMain.on('ignore', (_e, v) => win && win.setIgnoreMouseEvents(!!v, { forward: true }));
   ipcMain.handle('settings:get', () => pub());
+  ipcMain.handle('displays', () => screen.getAllDisplays().map((d, i) => ({ i, primary: d.id === screen.getPrimaryDisplay().id, w: d.size.width, h: d.size.height })));
   ipcMain.on('settings:set', (_e, p) => {
     p = p || {};
     if ('login' in p) app.setLoginItemSettings({ openAtLogin: !!p.login });
-    Object.assign(cfg, sanitize(p));
+    const o = sanitize(p);
+    Object.assign(cfg, o);
+    if (['align', 'monitor', 'offsetY'].some((k) => k in o)) { cfg.x = null; cfg.y = null; place(); }
+    if ('onTop' in o && win) win.setAlwaysOnTop(!!cfg.onTop, cfg.onTop ? 'screen-saver' : 'normal');
+    if ('hideFullscreen' in o) vis();
     save(); broadcast(); makeTray();
-    if ('city' in p || 'lang' in p) getWeather();
+    if ('city' in o || 'lang' in o) getWeather();
   });
   ipcMain.on('settings:reset', () => { const l = cfg.lang; cfg = { ...DEF, lang: l }; save(); place(); broadcast(); makeTray(); getWeather(); });
-  ipcMain.handle('weather:get', () => wx);
   ipcMain.on('pos:reset', () => { cfg.x = null; cfg.y = null; save(); place(); });
   ipcMain.on('test', () => send('test'));
   ipcMain.on('open-settings', openSettings);
+  ipcMain.on('settings:close', () => setWin && setWin.close());
+  ipcMain.on('settings:min', () => setWin && setWin.minimize());
   ipcMain.on('drag-start', (_e, sx, sy) => { if (cfg.lock) return; const [x, y] = win.getPosition(); drag = { sx, sy, x, y }; });
   ipcMain.on('drag-move', (_e, sx, sy) => {
     if (drag) win.setBounds({ x: Math.round(drag.x + sx - drag.sx), y: Math.round(drag.y + sy - drag.sy), width: W, height: H });
@@ -116,13 +158,16 @@ function wireIpc() {
   ipcMain.on('media-key', (_e, k) => {
     if (kp && ['pp', 'next', 'prev'].includes(k)) { try { kp.stdin.write(k + '\n'); } catch (e) {} }
   });
+  ipcMain.on('vol:set', (_e, v) => vsend('set ' + Number(v).toFixed(3)));
+  ipcMain.on('vol:step', (_e, d) => vsend('step ' + Number(d).toFixed(3)));
+  ipcMain.on('vol:mute', () => vsend('toggle'));
 }
 
-/* ---------- scripts de Windows: música, micrófono (llamadas) y teclas multimedia ---------- */
+/* ---------- scripts de Windows ---------- */
 function psDir() {
   const d = path.join(app.getPath('userData'), 'ps');
   fs.mkdirSync(d, { recursive: true });
-  ['media.ps1', 'keys.ps1', 'mic.ps1'].forEach((f) => fs.writeFileSync(path.join(d, f), fs.readFileSync(path.join(__dirname, 'ps', f))));
+  ['media.ps1', 'keys.ps1', 'mic.ps1', 'vol.ps1', 'fs.ps1'].forEach((f) => fs.writeFileSync(path.join(d, f), fs.readFileSync(path.join(__dirname, 'ps', f))));
   return d;
 }
 const runPS = (d, f) => spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', path.join(d, f)], { windowsHide: true });
@@ -133,7 +178,7 @@ function startPS(f, onLine) {
   const go = () => {
     const p = runPS(d, f); procs[f] = p;
     p.stdout.setEncoding('utf8');
-    p.stderr.on('data', (d) => log(f + ': ' + String(d).slice(0, 400)));
+    p.stderr.on('data', (x) => log(f + ': ' + String(x).slice(0, 400)));
     p.stdout.on('data', (chunk) => {
       buf += chunk;
       let i;
@@ -143,6 +188,7 @@ function startPS(f, onLine) {
         if (line[0] === '{') { try { onLine(JSON.parse(line)); } catch (e) {} }
       }
     });
+    p.stdin.on('error', () => {});
     p.on('exit', () => { if (!quitting && tries++ < 5) setTimeout(go, 4000); });
   };
   go();
@@ -165,7 +211,11 @@ function startScripts() {
     if (!win) return;
     win.webContents.send('mic', [].concat(j.apps || []).map((n) => String(n).split('#').pop()));
   });
+  startPS('vol.ps1', (j) => { if (win && j.vol !== undefined) win.webContents.send('volume', j); });
+  startPS('fs.ps1', (j) => { fsOn = !!j.fs; vis(); });
   startKeys();
+  setTimeout(() => vsend('get'), 1500);
+  setInterval(() => vsend('get'), 1500);
 }
 
 /* ---------- clima (Open-Meteo; ubicación por ciudad o por IP) ---------- */
@@ -186,6 +236,7 @@ async function getWeather() {
     if (win) win.webContents.send('weather', wx);
   } catch (e) {}
 }
+ipcMain.handle('weather:get', () => wx);
 
 /* ---------- avisos desde otros programas: http://127.0.0.1:47821/notify?title=..&body=.. ---------- */
 function startServer() {
@@ -200,12 +251,15 @@ function startServer() {
 
 /* ---------- atajos y bandeja ---------- */
 const L = {
-  es: { music: 'Música', timer: 'Temporizador', test: 'Probar notificación', idle: 'Reposo', settings: 'Configuración…', rpos: 'Restablecer posición', login: 'Iniciar con Windows', dataf: 'Abrir carpeta de datos', quit: 'Salir' },
-  en: { music: 'Music', timer: 'Timer', test: 'Test notification', idle: 'Idle', settings: 'Settings…', rpos: 'Reset position', login: 'Start with Windows', dataf: 'Open data folder', quit: 'Quit' },
+  es: { music: 'Música', timer: 'Temporizador', test: 'Probar aviso', idle: 'Reposo', settings: 'Configuración…', rpos: 'Restablecer posición', login: 'Iniciar con Windows', dataf: 'Abrir carpeta de datos', quit: 'Salir' },
+  en: { music: 'Music', timer: 'Timer', test: 'Test alert', idle: 'Idle', settings: 'Settings…', rpos: 'Reset position', login: 'Start with Windows', dataf: 'Open data folder', quit: 'Quit' },
 };
 const ACTIONS = [['music', '1'], ['timer', '2'], ['test', '3'], ['idle', '0']];
 function hotkeys() {
   ACTIONS.forEach(([k, n]) => globalShortcut.register('CommandOrControl+Alt+' + n, () => send(k)));
+  globalShortcut.register('CommandOrControl+Alt+PageUp', () => send('volup'));
+  globalShortcut.register('CommandOrControl+Alt+PageDown', () => send('voldown'));
+  globalShortcut.register('CommandOrControl+Alt+M', () => send('mute'));
   globalShortcut.register('CommandOrControl+Alt+S', openSettings);
 }
 function makeTray() {

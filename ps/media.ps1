@@ -49,7 +49,7 @@ while ($true) {
       $p = Await ($s.TryGetMediaPropertiesAsync()) ([Windows.Media.Control.GlobalSystemMediaTransportControlsSessionMediaProperties])
       $st = [int]$s.GetPlaybackInfo().PlaybackStatus
       $tl = $s.GetTimelineProperties()
-      $o = @{ t = [string]$p.Title; a = [string]$p.Artist; s = $st; p = [int]$tl.Position.TotalSeconds; d = [int]($tl.EndTime.TotalSeconds - $tl.StartTime.TotalSeconds) }
+      $o = @{ t = [string]$p.Title; a = [string]$p.Artist; s = $st; p = [int]$tl.Position.TotalSeconds; d = [int]($tl.EndTime.TotalSeconds - $tl.StartTime.TotalSeconds); src = [string]$s.SourceAppUserModelId }
       $key = $o.t + '|' + $o.a
       if ($key -ne $lastKey) { $lastKey = $key; $tries = 0; $lastLen = 0 }
       if ($tries -lt 25) {

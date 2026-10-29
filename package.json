@@ -1,6 +1,6 @@
 {
   "name": "isla-dinamica",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Isla dinámica flotante para Windows",
   "main": "main.js",
   "scripts": {
@@ -19,6 +19,8 @@
       "preload.js",
       "index.html",
       "settings.html",
+      "shared.js",
+      "shared.css",
       "ps/**",
       "assets/**"
     ],

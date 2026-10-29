@@ -1,4 +1,15 @@
-# Isla dinámica para Windows (v1.3)
+# Isla dinámica para Windows (v1.5)
+
+## Cambios 1.5
+- Control de volumen real: rueda del ratón sobre la isla, control deslizante en la vista de música,
+  aviso al cambiar el volumen con el teclado y atajos Ctrl+Alt+RePág / AvPág / M.
+- Se quitó la batería (equipo de escritorio).
+- Panel de configuración nuevo: barra lateral, vista previa en vivo y temas listos.
+- Más opciones: forma, borde, sombra, tipo de letra, animaciones, alineación, monitor, distancia desde arriba,
+  siempre encima, ocultar en pantalla completa, expandir al pasar el ratón, tiempo de expansión, portada,
+  barras, tiempos, ignorar música de ciertas apps, personaje (pingüino, cono, fantasma), tamaño del muñequito,
+  audífonos, segundos en el reloj, duración y sonido de avisos y cuenta regresiva a una fecha.
+
 
 ## Cambios 1.3
 - Corregido el recorte del contenido al abrir la isla con música.

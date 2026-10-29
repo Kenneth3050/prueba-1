@@ -1,0 +1,31 @@
+/* olas de la canción */
+.wvbox{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .7s;overflow:hidden}
+.wv>.wvbox{opacity:1}
+.wvbox svg{position:absolute;left:0;bottom:0;width:200%;fill:var(--wv1,#888);stroke:none}
+.wvbox .w2{height:70%;opacity:.4;animation:wv 9s linear infinite reverse}
+.wvbox .w1{height:60%;animation:wv 6s linear infinite}
+:not(.play)>.wvbox svg{animation-play-state:paused}
+@keyframes wv{to{transform:translateX(-50%)}}
+.wv .prog{background:#ffffff40}.wv .prog b{background:var(--fg)}
+.wv .bars i{background:var(--fg)}
+/* muñequitos */
+.mas{flex:none;overflow:visible}
+.mas .pb{fill:#2b2f55;stroke:#6a70b8;stroke-width:.8}
+.mas .pw{fill:#f4f4ff}.mas .pk{fill:#ffb340}.mas .pe{fill:#14162b}
+.mas .co{fill:#ff7a1a}.mas .cb{fill:#e0620d}.mas .cs{fill:#f4f4ff}
+.mas .bd{fill:var(--fg)}.mas .eye{fill:var(--isl)}
+.mas .band{stroke:var(--acc)}.mas .cup{fill:var(--acc)}
+.mas .body{transform-box:fill-box;transform-origin:50% 100%;animation:fl 3.2s ease-in-out infinite}
+.mas .eyes{transform-box:fill-box;transform-origin:50% 50%;animation:bl 4.5s infinite}
+.mas .hp{opacity:0;transform:translateY(-6px);transition:opacity .35s,transform .35s}
+.mas.on .hp{opacity:1;transform:none}
+.mas .mic{display:none}.mas.call .mic{display:inline}
+.mas .wl,.mas .wr{transform-box:fill-box}
+.mas.dance .body{animation:dn .55s ease-in-out infinite alternate}
+.mas.dance .wl{transform-origin:100% 0;animation:wl .3s ease-in-out infinite alternate}
+.mas.dance .wr{transform-origin:0 0;animation:wr .3s ease-in-out infinite alternate}
+@keyframes fl{50%{transform:translateY(-1.2px)}}
+@keyframes bl{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes dn{from{transform:rotate(-9deg)}to{transform:rotate(9deg) translateY(-1px)}}
+@keyframes wl{to{transform:rotate(28deg)}}
+@keyframes wr{to{transform:rotate(-28deg)}}
