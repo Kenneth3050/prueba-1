@@ -6,7 +6,7 @@ const W = 620, H = 300;
 const DEF = {
   scale: 1, bg: '#000000', accent: '#32d74b', fg: '#ffffff', opacity: 1,
   autoMusic: true, hideIdle: false, h24: true, lock: false, timerMin: 5, x: null, y: null,
-  lang: null, weather: true, unit: 'C', city: '', mascot: true, calls: true, coverMode: 'bg',
+  lang: null, weather: true, unit: 'C', city: '', mascot: true, mascotType: 'penguin', calls: true, coverMode: 'bg',
 };
 let cfg = { ...DEF }, win, setWin, tray, cfgFile, drag = null;
 let kp, wx = null, quitting = false;
@@ -41,6 +41,7 @@ function sanitize(p) {
   ['bg', 'accent', 'fg'].forEach((k) => { if (k in p) o[k] = col(p[k], DEF[k]); });
   ['autoMusic', 'hideIdle', 'h24', 'lock', 'weather', 'mascot', 'calls'].forEach((k) => { if (k in p) o[k] = !!p[k]; });
   if ('lang' in p) o.lang = p.lang === 'en' ? 'en' : 'es';
+  if ('mascotType' in p) o.mascotType = p.mascotType === 'cone' ? 'cone' : 'penguin';
   if ('unit' in p) o.unit = p.unit === 'F' ? 'F' : 'C';
   if ('city' in p) o.city = String(p.city).slice(0, 60);
   if ('coverMode' in p) o.coverMode = ['accent', 'bg', 'off'].includes(p.coverMode) ? p.coverMode : 'accent';
