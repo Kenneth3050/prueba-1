@@ -9,5 +9,5 @@ if errorlevel 1 (
 )
 call npm install
 call npm run build
-if exist dist\Isla-Dinamica-Setup.exe (explorer dist) else (echo Algo fallo al crear el instalador.)
+if exist dist\Cubo-Setup.exe (explorer dist) else (echo Algo fallo al crear el instalador.)
 pause

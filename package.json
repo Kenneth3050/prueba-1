@@ -1,7 +1,7 @@
 {
-  "name": "isla-dinamica",
-  "version": "1.6.0",
-  "description": "Isla dinámica flotante para Windows",
+  "name": "cubo",
+  "version": "1.7.0",
+  "description": "Cubo: isla dinámica para Windows",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -13,7 +13,7 @@
   },
   "build": {
     "appId": "com.isla.dinamica",
-    "productName": "Isla Dinamica",
+    "productName": "Cubo",
     "files": [
       "main.js",
       "preload.js",
@@ -37,7 +37,8 @@
       "uninstallerIcon": "assets/icon.ico",
       "installerHeaderIcon": "assets/icon.ico"
     },
-    "artifactName": "Isla-Dinamica-Setup.${ext}"
+    "artifactName": "Cubo-Setup.${ext}",
+    "afterAllArtifactBuild": "build-hooks.js"
   },
   "author": "Isla Dinamica"
 }

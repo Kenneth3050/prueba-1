@@ -1,4 +1,16 @@
-# Isla dinámica para Windows (v1.6)
+# Cubo — isla dinámica para Windows (v1.7)
+
+## Cambios 1.7
+- La app ahora se llama **Cubo** (palabra de activación por defecto: "hey cubo"). Tus ajustes y notas se migran solos.
+- Corregida la navegación del panel de configuración (las secciones ahora cambian al pulsarlas).
+- El asistente de voz se configura en el panel: nombre/palabra de activación, voz, velocidad, tono, volumen y tiempo de escucha.
+- Herramientas nuevas en la isla (botones al expandir la hora): cronómetro, pomodoro, rendimiento (CPU/RAM),
+  historial del portapapeles (opcional, solo en memoria), accesos rápidos configurables, captura de pantalla,
+  silencio del micrófono (en llamadas, Ctrl+Alt+K) y relojes del mundo.
+- Atajos: Ctrl+Alt+4 cronómetro · 5 pomodoro · 6 rendimiento · 7 portapapeles · 8 accesos · K micrófono.
+- El asistente también entiende cronómetro, pomodoro, rendimiento, portapapeles, capturas, micrófono y "abre <acceso>".
+
+# (historial) Isla dinámica para Windows (v1.6)
 
 ## Cambios 1.6
 - Logo nuevo (cubo de cristal) en el instalador, la bandeja, las ventanas y el panel.

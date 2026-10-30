@@ -22,22 +22,26 @@ interface IMMDeviceEnumerator {
 }
 [ComImport, Guid("BCDE0395-E52F-46C0-9CCB-36C3F8E83ED8")] class MMDeviceEnumeratorComObject { }
 public class Audio {
-  static IAudioEndpointVolume Vol() {
+  static IAudioEndpointVolume Vol(int flow) {
     var enumerator = new MMDeviceEnumeratorComObject() as IMMDeviceEnumerator;
     IMMDevice dev = null;
-    Marshal.ThrowExceptionForHR(enumerator.GetDefaultAudioEndpoint(0, 1, out dev));
+    Marshal.ThrowExceptionForHR(enumerator.GetDefaultAudioEndpoint(flow, 1, out dev));
     IAudioEndpointVolume epv = null;
     var epvid = typeof(IAudioEndpointVolume).GUID;
     Marshal.ThrowExceptionForHR(dev.Activate(ref epvid, 23, 0, out epv));
     return epv;
   }
   public static float Volume {
-    get { float v = -1; Marshal.ThrowExceptionForHR(Vol().GetMasterVolumeLevelScalar(out v)); return v; }
-    set { Marshal.ThrowExceptionForHR(Vol().SetMasterVolumeLevelScalar(value, System.Guid.Empty)); }
+    get { float v = -1; Marshal.ThrowExceptionForHR(Vol(0).GetMasterVolumeLevelScalar(out v)); return v; }
+    set { Marshal.ThrowExceptionForHR(Vol(0).SetMasterVolumeLevelScalar(value, System.Guid.Empty)); }
   }
   public static bool Mute {
-    get { bool m; Marshal.ThrowExceptionForHR(Vol().GetMute(out m)); return m; }
-    set { Marshal.ThrowExceptionForHR(Vol().SetMute(value, System.Guid.Empty)); }
+    get { bool m; Marshal.ThrowExceptionForHR(Vol(0).GetMute(out m)); return m; }
+    set { Marshal.ThrowExceptionForHR(Vol(0).SetMute(value, System.Guid.Empty)); }
+  }
+  public static bool MicMute {
+    get { bool m; Marshal.ThrowExceptionForHR(Vol(1).GetMute(out m)); return m; }
+    set { Marshal.ThrowExceptionForHR(Vol(1).SetMute(value, System.Guid.Empty)); }
   }
 }
 '@
@@ -45,7 +49,9 @@ $ci = [Globalization.CultureInfo]::InvariantCulture
 function State {
   $v = [Math]::Round([Audio]::Volume, 3)
   $m = [Audio]::Mute
-  [Console]::Out.WriteLine((@{ vol = $v; mute = $m } | ConvertTo-Json -Compress))
+  $mc = $false
+  try { $mc = [Audio]::MicMute } catch { }
+  [Console]::Out.WriteLine((@{ vol = $v; mute = $m; mic = $mc } | ConvertTo-Json -Compress))
   [Console]::Out.Flush()
 }
 while (($l = [Console]::In.ReadLine()) -ne $null) {
@@ -64,6 +70,7 @@ while (($l = [Console]::In.ReadLine()) -ne $null) {
         if ($d -gt 0 -and [Audio]::Mute) { [Audio]::Mute = $false }
       }
       'toggle' { [Audio]::Mute = -not [Audio]::Mute }
+      'mic' { [Audio]::MicMute = -not [Audio]::MicMute }
     }
     State
   } catch {

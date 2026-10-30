@@ -1,4 +1,4 @@
-param([string]$pre = 'es')
+param([string]$pre = 'es', [string]$name = 'cubo')
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 Add-Type -AssemblyName System.Speech
 $all = [System.Speech.Recognition.SpeechRecognitionEngine]::InstalledRecognizers()
@@ -7,7 +7,7 @@ if ($info -eq $null) { $info = $all | Select-Object -First 1 }
 if ($info -eq $null) { [Console]::Out.WriteLine('{"err":"norecognizer"}'); [Console]::Out.Flush(); exit }
 $eng = New-Object System.Speech.Recognition.SpeechRecognitionEngine($info)
 $ch = New-Object System.Speech.Recognition.Choices
-foreach ($w in @('isla', 'hey isla', 'oye isla', 'hola isla')) { $ch.Add($w) }
+foreach ($w in @($name, ('hey ' + $name), ('oye ' + $name), ('hola ' + $name))) { $ch.Add($w) }
 $gb = New-Object System.Speech.Recognition.GrammarBuilder
 $gb.Culture = $info.Culture
 $gb.Append($ch)

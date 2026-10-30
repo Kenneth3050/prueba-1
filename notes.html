@@ -55,7 +55,7 @@ footer{display:flex;align-items:center;justify-content:space-between;padding:10p
 const $=s=>document.querySelector(s);
 let notes=[],lang='es',filter='all';
 const D={
- es:{title:'Notas',ph:'Escribe una nota y pulsa Enter',add:'Agregar',all:'Todas',pend:'Pendientes',done:'Hechas',empty:'Aquí aparecerán tus notas.<br>También puedes decir “anota comprar leche”.',pin:'Fijar en la isla',del:'Borrar',clr:'Borrar hechas',cnt:n=>n+(n===1?' pendiente':' pendientes')},
+ es:{title:'Notas · Cubo',ph:'Escribe una nota y pulsa Enter',add:'Agregar',all:'Todas',pend:'Pendientes',done:'Hechas',empty:'Aquí aparecerán tus notas.<br>También puedes decir “anota comprar leche”.',pin:'Fijar en la isla',del:'Borrar',clr:'Borrar hechas',cnt:n=>n+(n===1?' pendiente':' pendientes')},
  en:{title:'Notes',ph:'Write a note and press Enter',add:'Add',all:'All',pend:'Pending',done:'Done',empty:'Your notes will show up here.<br>You can also say “note buy milk”.',pin:'Pin to island',del:'Delete',clr:'Clear done',cnt:n=>n+' pending'}
 };
 const T=()=>D[lang]||D.es;

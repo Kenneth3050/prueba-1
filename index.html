@@ -36,6 +36,9 @@ transition:width var(--tw) cubic-bezier(.34,1.35,.5,1),height var(--tw) cubic-be
 svg{width:16px;height:16px;fill:currentColor}
 .mas{width:auto}
 .vr{flex:1;min-width:0;height:16px;margin:0;cursor:pointer;accent-color:var(--acc)}
+.ci{all:unset;cursor:pointer;display:block;box-sizing:border-box;width:100%;padding:7px 12px;border-radius:10px;background:#ffffff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.ci:hover{background:#ffffff2e}
+.ap{width:92px;height:58px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);animation:p 1.4s infinite;flex:none}
 @keyframes p{50%{opacity:.35}}
 .noanim,.noanim *{animation:none!important;transition:none!important}
@@ -51,9 +54,9 @@ isl.innerHTML='<div class="wvbox">'+WAVES+'</div><div id="c"></div>';
 const c=$('#c');
 const esc=s=>String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 const T={
-es:{assistant:'Asistente',listening:'Escuchando…',notHeard:'No te escuché. Inténtalo de nuevo.',noReco:'Falta el reconocimiento de voz en tu idioma. Actívalo en Windows: Hora e idioma > Voz.',voiceErr:'No pude usar el micrófono o el reconocimiento de voz.',notes:'Notas',settings:'Configuración',noMusic:'Sin música',noTitle:'Sin título',timer:'Temporizador',timerEnd:'Se acabó el tiempo',music:'Música',nothing:'No hay nada sonando en este momento',inCall:'En llamada',testT:'Aviso de prueba',testB:'Así se verá un aviso en tu isla',clear:'Despejado',partly:'Parcialmente nublado',cloudy:'Nublado',fog:'Niebla',drizzle:'Llovizna',rain:'Lluvia',snow:'Nieve',storm:'Tormenta',prev:'Anterior',pp:'Reproducir o pausar',next:'Siguiente',tp:'Pausar o reanudar',t1:'Sumar un minuto',tr:'Reiniciar',tx:'Cerrar',mute:'Silenciar',day:'día',days:'días',locale:'es'},
-en:{assistant:'Assistant',listening:'Listening…',notHeard:'I did not hear you. Try again.',noReco:'Speech recognition is missing for your language. Enable it in Windows: Time & language > Speech.',voiceErr:'I could not use the microphone or speech recognition.',notes:'Notes',settings:'Settings',noMusic:'No music',noTitle:'Untitled',timer:'Timer',timerEnd:'Time is up',music:'Music',nothing:'Nothing is playing right now',inCall:'In a call',testT:'Test alert',testB:'This is how an alert looks on your island',clear:'Clear',partly:'Partly cloudy',cloudy:'Cloudy',fog:'Fog',drizzle:'Drizzle',rain:'Rain',snow:'Snow',storm:'Thunderstorm',prev:'Previous',pp:'Play or pause',next:'Next',tp:'Pause or resume',t1:'Add one minute',tr:'Reset',tx:'Close',mute:'Mute',day:'day',days:'days',locale:'en'}};
-let C={scale:1,bg:'#000000',accent:'#32d74b',fg:'#ffffff',opacity:1,shape:'round',borderW:0,borderColor:'#7c8cff',shadow:true,animSpeed:'normal',font:'Segoe UI',align:'center',hideIdle:false,hoverExpand:false,lock:false,autoMusic:true,expandSecs:3.5,coverMode:'bg',showCover:true,showBars:true,showTimes:true,musicIgnore:'',calls:true,volOSD:true,wheelVol:true,volSlider:true,volStep:2,mascot:true,mascotType:'penguin',mascotSize:1,headphones:true,h24:true,seconds:false,weather:true,unit:'C',city:'',timerMin:5,msgSecs:4.2,sound:false,cdName:'',cdDate:'',voiceOn:true,voiceSpeak:true,voiceTimeout:7,notesOnIsland:true,lang:'es'};
+es:{assistant:'Cubo',stopwatch:'Cronómetro',pomodoro:'Pomodoro',stats:'Rendimiento',clipboard:'Portapapeles',apps:'Accesos rápidos',shot:'Captura',lap:'Vuelta',mic:'Micrófono',clear:'Borrar',focus:'Enfoque',rest:'Descanso',longBreak:'Descanso largo',workTime:'¡A trabajar!',breakTime:'Hora de descansar',clipOff:'Activa el historial en Configuración > Herramientas',clipEmpty:'Aún no has copiado nada',noApps:'Agrega accesos en Configuración > Herramientas',micOn:'Micrófono activado',micOff:'Micrófono silenciado',listening:'Escuchando…',notHeard:'No te escuché. Inténtalo de nuevo.',noReco:'Falta el reconocimiento de voz en tu idioma. Actívalo en Windows: Hora e idioma > Voz.',voiceErr:'No pude usar el micrófono o el reconocimiento de voz.',notes:'Notas',settings:'Configuración',noMusic:'Sin música',noTitle:'Sin título',timer:'Temporizador',timerEnd:'Se acabó el tiempo',music:'Música',nothing:'No hay nada sonando en este momento',inCall:'En llamada',testT:'Aviso de prueba',testB:'Así se verá un aviso en tu isla',clear:'Despejado',partly:'Parcialmente nublado',cloudy:'Nublado',fog:'Niebla',drizzle:'Llovizna',rain:'Lluvia',snow:'Nieve',storm:'Tormenta',prev:'Anterior',pp:'Reproducir o pausar',next:'Siguiente',tp:'Pausar o reanudar',t1:'Sumar un minuto',tr:'Reiniciar',tx:'Cerrar',mute:'Silenciar',day:'día',days:'días',locale:'es'},
+en:{assistant:'Cubo',stopwatch:'Stopwatch',pomodoro:'Pomodoro',stats:'Performance',clipboard:'Clipboard',apps:'Quick launchers',shot:'Screenshot',lap:'Lap',mic:'Microphone',clear:'Clear',focus:'Focus',rest:'Break',longBreak:'Long break',workTime:'Time to work!',breakTime:'Time for a break',clipOff:'Turn on history in Settings > Tools',clipEmpty:'You have not copied anything yet',noApps:'Add launchers in Settings > Tools',micOn:'Microphone on',micOff:'Microphone muted',listening:'Listening…',notHeard:'I did not hear you. Try again.',noReco:'Speech recognition is missing for your language. Enable it in Windows: Time & language > Speech.',voiceErr:'I could not use the microphone or speech recognition.',notes:'Notes',settings:'Settings',noMusic:'No music',noTitle:'Untitled',timer:'Timer',timerEnd:'Time is up',music:'Music',nothing:'Nothing is playing right now',inCall:'In a call',testT:'Test alert',testB:'This is how an alert looks on your island',clear:'Clear',partly:'Partly cloudy',cloudy:'Cloudy',fog:'Fog',drizzle:'Drizzle',rain:'Rain',snow:'Snow',storm:'Thunderstorm',prev:'Previous',pp:'Play or pause',next:'Next',tp:'Pause or resume',t1:'Add one minute',tr:'Reset',tx:'Close',mute:'Mute',day:'day',days:'days',locale:'en'}};
+let C={scale:1,bg:'#000000',accent:'#32d74b',fg:'#ffffff',opacity:1,shape:'round',borderW:0,borderColor:'#7c8cff',shadow:true,animSpeed:'normal',font:'Segoe UI',align:'center',hideIdle:false,hoverExpand:false,lock:false,autoMusic:true,expandSecs:3.5,coverMode:'bg',showCover:true,showBars:true,showTimes:true,musicIgnore:'',calls:true,volOSD:true,wheelVol:true,volSlider:true,volStep:2,mascot:true,mascotType:'penguin',mascotSize:1,headphones:true,h24:true,seconds:false,weather:true,unit:'C',city:'',timerMin:5,msgSecs:4.2,sound:false,cdName:'',cdDate:'',voiceOn:true,voiceSpeak:true,voiceTimeout:7,voiceName:'',voiceRate:1,voicePitch:1,voiceVolume:100,notesOnIsland:true,pomoWork:25,pomoBreak:5,clipHistory:false,zones:'',launchers:'',lang:'es'};
 const tt=k=>(T[C.lang]||T.es)[k]||k;
 const I={play:'<svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg>',pause:'<svg viewBox="0 0 16 16"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg>',prev:'<svg viewBox="0 0 16 16"><path d="M3 2h2v12H3zM14 2v12L6 8z"/></svg>',next:'<svg viewBox="0 0 16 16"><path d="M11 2h2v12h-2zM2 2l8 6-8 6z"/></svg>',plus:'<svg viewBox="0 0 16 16"><path d="M7 2h2v5h5v2H9v5H7V9H2V7h5z"/></svg>',reset:'<svg viewBox="0 0 16 16"><path d="M8 2a6 6 0 105.700 4h-2.100A4 4 0 118 4V7l4-3.500L8 0z"/></svg>',x:'<svg viewBox="0 0 16 16"><path d="M3 1.500L8 6.500l5-5L14.500 3l-5 5 5 5L13 14.500l-5-5-5 5L1.500 13l5-5-5-5z"/></svg>',vol:'<svg viewBox="0 0 16 16"><path d="M2 6h3l4-3v10l-4-3H2z"/><path d="M11.200 5.200a4 4 0 010 5.600" fill="none" stroke="currentColor" stroke-width="1.400" stroke-linecap="round"/></svg>',mute:'<svg viewBox="0 0 16 16"><path d="M2 6h3l4-3v10l-4-3H2z"/><path d="M11 6l4 4M15 6l-4 4" fill="none" stroke="currentColor" stroke-width="1.400" stroke-linecap="round"/></svg>'};
 const mm=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
@@ -62,12 +65,31 @@ const hue=s=>{let h=0;for(const ch of String(s))h=(h*31+ch.charCodeAt(0))%360;re
 const cover=s=>`linear-gradient(135deg,hsl(${hue(s)} 80% 60%),hsl(${(hue(s)+60)%360} 80% 42%))`;
 const bars=on=>`<div class="bars ${on?'on':''}"><i></i><i></i><i></i><i></i></div>`;
 const S={cur:'idle',exp:false,manual:false,hov:false,prev:null,msg:{t:'',b:''},tLeft:300,tRun:false};
-const VOL={vol:.5,mute:false,known:false};
+const VOL={vol:.5,mute:false,mic:false,known:false};
 let M=null,W=null,lastKey='',curKey='',dismissKey='',pausedAt=0,autoT,msgT,callT,rt,hoverT,lastSet=0,lastSlider=0;
 let coverImg='',hasCol=false,coverAcc='#e8e8f0',coverW1='#8a8a96',coverW2='#4a4a54';
 let callApp=null,callStart=0,ac=null;
 const TR=['msg','vol','listen'];
 let NOTES=[],voiceBusy=false;
+const SW={run:false,start:0,acc:0,laps:[]};
+const PO={phase:'work',left:25*60,run:false,n:0};
+let STATS={cpu:0,ram:0,used:0,total:0},CLIPS=[];
+const swMs=()=>SW.acc+(SW.run?Date.now()-SW.start:0);
+function swFmt(){const t=Math.floor(swMs()/100),d=t%10,s=Math.floor(t/10)%60,m=Math.floor(t/600);return m+':'+String(s).padStart(2,'0')+'.'+d}
+const poLen=ph=>(ph==='work'?C.pomoWork:ph==='long'?C.pomoBreak*3:C.pomoBreak)*60;
+const VIEWS=['sw','pomo','stats','clip','apps'];
+function launchers(){
+  return String(C.launchers||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.indexOf('|');return i<0?{name:l,cmd:l}:{name:l.slice(0,i).trim(),cmd:l.slice(i+1).trim()}}).filter(a=>a.name&&a.cmd).slice(0,8);
+}
+function zonesLine(){
+  if(!C.zones)return'';
+  const out=[];
+  for(const part of C.zones.split(',').map(s=>s.trim()).filter(Boolean).slice(0,3)){
+    const [a,b]=part.includes('=')?part.split('=').map(s=>s.trim()):[null,part];
+    try{const x=new Date().toLocaleTimeString(tt('locale'),{timeZone:b,hour:'2-digit',minute:'2-digit',hour12:!C.h24});out.push((a||b.split('/').pop().replace(/_/g,' '))+' '+x)}catch(e){}
+  }
+  return out.join(' · ');
+}
 const clock=()=>new Date().toLocaleTimeString(tt('locale'),{hour:'2-digit',minute:'2-digit',second:C.seconds?'2-digit':undefined,hour12:!C.h24});
 const shortDate=()=>new Date().toLocaleDateString(tt('locale'),{weekday:'short',day:'numeric'}).replace('.','');
 const dateStr=()=>new Date().toLocaleDateString(tt('locale'),{weekday:'long',day:'numeric',month:'long'});
@@ -151,9 +173,10 @@ const V={
 idle:e=>{
   const w=wx(),cd=countdown();
   if(e){
-    const pin=C.notesOnIsland?NOTES.find(n=>n.p&&!n.d):null,pend=NOTES.filter(n=>!n.d).length;
-    return{w:440,h:118+(cd?14:0)+(pin?16:0),r:30,col:1,html:`<div class="row"><div style="flex:none;max-width:210px"><div class="big num" id="clk" style="font-size:30px;line-height:1">${clock()}</div><div class="t2" style="margin-top:4px">${esc(dateStr())}</div>${cd?`<div class="t2" style="opacity:.9;margin-top:2px">${esc(cd)}</div>`:''}${pin?`<div class="t2" style="opacity:.95;margin-top:2px">📌 ${esc(pin.t)}</div>`:''}</div>${w?`<div style="min-width:0;flex:1;text-align:right"><div class="t1" style="font-size:22px">${w.ic} ${w.t}</div><div class="t2">${esc(w.desc)}${w.city?' · '+esc(w.city):''}</div></div>`:'<span class="sp"></span>'}${mascot(40,mcls())}</div>
-<div class="row" style="gap:8px">${C.voiceOn?`<button class="ib sm" data-a="voice" aria-label="${tt('assistant')}">🎤</button>`:''}<button class="ib sm" data-a="notes" aria-label="${tt('notes')}" style="width:auto;min-width:28px;padding:0 9px;font-size:13px">📝${pend?' '+pend:''}</button><button class="ib sm" data-a="gear" aria-label="${tt('settings')}">⚙️</button></div>`};
+    const pin=C.notesOnIsland?NOTES.find(n=>n.p&&!n.d):null,pend=NOTES.filter(n=>!n.d).length,zl=zonesLine();
+    const tb=(a,ic,l,x='')=>`<button class="ib sm" data-a="${a}" aria-label="${esc(l)}" title="${esc(l)}"${x?` style="${x}"`:''}>${ic}</button>`;
+    return{w:440,h:122+(cd?14:0)+(pin?16:0)+(zl?14:0),r:30,col:1,html:`<div class="row"><div style="flex:none;max-width:210px"><div class="big num" id="clk" style="font-size:30px;line-height:1">${clock()}</div><div class="t2" style="margin-top:4px">${esc(dateStr())}</div>${cd?`<div class="t2" style="opacity:.9;margin-top:2px">${esc(cd)}</div>`:''}${zl?`<div class="t2" id="znl" style="opacity:.9;margin-top:2px">🌍 ${esc(zl)}</div>`:''}${pin?`<div class="t2" style="opacity:.95;margin-top:2px">📌 ${esc(pin.t)}</div>`:''}</div>${w?`<div style="min-width:0;flex:1;text-align:right"><div class="t1" style="font-size:22px">${w.ic} ${w.t}</div><div class="t2">${esc(w.desc)}${w.city?' · '+esc(w.city):''}</div></div>`:'<span class="sp"></span>'}${mascot(40,mcls())}</div>
+<div class="row" style="gap:6px">${C.voiceOn?tb('voice','🎤',tt('assistant')):''}${tb('notes','📝',tt('notes'),'width:auto;min-width:28px;padding:0 9px;font-size:13px').replace('📝</button>','📝'+(pend?' '+pend:'')+'</button>')}${tb('sw','⏱',tt('stopwatch'))}${tb('pomo','🍅',tt('pomodoro'))}${tb('stats','📊',tt('stats'))}${tb('clip','📋',tt('clipboard'))}${tb('apps','🚀',tt('apps'))}${tb('shot','📸',tt('shot'))}${tb('gear','⚙️',tt('settings'))}</div>`};
   }
   const mw=C.mascot?Math.round(28*C.mascotSize)+10:0;
   return{w:24+(C.seconds?64:42)+(w?52:0)+48+mw+10,h:36,r:18,html:`<span class="num" id="clk">${clock()}</span>${w?`<span class="t2" style="opacity:.9">${w.ic} ${w.t}</span>`:''}<span class="t2" id="dts" style="opacity:.8">${esc(shortDate())}</span><span class="sp"></span>${mascot(28,mcls())}`};
@@ -170,8 +193,36 @@ music:e=>{
 },
 call:e=>{
   const n=callApp||'',el=Math.floor((Date.now()-callStart)/1000);
-  return e?{w:390,h:96,r:32,html:`<div class="cov" style="width:50px;height:50px;border-radius:50%;background:${cover(n)};display:grid;place-items:center;font-weight:800;font-size:20px">${esc(n.slice(0,1))}</div><div style="min-width:0;flex:1"><div class="t1">${esc(n)}</div><div class="t2 num" style="display:flex;align-items:center;gap:6px"><span class="dot"></span><span id="cl">${tt('inCall')} · ${mm(el)}</span></div></div>${mascot(44,'on call'+(listening()?' dance':''))}`}:
+  return e?{w:390,h:96,r:32,html:`<div class="cov" style="width:50px;height:50px;border-radius:50%;background:${cover(n)};display:grid;place-items:center;font-weight:800;font-size:20px">${esc(n.slice(0,1))}</div><div style="min-width:0;flex:1"><div class="t1">${esc(n)}</div><div class="t2 num" style="display:flex;align-items:center;gap:6px"><span class="dot"></span><span id="cl">${tt('inCall')} · ${mm(el)}</span></div></div><button class="ib sm" data-a="mic" id="mb" aria-label="${tt('mic')}">${VOL.mic?'🔇':'🎙️'}</button>${mascot(44,'on call'+(listening()?' dance':''))}`}:
   {w:(C.mascot?270:220)+(C.mascot?Math.round(28*(C.mascotSize-1)):0),h:40,r:20,html:`<span class="dot"></span><div class="t1" style="font-size:13px;min-width:0">${esc(n)}</div><span class="sp"></span><span class="num" id="cl" style="color:var(--green)">${mm(el)}</span>${mascot(28,'on call')}`};
+},
+sw:e=>{
+  const n=SW.laps.length,l=SW.laps.slice(-2).map((x,i)=>'#'+(n-Math.min(2,n)+i+1)+' '+x).join(' · ');
+  return e?{w:360,h:132+(n?18:0),r:34,col:1,html:`<div class="row"><span class="big num" id="swt" style="font-size:36px">${swFmt()}</span><span class="sp"></span><span class="t2">${tt('stopwatch')}</span></div><div class="ctl"><button class="ib" data-a="swp" aria-label="${tt('tp')}">${SW.run?I.pause:I.play}</button><button class="ib" data-a="swl" aria-label="${tt('lap')}">🚩</button><button class="ib" data-a="swr" aria-label="${tt('tr')}">${I.reset}</button><button class="ib" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div>${n?`<div class="t2" style="text-align:center">${esc(l)}</div>`:''}`}:
+  {w:200,h:40,r:20,html:`<span>⏱</span><span class="sp"></span><span class="num" id="swt">${swFmt()}</span>`};
+},
+pomo:e=>{
+  const ph=PO.phase,col=ph==='work'?'#ff6b5a':'var(--green)',lab=ph==='work'?tt('focus'):ph==='long'?tt('longBreak'):tt('rest');
+  return e?{w:360,h:132,r:34,col:1,html:`<div class="row"><span class="big num" id="pot" style="color:${col}">${tm(PO.left)}</span><span class="sp"></span><div style="text-align:right"><div class="t1" style="font-size:14px">${lab}</div><div class="t2">🍅 ${PO.n}</div></div></div><div class="ctl"><button class="ib" data-a="pop" aria-label="${tt('tp')}">${PO.run?I.pause:I.play}</button><button class="ib" data-a="pos" aria-label="${tt('next')}">${I.next}</button><button class="ib" data-a="por" aria-label="${tt('tr')}">${I.reset}</button><button class="ib" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div>`}:
+  {w:190,h:40,r:20,html:`<span>🍅</span><span class="sp"></span><span class="num" id="pot" style="color:${col}">${tm(PO.left)}</span>`};
+},
+stats:e=>{
+  const gb=x=>(x/1073741824).toFixed(1);
+  return e?{w:360,h:142,r:30,col:1,html:`<div class="row"><span class="t1" style="font-size:14px">📊 ${tt('stats')}</span><span class="sp"></span><button class="ib sm" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div><div class="row"><span class="t2" style="width:40px">CPU</span><div class="prog" style="flex:1"><b id="stcb" style="width:${STATS.cpu}%"></b></div><span class="num" id="stc" style="width:42px;text-align:right">${STATS.cpu}%</span></div><div class="row"><span class="t2" style="width:40px">RAM</span><div class="prog" style="flex:1"><b id="strb" style="width:${STATS.ram}%"></b></div><span class="num" id="str" style="width:42px;text-align:right">${STATS.ram}%</span></div><div class="t2" id="strd" style="text-align:right">${gb(STATS.used)} / ${gb(STATS.total)} GB</div>`}:
+  {w:230,h:40,r:20,html:`<span class="t2">CPU</span><b class="num" id="stc">${STATS.cpu}%</b><span class="sp"></span><span class="t2">RAM</span><b class="num" id="str">${STATS.ram}%</b>`};
+},
+clip:e=>{
+  const n=CLIPS.length;
+  if(!e)return{w:150,h:40,r:20,html:`<span>📋</span><span class="sp"></span><span class="num">${n}</span>`};
+  const list=n?CLIPS.slice(0,5).map((t,i)=>`<button class="ci" data-a="clipi" data-i="${i}" title="${esc(t)}">${esc(t.replace(/\s+/g,' ').slice(0,70))}</button>`).join(''):`<div class="t2" style="text-align:center;padding:6px 0">${tt(C.clipHistory?'clipEmpty':'clipOff')}</div>`;
+  return{w:420,h:(n?64+Math.min(n,5)*38:100),r:30,col:1,html:`<div class="row"><span class="t1" style="font-size:14px">📋 ${tt('clipboard')}</span><span class="sp"></span>${n?`<button class="ib sm" data-a="clipx" aria-label="${tt('clear')}">🗑️</button>`:''}<button class="ib sm" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div>${list}`};
+},
+apps:e=>{
+  const Ls=launchers(),n=Ls.length;
+  if(!e)return{w:150,h:40,r:20,html:`<span>🚀</span><span class="sp"></span><span class="num">${n}</span>`};
+  const rows=Math.max(1,Math.ceil(n/4));
+  const btns=n?Ls.map((a,i)=>{const m=a.name.match(/^\p{Extended_Pictographic}\uFE0F?/u),ic=m?m[0]:a.name.slice(0,1).toUpperCase(),nm=m?a.name.slice(m[0].length).trim():a.name;return`<button class="ib ap" data-a="app" data-i="${i}" title="${esc(a.cmd)}"><span style="font-size:20px;line-height:1">${esc(ic)}</span><span class="t2" style="opacity:.9;max-width:84px">${esc(nm||a.name)}</span></button>`}).join(''):`<div class="t2" style="padding:6px 0">${tt('noApps')}</div>`;
+  return{w:420,h:n?64+rows*58+(rows-1)*8:100,r:30,col:1,html:`<div class="row"><span class="t1" style="font-size:14px">🚀 ${tt('apps')}</span><span class="sp"></span><button class="ib sm" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div><div style="display:flex;flex-wrap:wrap;gap:8px">${btns}</div>`};
 },
 timer:e=>e?{w:360,h:132,r:34,col:1,html:`<div class="row"><span class="big num" id="tm" style="color:var(--amber)">${tm(S.tLeft)}</span><span class="sp"></span><span class="t2">${tt('timer')}</span></div>
 <div class="ctl"><button class="ib" data-a="tp" aria-label="${tt('tp')}">${S.tRun?I.pause:I.play}</button><button class="ib" data-a="t1" aria-label="${tt('t1')}">${I.plus}</button><button class="ib" data-a="tr" aria-label="${tt('tr')}">${I.reset}</button><button class="ib" data-a="tx" aria-label="${tt('tx')}">${I.x}</button></div>`}:
@@ -214,7 +265,7 @@ function back(){
   if(!TR.includes(S.cur))return;
   if(S.cur==='listen')voiceBusy=false;
   const p=S.prev||['idle',false];S.prev=null;
-  if(p[0]==='timer'||(p[0]==='music'&&M)||(p[0]==='call'&&callApp)){S.cur=p[0];S.exp=p[1]}
+  if(p[0]==='timer'||VIEWS.includes(p[0])||(p[0]==='music'&&M)||(p[0]==='call'&&callApp)){S.cur=p[0];S.exp=p[1]}
   else{S.cur=rest();S.exp=false}
   render();
 }
@@ -239,6 +290,7 @@ function onVolume(v){
   const recent=Date.now()-lastSet<700;
   const changed=VOL.known&&!recent&&(Math.abs(v.vol-VOL.vol)>.004||v.mute!==VOL.mute);
   if(Date.now()-lastSlider>700){VOL.vol=v.vol;VOL.mute=!!v.mute}
+  if(Date.now()-lastSet>700){VOL.mic=!!v.mic;const mb=document.getElementById('mb');if(mb)mb.textContent=VOL.mic?'🔇':'🎙️'}
   VOL.known=true;
   if(changed&&C.volOSD)showVol();else if(S.cur==='vol')updateVol();
   syncSlider();
@@ -325,8 +377,10 @@ function speak(text){
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text),lg=C.lang==='en'?'en':'es';
     u.lang=lg==='en'?'en-US':'es-ES';
-    const v=speechSynthesis.getVoices().find(x=>x.lang.toLowerCase().startsWith(lg));
+    const vs=speechSynthesis.getVoices();
+    const v=vs.find(x=>C.voiceName&&x.name===C.voiceName)||vs.find(x=>x.lang.toLowerCase().startsWith(lg));
     if(v)u.voice=v;
+    u.rate=C.voiceRate||1;u.pitch=C.voicePitch||1;u.volume=(C.voiceVolume==null?100:C.voiceVolume)/100;
     speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -359,11 +413,25 @@ function runIntent(raw){
     if(!NOTES.length)return{text:say('No tienes notas.','You have no notes.')};
     NOTES=NOTES.slice(1);api.setNotes(NOTES);return{text:say('Última nota borrada.','Last note deleted.')};
   }
-  if(/\b(abre|abrir|muestra|muestrame|ver|open|show)\b.*\b(notas?|notes?)\b/.test(t)){api.openNotes();return{text:say('Abriendo tus notas.','Opening your notes.')}}
+  if(/\b(abre|abrir|muestra|muestrame|ver|open|show)\b.*\b(notas?|notes?)\b/.test(t)&&!/bloc de notas|notepad/.test(t)){api.openNotes();return{text:say('Abriendo tus notas.','Opening your notes.')}}
   if(/munequito|mascota|mascot|personaje|character/.test(t)){
     const mt=/pinguino|penguin/.test(t)?'penguin':/\bcono\b|\bcone\b/.test(t)?'cone':/fantasma|ghost/.test(t)?'ghost':null;
     if(mt){api.setSettings({mascotType:mt});return{text:say('Listo, cambié el muñequito.','Done, I changed the mascot.')}}
   }
+  if(/\b(cronometro|stopwatch)\b/.test(t)){
+    if(/\b(reinicia|reset|reiniciar|borra)\b/.test(t)){SW.run=false;SW.acc=0;SW.laps=[];return{text:say('Cronómetro reiniciado.','Stopwatch reset.'),keep:['sw',false]}}
+    if(/\b(deten|detener|para|parar|pausa|pausar|stop|pause)\b/.test(t)){if(SW.run){SW.acc+=Date.now()-SW.start;SW.run=false}return{text:say('Cronómetro detenido.','Stopwatch stopped.'),keep:['sw',false]}}
+    if(!SW.run){SW.start=Date.now();SW.run=true}
+    return{text:say('Cronómetro iniciado.','Stopwatch started.'),keep:['sw',false]};
+  }
+  if(/pomodoro/.test(t)){
+    if(/\b(cancela|cancelar|deten|detener|para|parar|stop|cancel|pausa|pause)\b/.test(t)){PO.run=false;return{text:say('Pomodoro en pausa.','Pomodoro paused.'),keep:['pomo',false]}}
+    PO.run=true;return{text:say('Pomodoro iniciado. A concentrarse.','Pomodoro started. Time to focus.'),keep:['pomo',false]};
+  }
+  if(/\b(rendimiento|cpu|memoria|ram|performance|memory)\b/.test(t))return{text:'CPU '+STATS.cpu+'%, RAM '+STATS.ram+'%.',keep:['stats',false]};
+  if(/\b(portapapeles|clipboard)\b/.test(t)){if(C.clipHistory){S.prev=['clip',true];return{text:say('Aquí está tu historial.','Here is your history.'),keep:['clip',true]}}return{text:tt('clipOff')}}
+  if(/\b(captura|pantallazo|screenshot|screen shot)\b/.test(t)){api.shot();return{text:say('Abriendo la captura de pantalla.','Opening the screenshot tool.')}}
+  if(/\b(microfono|microphone|mic)\b/.test(t)){micToggle();return{text:VOL.mic?tt('micOff'):tt('micOn')}}
   if(/temporizador|timer|cuenta regresiva|countdown|alarma/.test(t)){
     if(/\b(cancela|cancelar|detener|deten|quita|apaga|cancel|stop|clear)\b/.test(t)){S.tRun=false;S.tLeft=C.timerMin*60;return{text:say('Temporizador cancelado.','Timer cancelled.'),keep:['idle',false]}}
     const mt=t.match(/(\d+(?:[.,]\d+)?|[a-z]+)\s*(horas?|hours?|hrs?|minutos?|minutes?|mins?|segundos?|seconds?|secs?)\b/);
@@ -392,14 +460,48 @@ function runIntent(raw){
   if(/\bque dia\b|\bfecha\b|what day|the date|today/.test(t))return{text:dateStr()+'.'};
   if(/\b(temperatura|clima|weather|temperature)\b|tiempo hace/.test(t)){const w=wx();return{text:w?say(w.desc+', '+w.t+(w.city?' en '+w.city:'')+'.',w.desc+', '+w.t+(w.city?' in '+w.city:'')+'.'):say('No tengo el clima en este momento.','Weather is not available right now.')}}
   if(/\b(configuracion|ajustes|settings|preferences|opciones)\b/.test(t)){api.openSettings();return{text:say('Abriendo configuración.','Opening settings.')}}
+  if(/^(abre|abrir|open|lanza|ejecuta|inicia|launch)\b/.test(t)){
+    const Ls=launchers(),q=t.replace(/^(abre|abrir|open|lanza|ejecuta|inicia|launch)\s+(el|la|los|las|un|una|the)?\s*/,'');
+    const i=Ls.findIndex(a=>{const nm=norm(a.name.replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u,''));return nm&&(q.includes(nm)||nm.includes(q))});
+    if(i>=0&&q){api.launch(i);return{text:say('Abriendo '+Ls[i].name.replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u,'')+'.','Opening '+Ls[i].name.replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u,'')+'.')}}
+  }
+  if(/\b(accesos|aplicaciones|launcher|launchers)\b/.test(t))return{text:say('Aquí están tus accesos.','Here are your launchers.'),keep:['apps',true]};
   if(/\b(oculta|esconde|hide|reposo|idle)\b/.test(t)){if(M)dismissKey=M.t+'|'+M.a;return{text:say('Listo.','Done.'),keep:[callApp?'call':'idle',false]}}
-  if(/\b(ayuda|help)\b|que puedes hacer|what can you do/.test(t))return{text:say('Puedo subir el volumen, controlar la música, poner temporizadores, tomar notas y decirte la hora o el clima.','I can change the volume, control music, set timers, take notes and tell you the time or weather.')};
+  if(/\b(ayuda|help)\b|que puedes hacer|what can you do/.test(t))return{text:say('Puedo controlar el volumen y la música, poner temporizadores, cronómetro y pomodoro, tomar notas, abrir tus accesos y decirte la hora o el clima.','I can control volume and music, set timers, stopwatch and pomodoro, take notes, open your launchers and tell you the time or weather.')};
   if(/^(hola|hello|hi|hey)\b/.test(t))return{text:say('¡Hola! ¿En qué te ayudo?','Hi! How can I help?')};
-  return{text:say('No entendí eso. Prueba con “sube el volumen” o “anota comprar leche”.','I did not get that. Try “volume up” or “note buy milk”.')};
+  return{text:say('No entendí eso. Prueba con “sube el volumen” o “anota comprar leche”. Di “ayuda” para ver qué puedo hacer.','I did not get that. Try “volume up” or “note buy milk”.')};
 }
 
 /* acciones */
-function act(a){
+function openView(k){
+  if(k==='clip'&&!C.clipHistory){notify(tt('clipboard'),tt('clipOff'));return}
+  S.cur=k;S.exp=true;S.manual=true;S.hov=false;render();
+}
+function poNext(auto){
+  if(PO.phase==='work'){PO.n++;PO.phase=PO.n%4===0?'long':'break'}else PO.phase='work';
+  PO.left=poLen(PO.phase);
+  if(auto)notify('🍅 '+tt('pomodoro'),PO.phase==='work'?tt('workTime'):PO.phase==='long'?tt('longBreak'):tt('breakTime'));
+  else render();
+}
+function micToggle(){
+  VOL.mic=!VOL.mic;lastSet=Date.now();api.micMute();
+  const el=document.getElementById('mb');if(el)el.textContent=VOL.mic?'🔇':'🎙️';
+  if(S.cur!=='call')notify(tt('mic'),VOL.mic?tt('micOff'):tt('micOn'));
+}
+function act(a,b){
+  if(VIEWS.includes(a)){openView(a);return}
+  if(a==='vx'){base();return}
+  if(a==='shot'){api.shot();return}
+  if(a==='mic'){micToggle();return}
+  if(a==='app'){api.launch(Number(b&&b.dataset.i)||0);return}
+  if(a==='clipi'){const i=Number(b&&b.dataset.i)||0;if(CLIPS[i])api.clipSet(CLIPS[i]);return}
+  if(a==='clipx'){api.clipClear();return}
+  if(a==='swp'){if(SW.run){SW.acc+=Date.now()-SW.start;SW.run=false}else{SW.start=Date.now();SW.run=true}render();return}
+  if(a==='swl'){if(swMs()>0)SW.laps.push(swFmt());render();return}
+  if(a==='swr'){SW.run=false;SW.acc=0;SW.laps=[];render();return}
+  if(a==='pop'){PO.run=!PO.run;render();return}
+  if(a==='pos'){poNext(false);return}
+  if(a==='por'){PO.phase='work';PO.left=C.pomoWork*60;PO.run=false;PO.n=0;render();return}
   if(['prev','pp','next'].includes(a)){api.media(a);return}
   if(a==='mute'){volMute();return}
   if(a==='voice'){startVoice();return}
@@ -427,6 +529,9 @@ api.on('show',k=>{
   else if(k==='voldown')volStep(-1);
   else if(k==='mute')volMute();
   else if(k==='voice')startVoice();
+  else if(VIEWS.includes(k)){if(S.cur===k)base();else openView(k)}
+  else if(k==='micmute')micToggle();
+  else if(k==='speaktest')speak(say('Hola, soy Cubo. Así sueno.','Hi, I am Cubo. This is how I sound.'));
   else if(k==='idle'){
     if(M)dismissKey=M.t+'|'+M.a;
     S.cur=callApp?'call':'idle';S.exp=false;S.manual=false;render();
@@ -438,6 +543,8 @@ api.on('cover',onCover);
 api.on('mic',onMic);
 api.on('volume',onVolume);
 api.on('heard',onHeard);
+api.on('stats',s=>{STATS=s;const set=(id,f)=>{const el=document.getElementById(id);if(el)f(el)};set('stc',e=>e.textContent=s.cpu+'%');set('str',e=>e.textContent=s.ram+'%');set('stcb',e=>e.style.width=s.cpu+'%');set('strb',e=>e.style.width=s.ram+'%');set('strd',e=>e.textContent=(s.used/1073741824).toFixed(1)+' / '+(s.total/1073741824).toFixed(1)+' GB')});
+api.on('clip',a=>{CLIPS=a||[];if(S.cur==='clip')render()});
 api.on('notes',a=>{NOTES=a||[];if(S.cur==='idle'&&S.exp)render()});
 api.getNotes().then(a=>{NOTES=a||[]});
 api.on('weather',w=>{W=w;if(S.cur==='idle')render()});
@@ -463,8 +570,8 @@ isl.addEventListener('pointerup',e=>{
 isl.addEventListener('click',e=>{
   if(justDragged||e.target.closest('input'))return;
   const b=e.target.closest('[data-a]');
-  if(b){act(b.dataset.a);return}
-  if(['music','timer','call','idle'].includes(S.cur)){S.exp=!S.exp;S.manual=true;S.hov=false;render()}
+  if(b){act(b.dataset.a,b);return}
+  if(['music','timer','call','idle',...VIEWS].includes(S.cur)){S.exp=!S.exp;S.manual=true;S.hov=false;render()}
 });
 isl.addEventListener('input',e=>{
   if(e.target.id!=='vs')return;
@@ -478,7 +585,7 @@ isl.addEventListener('wheel',e=>{
 isl.addEventListener('contextmenu',e=>{e.preventDefault();api.openSettings()});
 isl.addEventListener('mouseenter',()=>{
   api.setIgnore(false);
-  if(C.hoverExpand&&!S.exp&&['music','timer','call','idle'].includes(S.cur)){
+  if(C.hoverExpand&&!S.exp&&['music','timer','call','idle',...VIEWS].includes(S.cur)){
     clearTimeout(hoverT);hoverT=setTimeout(()=>{S.exp=true;S.hov=true;render()},400);
   }
 });
@@ -494,7 +601,10 @@ setInterval(()=>{
   set('clk',clock());set('dts',shortDate());set('tm',tm(S.tLeft));
   if(callApp){const el=Math.floor((Date.now()-callStart)/1000);set('cl',S.exp?tt('inCall')+' · '+mm(el):mm(el))}
   if(M&&M.s===4){M.p++;refreshMusic()}
+  if(PO.run&&PO.left>0){PO.left--;if(PO.left===0)poNext(true);else set('pot',tm(PO.left))}
+  const zl=document.getElementById('znl');if(zl)zl.textContent='🌍 '+zonesLine();
 },1000);
+setInterval(()=>{if(S.cur==='sw'&&SW.run){const el=document.getElementById('swt');if(el)el.textContent=swFmt()}},100);
 render();
 </script>
 </body>

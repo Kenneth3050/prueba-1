@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Isla</title>
+<title>Cubo</title>
 <link rel="stylesheet" href="shared.css">
 <style>
 :root{color-scheme:dark;--bg:#0e1022;--panel:#171a35;--card:#1c2042;--line:#ffffff1a;--text:#eef0ff;--muted:#a3a8d6;--acc:#7c8cff;--acc2:#ff7ad9}
@@ -10,7 +10,7 @@
 html,body{margin:0;height:100%;overflow:hidden}
 body{background:radial-gradient(800px 500px at 85% -10%,#3a2f7a66,transparent 70%),radial-gradient(600px 400px at -5% 110%,#7c3a8f44,transparent 70%),var(--bg);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif}
 #app{display:flex;height:100%}
-aside{width:210px;flex:none;padding:18px 12px;background:#0b0d1e99;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;-webkit-app-region:drag}
+aside{width:210px;flex:none;overflow-y:auto;padding:18px 12px;background:#0b0d1e99;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;-webkit-app-region:drag}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;padding:4px 10px 16px;letter-spacing:-.3px}
 .logo{width:30px;height:30px;border-radius:9px}
 .brand span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;color:transparent}
@@ -42,9 +42,9 @@ header h1{margin:0;font-size:20px;letter-spacing:-.3px}
 .mk .bar i{display:block;height:100%;width:60%;background:var(--acc)}
 #pane{flex:1;overflow-y:auto;padding:14px 22px 26px}
 #pane::-webkit-scrollbar{width:10px}#pane::-webkit-scrollbar-thumb{background:#ffffff22;border-radius:6px}
-.sec{display:none}.sec.on{display:block}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media (max-width:1000px){.grid{grid-template-columns:1fr}}
+.sec{display:none;grid-template-columns:1fr 1fr;gap:10px}
+.sec.on{display:grid}
+@media (max-width:1000px){.sec{grid-template-columns:1fr}}
 .r{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:14px;min-height:56px}
 .r.full{grid-column:1/-1}
 .lb b{display:block;font-weight:600}
@@ -55,6 +55,8 @@ input[type=range]{width:140px;accent-color:var(--acc)}
 input[type=color]{width:46px;height:28px;border:1px solid var(--line);border-radius:8px;background:none;padding:0;cursor:pointer}
 input[type=text],input[type=number],input[type=date],select{background:#0e1022;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit;max-width:180px}
 input[type=number]{width:80px}
+textarea{background:#0e1022;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;width:300px;max-width:100%;resize:vertical}
+input.wide{max-width:260px;width:260px}
 .sw{position:relative;width:44px;height:24px;flex:none}
 .sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
 .sw i{position:absolute;inset:0;border-radius:99px;background:#ffffff22;transition:.2s}
@@ -167,12 +169,27 @@ const SECT=[
   {t:'btn',a:'test',b:['Probar aviso','Test alert']}
  ]},
 
+
+ {id:'tools',ic:'🧰',n:['Herramientas','Tools'],items:[
+  {k:'pomoWork',t:'number',min:1,max:120,l:['Pomodoro: minutos de enfoque','Pomodoro: focus minutes']},
+  {k:'pomoBreak',t:'number',min:1,max:60,l:['Pomodoro: minutos de descanso','Pomodoro: break minutes']},
+  {k:'clipHistory',t:'toggle',l:['Historial del portapapeles','Clipboard history'],d:['Guarda solo en memoria los últimos textos copiados. No copies contraseñas con esto activo.','Keeps the last copied texts in memory only. Do not copy passwords while on.']},
+  {k:'zones',t:'text',w:1,ph:['Madrid=Europe/Madrid, Tokio=Asia/Tokyo','Madrid=Europe/Madrid, Tokyo=Asia/Tokyo'],l:['Relojes del mundo','World clocks'],d:['Hasta 3, separados por coma. Aparecen al expandir la hora','Up to 3, comma-separated. Shown when the clock is expanded']},
+  {k:'launchers',t:'area',l:['Accesos rápidos','Quick launchers'],d:['Una línea por acceso: Nombre | programa, carpeta o enlace. Máximo 8','One line per launcher: Name | program, folder or link. Up to 8']},
+  {t:'note',x:['Atajos: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>4</kbd> cronómetro · <kbd>5</kbd> pomodoro · <kbd>6</kbd> rendimiento · <kbd>7</kbd> portapapeles · <kbd>8</kbd> accesos · <kbd>K</kbd> silenciar micrófono. También con los botones al expandir la hora.','Shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>4</kbd> stopwatch · <kbd>5</kbd> pomodoro · <kbd>6</kbd> performance · <kbd>7</kbd> clipboard · <kbd>8</kbd> launchers · <kbd>K</kbd> mute microphone. Also with the buttons when the clock is expanded.']}
+ ]},
  {id:'voice',ic:'🎙️',n:['Asistente de voz','Voice assistant'],items:[
   {k:'voiceOn',t:'toggle',l:['Activar asistente','Enable assistant'],d:['Atajo: Ctrl+Alt+V o el botón 🎤 de la isla','Shortcut: Ctrl+Alt+V or the 🎤 button on the island']},
-  {k:'wakeWord',t:'toggle',l:['Palabra de activación “isla”','Wake word “isla”'],d:['Experimental: deja el micrófono escuchando','Experimental: keeps the microphone listening']},
+  {k:'wakeWord',t:'toggle',l:['Activar con la palabra de activación','Wake word “isla”'],d:['Experimental: deja el micrófono escuchando','Experimental: keeps the microphone listening']},
+  {k:'wakeName',t:'text',ph:['cubo','cubo'],l:['Nombre / palabra de activación','Name / wake word'],d:['Por defecto “cubo”. Di “hey cubo”.','Default “cubo”. Say “hey cubo”.']},
   {k:'voiceSpeak',t:'toggle',l:['Responder en voz alta','Speak replies']},
+  {k:'voiceName',t:'select',l:['Voz','Voice'],d:['Voces instaladas en Windows','Voices installed in Windows']},
+  {k:'voiceRate',t:'range',min:.6,max:1.6,step:.05,m:100,u:'%',l:['Velocidad de la voz','Voice speed']},
+  {k:'voicePitch',t:'range',min:.5,max:1.5,step:.05,m:100,u:'%',l:['Tono de la voz','Voice pitch']},
+  {k:'voiceVolume',t:'range',min:0,max:100,step:5,m:1,u:' %',l:['Volumen de la voz','Voice volume']},
   {k:'voiceTimeout',t:'range',min:4,max:15,step:1,m:1,u:' s',l:['Tiempo de escucha','Listening time']},
   {t:'btn',a:'voice',b:['Probar asistente','Test assistant']},
+  {t:'btn',a:'speak',b:['Probar la voz','Test the voice']},
   {t:'note',x:['Habla en el idioma elegido en Sistema. Ejemplos: “sube el volumen”, “volumen al 40”, “pausa”, “siguiente”, “temporizador de 10 minutos”, “anota comprar leche”, “abre las notas”, “qué hora es”, “qué temperatura hace”, “cambia el muñequito a cono”.','Speak in the language chosen under System. Examples: “volume up”, “volume to 40”, “pause”, “next”, “timer ten minutes”, “note buy milk”, “open the notes”, “what time is it”, “what is the weather”, “change the mascot to cone”.']},
   {t:'note',x:['Necesita el reconocimiento de voz de Windows en tu idioma (Configuración de Windows > Hora e idioma > Voz).','It needs Windows speech recognition for your language (Windows Settings > Time & language > Speech).']}
  ]},
@@ -190,6 +207,7 @@ const SECT=[
 ];
 
 function optsFor(it){
+  if(it.k==='voiceName'){let v=[];try{v=speechSynthesis.getVoices()}catch(e){}return [['',L(['Automática','Automatic'])]].concat(v.map(x=>[x.name,x.name+' ('+x.lang+')']))}
   if(it.k==='monitor')return (DISP.length?DISP:[{i:0,primary:true,w:0,h:0}]).map((d,i)=>[String(i),'Monitor '+(i+1)+(d.primary?' ★':'')+(d.w?' ('+d.w+'×'+d.h+')':'')]);
   return OPT[it.k]||[];
 }
@@ -208,7 +226,8 @@ function mk(it){
   else if(it.t==='color')ctl=`<input type="color" data-k="${it.k}">`;
   else if(it.t==='toggle')ctl=`<label class="sw"><input type="checkbox" data-k="${it.k}"><i></i></label>`;
   else if(it.t==='select')ctl=`<select data-k="${it.k}"${it.num?' data-num="1"':''}>${optsFor(it).map(o=>`<option value="${o[0]}">${typeof o[1]==='string'?o[1]:L(o[1])}</option>`).join('')}</select>`;
-  else if(it.t==='text')ctl=`<input type="text" data-k="${it.k}" placeholder="${it.ph?L(it.ph):''}">`;
+  else if(it.t==='text')ctl=`<input type="text"${it.w?' class="wide"':''} data-k="${it.k}" placeholder="${it.ph?L(it.ph):''}">`;
+  else if(it.t==='area')ctl=`<textarea data-k="${it.k}" rows="5" spellcheck="false"></textarea>`;
   else if(it.t==='number')ctl=`<input type="number" data-k="${it.k}" min="${it.min}" max="${it.max}">`;
   else if(it.t==='date')ctl=`<input type="date" data-k="${it.k}">`;
   else if(it.t==='btn'){el.className='r full';el.innerHTML=`<button class="b" data-act="${it.a}">${L(it.b)}</button>`;return el}
@@ -218,12 +237,12 @@ function mk(it){
 function build(){
   $('#ttl').textContent=L(['Configuración','Settings']);
   $('#pvl').textContent=L(['Vista previa en vivo','Live preview']);
-  document.title='Isla — '+L(['Configuración','Settings']);
+  document.title='Cubo — '+L(['Configuración','Settings']);
   document.documentElement.lang=LANG;
-  $('#side').innerHTML=`<div class="brand"><img class="logo" src="assets/logo.png" alt=""><span>Isla</span></div>`+SECT.map(s=>`<button class="nav${s.id===active?' on':''}" data-nav="${s.id}"><i>${s.ic}</i>${L(s.n)}</button>`).join('')+`<div class="foot">${L(['Los cambios se aplican al instante y se guardan solos.','Changes apply instantly and save automatically.'])}</div>`;
+  $('#side').innerHTML=`<div class="brand"><img class="logo" src="assets/logo.png" alt=""><span>Cubo</span></div>`+SECT.map(s=>`<button class="nav${s.id===active?' on':''}" data-nav="${s.id}"><i>${s.ic}</i>${L(s.n)}</button>`).join('')+`<div class="foot">${L(['Los cambios se aplican al instante y se guardan solos.','Changes apply instantly and save automatically.'])}</div>`;
   const pane=$('#pane');pane.innerHTML='';
   SECT.forEach(s=>{
-    const d=document.createElement('div');d.className='sec grid'+(s.id===active?' on':'');d.id='sec-'+s.id;
+    const d=document.createElement('div');d.className='sec'+(s.id===active?' on':'');d.id='sec-'+s.id;
     s.items.forEach(it=>d.appendChild(mk(it)));
     pane.appendChild(d);
   });
@@ -267,6 +286,7 @@ function wire(){
     if(a==='rall')api.resetAll();
     if(a==='test')api.testNotify();
     if(a==='voice')api.voiceTest();
+    if(a==='speak')api.speakTest();
     if(a==='notes')api.openNotes();
   });
 }
@@ -306,6 +326,7 @@ function preview(){
    `<div class="mk" ${sty(19)}><div class="z"><span>🔊</span><div class="bar"><i></i></div><b style="font-size:13px">60%</b></div></div>`;
 }
 
+try{speechSynthesis.onvoiceschanged=()=>{if(cfg){build();fill(cfg)}}}catch(e){}
 $('#bcl').onclick=()=>api.closeSettings();
 $('#bmin').onclick=()=>api.minSettings();
 api.on('settings',fill);

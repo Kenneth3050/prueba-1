@@ -1,5 +1,5 @@
 const { contextBridge, ipcRenderer: r } = require('electron');
-const CH = ['show', 'settings', 'media', 'cover', 'mic', 'weather', 'notify', 'volume', 'heard', 'notes'];
+const CH = ['show', 'settings', 'media', 'cover', 'mic', 'weather', 'notify', 'volume', 'heard', 'notes', 'stats', 'clip'];
 contextBridge.exposeInMainWorld('api', {
   setIgnore: (v) => r.send('ignore', v),
   on: (ch, cb) => { if (CH.includes(ch)) r.on(ch, (_e, ...a) => cb(...a)); },
@@ -26,4 +26,10 @@ contextBridge.exposeInMainWorld('api', {
   setNotes: (a) => r.send('notes:set', a),
   noteAdd: (t) => r.send('notes:add', t),
   openNotes: () => r.send('notes:open'),
+  clipSet: (t) => r.send('clip:set', t),
+  clipClear: () => r.send('clip:clear'),
+  launch: (i) => r.send('app:launch', i),
+  shot: () => r.send('shot'),
+  micMute: () => r.send('mic:toggle'),
+  speakTest: () => r.send('voice:speaktest'),
 });
