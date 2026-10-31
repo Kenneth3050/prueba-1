@@ -32,4 +32,7 @@ contextBridge.exposeInMainWorld('api', {
   shot: () => r.send('shot'),
   micMute: () => r.send('mic:toggle'),
   speakTest: () => r.send('voice:speaktest'),
+  aiAsk: (p, q) => r.invoke('ai:ask', p, q),
+  aiOpen: (p, q) => r.invoke('ai:open', p, q),
+  aiSetKey: (p, k) => r.send('ai:setkey', p, k),
 });

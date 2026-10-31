@@ -1,4 +1,15 @@
-# Cubo — isla dinámica para Windows (v1.7)
+# Cubo — isla dinámica para Windows (v1.8)
+
+## Cambios 1.8
+- La isla expandida ya no tiene filas de botones: ahora son PÁGINAS con flechas ‹ › y puntos indicadores
+  (Hora, Música, Temporizador, Cronómetro, Pomodoro, Rendimiento, Portapapeles, Accesos, Notas, Asistentes).
+  También cambian con Ctrl+Alt+← / → o desplazando horizontalmente con el panel táctil.
+- Página de Notas dentro de la isla (marca como hechas) y página de Asistentes (Hablar, ChatGPT, Gemini, Claude, Copilot, Google, captura, ajustes).
+- Vínculos con IA por voz: "pregúntale a Gemini …", "dile a ChatGPT …", "abre Claude". Dos modos: abrir el navegador con tu pregunta
+  o responder dentro de la isla con tu clave de API (ChatGPT, Gemini, Claude). Las claves se guardan cifradas con Windows.
+- Panel de configuración nuevo: fondo negro con acentos de neón, cada sección y cada opción explican para qué sirven, y hay buscador.
+
+# (historial) Cubo — isla dinámica para Windows (v1.7)
 
 ## Cambios 1.7
 - La app ahora se llama **Cubo** (palabra de activación por defecto: "hey cubo"). Tus ajustes y notas se migran solos.

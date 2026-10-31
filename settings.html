@@ -5,78 +5,108 @@
 <title>Cubo</title>
 <link rel="stylesheet" href="shared.css">
 <style>
-:root{color-scheme:dark;--bg:#0e1022;--panel:#171a35;--card:#1c2042;--line:#ffffff1a;--text:#eef0ff;--muted:#a3a8d6;--acc:#7c8cff;--acc2:#ff7ad9}
+:root{color-scheme:dark;--bg:#000;--line:#ffffff1f;--text:#f3f6ff;--muted:#98a2c8;--c1:#22d3ee;--c2:#e879f9;--c3:#fb923c;--acc:#22d3ee;--grad:linear-gradient(90deg,#22d3ee,#e879f9,#fb923c)}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden}
-body{background:radial-gradient(800px 500px at 85% -10%,#3a2f7a66,transparent 70%),radial-gradient(600px 400px at -5% 110%,#7c3a8f44,transparent 70%),var(--bg);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif}
-#app{display:flex;height:100%}
-aside{width:210px;flex:none;overflow-y:auto;padding:18px 12px;background:#0b0d1e99;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;-webkit-app-region:drag}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;padding:4px 10px 16px;letter-spacing:-.3px}
-.logo{width:30px;height:30px;border-radius:9px}
-.brand span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;color:transparent}
-.nav{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--muted);font-weight:600;-webkit-app-region:no-drag}
-.nav:hover{background:#ffffff0d;color:var(--text)}
-.nav.on{background:linear-gradient(90deg,#7c8cff33,#ff7ad922);color:var(--text);box-shadow:inset 0 0 0 1px #7c8cff55}
-.nav i{font-style:normal;width:22px;text-align:center}
+body{background:#000;color:var(--text);font:14px "Segoe UI",system-ui,sans-serif}
+#bg{position:fixed;inset:0;overflow:hidden;z-index:0}
+#bg i{position:absolute;width:560px;height:560px;border-radius:50%;filter:blur(100px);opacity:.3;animation:drift 20s ease-in-out infinite alternate}
+#bg .o1{background:var(--c1);left:-160px;top:-180px}
+#bg .o2{background:var(--c2);right:-200px;top:18%;animation-delay:-7s}
+#bg .o3{background:var(--c3);left:34%;bottom:-300px;animation-delay:-13s}
+@keyframes drift{to{transform:translate(90px,70px) scale(1.18)}}
+#grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(#ffffff09 1px,transparent 1px),linear-gradient(90deg,#ffffff09 1px,transparent 1px);background-size:38px 38px;-webkit-mask-image:radial-gradient(ellipse at 62% 38%,#000 15%,transparent 72%);mask-image:radial-gradient(ellipse at 62% 38%,#000 15%,transparent 72%)}
+#app{position:relative;z-index:1;display:flex;height:100%}
+aside{width:236px;flex:none;overflow-y:auto;padding:16px 12px;background:#00000099;backdrop-filter:blur(14px);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;-webkit-app-region:drag}
+aside::-webkit-scrollbar{width:0}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 16px;-webkit-app-region:drag}
+.logo{width:40px;height:40px;border-radius:12px;filter:drop-shadow(0 0 14px #22d3ee88);animation:spin3d 9s linear infinite}
+@keyframes spin3d{0%{transform:perspective(220px) rotateY(0)}100%{transform:perspective(220px) rotateY(360deg)}}
+.brand b{display:block;font-size:22px;letter-spacing:.18em;font-weight:900;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand small{display:block;color:var(--muted);font-size:10.5px;letter-spacing:.06em;margin-top:1px}
+.nav{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:11px;padding:7px 10px;border-radius:14px;cursor:pointer;color:var(--muted);font-weight:600;border:1px solid transparent;-webkit-app-region:no-drag}
+.nav .ic{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:#ffffff0d;border:1px solid #ffffff14;font-size:15px;flex:none;transition:.25s}
+.nav:hover{background:#ffffff0a;color:var(--text)}
+.nav.on{color:#fff;background:linear-gradient(#08080f,#08080f) padding-box,var(--grad) border-box;box-shadow:0 0 24px #22d3ee22,0 0 40px #e879f914}
+.nav.on .ic{background:var(--grad);border-color:transparent;box-shadow:0 0 14px #e879f988}
 .foot{margin-top:auto;font-size:11.5px;color:var(--muted);padding:10px;line-height:1.5}
 main{flex:1;min-width:0;display:flex;flex-direction:column}
-header{display:flex;align-items:center;justify-content:space-between;padding:14px 22px 6px;-webkit-app-region:drag}
-header h1{margin:0;font-size:20px;letter-spacing:-.3px}
-.wb{display:flex;gap:6px;-webkit-app-region:no-drag}
+header{display:flex;align-items:center;gap:14px;padding:14px 22px 6px;-webkit-app-region:drag}
+header h1{margin:0;font-size:20px;letter-spacing:-.2px;flex:none}
+.srch{position:relative;flex:1;max-width:340px;-webkit-app-region:no-drag}
+.srch input{width:100%;background:#ffffff0d;color:var(--text);border:1px solid var(--line);border-radius:99px;padding:8px 14px 8px 36px;font:inherit}
+.srch input:focus{outline:none;border-color:#22d3ee;box-shadow:0 0 0 3px #22d3ee22}
+.srch span{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.7;pointer-events:none}
+.wb{display:flex;gap:6px;margin-left:auto;-webkit-app-region:no-drag}
 .wb button{all:unset;cursor:pointer;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--muted)}
 .wb button:hover{background:#ffffff14;color:var(--text)}
 .wb .cl:hover{background:#ff453a;color:#fff}
-#pvc{margin:6px 22px 0;padding:14px 16px 18px;border-radius:18px;background:repeating-linear-gradient(45deg,#ffffff06 0 10px,transparent 10px 20px),#10132b;border:1px solid var(--line)}
-#pvc small{display:block;color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
-#pv{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;min-height:56px;font-family:"Segoe UI",system-ui,sans-serif}
+#pvc{margin:6px 22px 0;padding:12px 16px 14px;border-radius:18px;background:linear-gradient(#000,#000) padding-box,linear-gradient(120deg,#22d3ee66,#e879f966,#fb923c66) border-box;border:1px solid transparent}
+#pvc small{display:block;color:var(--muted);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+#pv{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;min-height:50px}
 .mk{position:relative;display:inline-flex;align-items:center;gap:10px;padding:0 14px;height:38px;background-color:var(--isl);color:var(--fg);overflow:hidden;white-space:nowrap;font-size:14px}
 .mk .z{position:relative;z-index:1;display:flex;align-items:center;gap:10px}
 .mk b{font-variant-numeric:tabular-nums}
 .mk .t2{font-size:12px;opacity:.7}
 .mk .cv2{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,#38bdf8,#6366f1)}
 .mk .bars{display:flex;gap:2px;align-items:center;height:14px}
-.mk .bars i{width:3px;background:var(--acc2x,var(--acc));border-radius:2px;height:4px;animation:b .8s ease-in-out infinite alternate}
+.mk .bars i{width:3px;background:var(--acc);border-radius:2px;height:4px;animation:b .8s ease-in-out infinite alternate}
 .mk .bars i:nth-child(2){animation-delay:.2s}.mk .bars i:nth-child(3){animation-delay:.4s}.mk .bars i:nth-child(4){animation-delay:.1s}
 @keyframes b{to{height:14px}}
 .mk .bar{width:90px;height:4px;border-radius:2px;background:#ffffff30;overflow:hidden}
 .mk .bar i{display:block;height:100%;width:60%;background:var(--acc)}
-#pane{flex:1;overflow-y:auto;padding:14px 22px 26px}
-#pane::-webkit-scrollbar{width:10px}#pane::-webkit-scrollbar-thumb{background:#ffffff22;border-radius:6px}
-.sec{display:none;grid-template-columns:1fr 1fr;gap:10px}
+#pane{flex:1;overflow-y:auto;padding:12px 22px 26px}
+#pane::-webkit-scrollbar{width:10px}#pane::-webkit-scrollbar-thumb{background:#ffffff26;border-radius:6px}
+.sec{display:none;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
 .sec.on{display:grid}
+body.searching .sec{display:grid}
+.sec.empty-s{display:none!important}
+.r.hide{display:none}
+body.searching .hero,body.searching .note{display:none}
 @media (max-width:1000px){.sec{grid-template-columns:1fr}}
-.r{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:14px;min-height:56px}
+.hero{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:6px 4px 10px}
+.hero .hic{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;font-size:26px;background:#ffffff0d;border:1px solid #ffffff22;box-shadow:0 0 30px #22d3ee33,inset 0 0 20px #e879f922;flex:none}
+.hero h2{margin:0;font-size:24px;font-weight:900;letter-spacing:-.3px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:4px 0 0;color:var(--muted);line-height:1.5;max-width:560px}
+.r{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 15px;background:linear-gradient(180deg,#ffffff0c,#ffffff04);border:1px solid var(--line);border-radius:16px;min-height:62px;transition:.2s}
+.r:hover{border-color:#22d3ee66;box-shadow:0 0 28px #22d3ee14}
 .r.full{grid-column:1/-1}
-.lb b{display:block;font-weight:600}
-.lb small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;line-height:1.35}
-.rg{display:flex;align-items:center;gap:10px}
-.rg .val{width:46px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px}
-input[type=range]{width:140px;accent-color:var(--acc)}
-input[type=color]{width:46px;height:28px;border:1px solid var(--line);border-radius:8px;background:none;padding:0;cursor:pointer}
-input[type=text],input[type=number],input[type=date],select{background:#0e1022;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit;max-width:180px}
+.lb{min-width:0}
+.lb b{display:block;font-weight:700}
+.lb small{display:block;color:var(--muted);font-size:12px;margin-top:3px;line-height:1.4}
+.rg{display:flex;align-items:center;gap:10px;flex:none}
+.rg .val{width:50px;text-align:right;color:#bff4ff;font-variant-numeric:tabular-nums;font-size:12.5px}
+input[type=range]{width:140px;accent-color:#e879f9}
+input[type=color]{width:46px;height:28px;border:1px solid var(--line);border-radius:8px;background:none;padding:0;cursor:pointer;flex:none}
+input[type=text],input[type=number],input[type=date],input[type=password],select,textarea{background:#000;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit;max-width:190px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#22d3ee;box-shadow:0 0 0 3px #22d3ee22}
 input[type=number]{width:80px}
-textarea{background:#0e1022;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;width:300px;max-width:100%;resize:vertical}
+textarea{width:300px;max-width:100%;resize:vertical}
 input.wide{max-width:260px;width:260px}
-.sw{position:relative;width:44px;height:24px;flex:none}
+.sk{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+.stt{font-size:11.5px;color:var(--muted)}.stt.ok{color:#4ade80}
+.sw{position:relative;width:46px;height:25px;flex:none}
 .sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
-.sw i{position:absolute;inset:0;border-radius:99px;background:#ffffff22;transition:.2s}
-.sw i::after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
-.sw input:checked+i{background:linear-gradient(90deg,var(--acc),var(--acc2))}
-.sw input:checked+i::after{transform:translateX(20px)}
-button.b{font:inherit;font-weight:600;color:var(--text);background:#ffffff12;border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}
-button.b:hover{border-color:var(--acc);background:#7c8cff22}
+.sw i{position:absolute;inset:0;border-radius:99px;background:#ffffff1f;transition:.2s}
+.sw i::after{content:"";position:absolute;left:3px;top:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s}
+.sw input:checked+i{background:var(--grad);box-shadow:0 0 16px #e879f966}
+.sw input:checked+i::after{transform:translateX(21px)}
+button.b{font:inherit;font-weight:700;color:#fff;background:linear-gradient(#0b0b14,#0b0b14) padding-box,var(--grad) border-box;border:1px solid transparent;border-radius:12px;padding:9px 16px;cursor:pointer;transition:.2s}
+button.b:hover{box-shadow:0 0 22px #e879f955;transform:translateY(-1px)}
 .themes{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font:inherit;font-weight:600;color:#fff;border:1px solid #ffffff33;border-radius:99px;padding:7px 14px;cursor:pointer;text-shadow:0 1px 3px #000a}
-.chip:hover{transform:translateY(-1px);border-color:#fff}
-.note{grid-column:1/-1;color:var(--muted);font-size:12.5px;line-height:1.7;padding:4px 4px}
+.chip{font:inherit;font-weight:700;color:#fff;border:1px solid #ffffff33;border-radius:99px;padding:7px 14px;cursor:pointer;text-shadow:0 1px 3px #000a}
+.chip:hover{transform:translateY(-1px);border-color:#fff;box-shadow:0 0 18px #ffffff33}
+.note{grid-column:1/-1;color:var(--muted);font-size:12.5px;line-height:1.7;padding:4px 6px}
 .note kbd{background:#ffffff14;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font:inherit;font-size:11.5px;color:var(--text)}
+@media (prefers-reduced-motion:reduce){#bg i,.logo,.mk .bars i{animation:none}}
 </style>
 </head>
 <body>
+<div id="bg"><i class="o1"></i><i class="o2"></i><i class="o3"></i></div><div id="grid"></div>
 <div id="app">
   <aside id="side"></aside>
   <main>
-    <header><h1 id="ttl"></h1><div class="wb"><button id="bmin" aria-label="min">—</button><button id="bcl" class="cl" aria-label="close">✕</button></div></header>
+    <header><h1 id="ttl"></h1><div class="srch"><span>🔍</span><input id="q" type="search" autocomplete="off"></div><div class="wb"><button id="bmin" aria-label="min">—</button><button id="bcl" class="cl" aria-label="close">✕</button></div></header>
     <div id="pvc"><small id="pvl"></small><div id="pv"></div></div>
     <div id="pane"></div>
   </main>
@@ -103,104 +133,117 @@ const OPT={
  align:[['left',['Izquierda','Left']],['center',['Centro','Center']],['right',['Derecha','Right']]],
  coverMode:[['accent',['Solo detalles','Details only']],['bg',['Olas y detalles','Waves and details']],['off',['Desactivado','Off']]],
  mascotType:[['penguin',['Pingüino','Penguin']],['cone',['Cono','Cone']],['ghost',['Fantasma','Ghost']]],
- unit:[['C','°C'],['F','°F']]
+ unit:[['C','°C'],['F','°F']],
+ aiDefault:[['none',['Ninguna','None']],['chatgpt','ChatGPT'],['gemini','Gemini'],['claude','Claude'],['copilot','Copilot'],['perplexity','Perplexity'],['google','Google']],
+ aiMode:[['web',['Navegador (sin clave)','Browser (no key)']],['api',['Dentro de Cubo (con clave)','Inside Cubo (with key)']]]
 };
 const SECT=[
- {id:'look',ic:'🎨',n:['Apariencia','Appearance'],items:[
+ {id:'look',ic:'🎨',n:['Apariencia','Appearance'],i:['Cambia cómo se ve la isla: tamaño, colores, forma y estilo. Todo se ve al instante en la vista previa de arriba.','Change how the island looks: size, colors, shape and style. Everything shows instantly in the preview above.'],items:[
   {t:'themes'},
-  {k:'scale',t:'range',min:.7,max:1.4,step:.05,m:100,u:'%',l:['Tamaño','Size']},
-  {k:'opacity',t:'range',min:.4,max:1,step:.05,m:100,u:'%',l:['Opacidad','Opacity']},
-  {k:'bg',t:'color',l:['Color de fondo','Background color']},
-  {k:'accent',t:'color',l:['Color de acento','Accent color']},
-  {k:'fg',t:'color',l:['Color del texto','Text color']},
-  {k:'shape',t:'select',l:['Forma','Shape']},
-  {k:'font',t:'select',l:['Tipo de letra','Font']},
-  {k:'borderW',t:'range',min:0,max:6,step:1,m:1,u:' px',l:['Grosor del borde','Border width']},
-  {k:'borderColor',t:'color',l:['Color del borde','Border color']},
-  {k:'shadow',t:'toggle',l:['Sombra','Shadow']},
-  {k:'animSpeed',t:'select',l:['Animaciones','Animations']}
+  {k:'scale',t:'range',min:.7,max:1.4,step:.05,m:100,u:'%',l:['Tamaño','Size'],d:['Hace toda la isla más grande o más pequeña.','Makes the whole island bigger or smaller.']},
+  {k:'opacity',t:'range',min:.4,max:1,step:.05,m:100,u:'%',l:['Opacidad','Opacity'],d:['Qué tan transparente es el fondo. Más bajo deja ver lo que hay detrás.','How transparent the background is. Lower lets you see what is behind.']},
+  {k:'bg',t:'color',l:['Color de fondo','Background color'],d:['Color base de la isla. El negro combina con cualquier ventana.','Base color of the island. Black matches any window.']},
+  {k:'accent',t:'color',l:['Color de acento','Accent color'],d:['Color de las barras, la barra de progreso, los audífonos y los puntos activos.','Color of the bars, progress bar, headphones and active dots.']},
+  {k:'fg',t:'color',l:['Color del texto','Text color'],d:['Color de las letras y los íconos de la isla.','Color of the island letters and icons.']},
+  {k:'shape',t:'select',l:['Forma','Shape'],d:['Redonda parece una píldora; cuadrada tiene esquinas más rectas.','Round looks like a pill; square has straighter corners.']},
+  {k:'font',t:'select',l:['Tipo de letra','Font'],d:['Letra que usan todos los textos de la isla.','Font used by every text on the island.']},
+  {k:'borderW',t:'range',min:0,max:6,step:1,m:1,u:' px',l:['Grosor del borde','Border width'],d:['Borde brillante alrededor de la isla. En 0 no hay borde.','Glowing border around the island. At 0 there is none.']},
+  {k:'borderColor',t:'color',l:['Color del borde','Border color'],d:['Color de ese borde.','Color of that border.']},
+  {k:'shadow',t:'toggle',l:['Sombra','Shadow'],d:['Sombra suave debajo de la isla para que destaque del fondo.','Soft shadow under the island so it stands out.']},
+  {k:'animSpeed',t:'select',l:['Animaciones','Animations'],d:['Velocidad al abrir, cerrar y cambiar de página. “Sin animaciones” ahorra recursos.','Speed when opening, closing and switching pages. “Off” saves resources.']}
  ]},
- {id:'pos',ic:'📍',n:['Posición','Position'],items:[
-  {k:'align',t:'select',l:['Alineación','Alignment'],d:['Dónde aparece en la pantalla','Where it appears on screen']},
-  {k:'monitor',t:'select',num:1,l:['Monitor','Monitor']},
-  {k:'offsetY',t:'range',min:0,max:300,step:5,m:1,u:' px',l:['Distancia desde arriba','Distance from top']},
-  {k:'lock',t:'toggle',l:['Bloquear posición','Lock position'],d:['Evita moverla por accidente','Prevents accidental moves']},
-  {k:'onTop',t:'toggle',l:['Siempre encima','Always on top']},
-  {k:'hideFullscreen',t:'toggle',l:['Ocultar en pantalla completa','Hide in fullscreen'],d:['Juegos y videos a pantalla completa','Games and fullscreen video']},
-  {k:'hideIdle',t:'toggle',l:['Ocultar sin actividad','Hide when idle'],d:['Aparece al pasar el ratón','Shows on mouse hover']},
-  {k:'hoverExpand',t:'toggle',l:['Expandir al pasar el ratón','Expand on hover']},
+ {id:'pos',ic:'📍',n:['Posición','Position'],i:['Dónde aparece la isla y cómo se comporta en tu pantalla. También puedes arrastrarla con el ratón.','Where the island appears and how it behaves on your screen. You can also drag it with the mouse.'],items:[
+  {k:'align',t:'select',l:['Alineación','Alignment'],d:['Lado de la pantalla donde aparece la isla.','Side of the screen where the island appears.']},
+  {k:'monitor',t:'select',num:1,l:['Monitor','Monitor'],d:['En qué pantalla aparece si tienes más de una.','Which screen it appears on if you have more than one.']},
+  {k:'offsetY',t:'range',min:0,max:300,step:5,m:1,u:' px',l:['Distancia desde arriba','Distance from top'],d:['Qué tan separada del borde superior queda.','How far from the top edge it sits.']},
+  {k:'lock',t:'toggle',l:['Bloquear posición','Lock position'],d:['Evita moverla por accidente al hacer clic.','Prevents moving it by accident when clicking.']},
+  {k:'onTop',t:'toggle',l:['Siempre encima','Always on top'],d:['La mantiene visible sobre todas las ventanas.','Keeps it visible above all windows.']},
+  {k:'hideFullscreen',t:'toggle',l:['Ocultar en pantalla completa','Hide in fullscreen'],d:['Se esconde sola con juegos o videos a pantalla completa.','Hides itself during fullscreen games or videos.']},
+  {k:'hideIdle',t:'toggle',l:['Ocultar sin actividad','Hide when idle'],d:['Desaparece cuando no hay nada que mostrar y vuelve al pasar el ratón.','Disappears when there is nothing to show and returns on mouse hover.']},
+  {k:'hoverExpand',t:'toggle',l:['Expandir al pasar el ratón','Expand on hover'],d:['Se abre sola al poner el ratón encima, sin hacer clic.','Opens by itself when you hover, no click needed.']},
   {t:'btn',a:'rpos',b:['Restablecer posición','Reset position']},
-  {t:'note',x:['Arrastra la isla con el ratón para moverla donde quieras.','Drag the island with the mouse to move it anywhere.']}
+  {t:'note',x:['Con la isla abierta usa las flechas ‹ › para cambiar de página, o <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd>.','With the island open use the ‹ › arrows to change page, or <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd>.']}
  ]},
- {id:'music',ic:'🎵',n:['Música','Music'],items:[
-  {k:'autoMusic',t:'toggle',l:['Mostrar la música que suena','Show the music that is playing']},
-  {k:'expandSecs',t:'range',min:1,max:10,step:.5,m:1,u:' s',l:['Tiempo expandida','Expanded time'],d:['Al cambiar de canción','When the song changes']},
-  {k:'coverMode',t:'select',l:['Color según la portada','Color from album cover']},
-  {k:'showCover',t:'toggle',l:['Mostrar portada','Show album cover']},
-  {k:'showBars',t:'toggle',l:['Barras de sonido','Sound bars']},
-  {k:'showTimes',t:'toggle',l:['Mostrar tiempos','Show times']},
-  {k:'musicIgnore',t:'text',ph:['chrome, edge','chrome, edge'],l:['Ignorar música de…','Ignore music from…'],d:['Palabras separadas por coma','Comma-separated words']},
-  {k:'calls',t:'toggle',l:['Detectar llamadas','Detect calls'],d:['Discord, WhatsApp, Teams, Zoom…','Discord, WhatsApp, Teams, Zoom…']}
+ {id:'music',ic:'🎵',n:['Música y llamadas','Music and calls'],i:['Qué muestra la isla cuando suena música o estás en una llamada.','What the island shows when music plays or you are on a call.'],items:[
+  {k:'autoMusic',t:'toggle',l:['Mostrar la música que suena','Show the music that is playing'],d:['Abre la isla con la canción cuando empieza a sonar.','Opens the island with the song when it starts playing.']},
+  {k:'expandSecs',t:'range',min:1,max:10,step:.5,m:1,u:' s',l:['Tiempo expandida','Expanded time'],d:['Cuánto se queda abierta con la canción antes de volverse pequeña.','How long it stays open with the song before shrinking.']},
+  {k:'coverMode',t:'select',l:['Color según la portada','Color from album cover'],d:['Pinta la isla con los colores de la portada del álbum.','Paints the island with the album cover colors.']},
+  {k:'showCover',t:'toggle',l:['Mostrar portada','Show album cover'],d:['Muestra la imagen del álbum junto al título.','Shows the album image next to the title.']},
+  {k:'showBars',t:'toggle',l:['Barras de sonido','Sound bars'],d:['Barras animadas que se mueven mientras suena la música.','Animated bars that move while music plays.']},
+  {k:'showTimes',t:'toggle',l:['Mostrar tiempos','Show times'],d:['Tiempo transcurrido y duración de la canción.','Elapsed time and song length.']},
+  {k:'musicIgnore',t:'text',ph:['chrome, edge','chrome, edge'],l:['Ignorar música de…','Ignore music from…'],d:['Apps cuya música no quieres ver, separadas por coma.','Apps whose music you do not want to see, comma-separated.']},
+  {k:'calls',t:'toggle',l:['Detectar llamadas','Detect calls'],d:['Avisa cuando Discord, WhatsApp, Teams o Zoom usan el micrófono.','Notifies when Discord, WhatsApp, Teams or Zoom use the microphone.']}
  ]},
- {id:'vol',ic:'🔊',n:['Volumen','Volume'],items:[
-  {k:'volOSD',t:'toggle',l:['Mostrar al cambiar el volumen','Show when volume changes'],d:['También con las teclas del teclado','Also with keyboard keys']},
-  {k:'wheelVol',t:'toggle',l:['Rueda del ratón sobre la isla','Mouse wheel over the island']},
-  {k:'volSlider',t:'toggle',l:['Control deslizante con música','Slider in music view']},
-  {k:'volStep',t:'range',min:1,max:10,step:1,m:1,u:' %',l:['Paso de volumen','Volume step']},
-  {t:'note',x:['Atajos: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>AvPág</kbd> baja · <kbd>RePág</kbd> sube · <kbd>M</kbd> silencia.','Shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>PgDn</kbd> down · <kbd>PgUp</kbd> up · <kbd>M</kbd> mute.']}
+ {id:'vol',ic:'🔊',n:['Volumen','Volume'],i:['Controla el volumen de Windows sin salir de lo que estás haciendo.','Control the Windows volume without leaving what you are doing.'],items:[
+  {k:'volOSD',t:'toggle',l:['Mostrar al cambiar el volumen','Show when volume changes'],d:['Muestra una barra cuando cambias el volumen, incluso con las teclas del teclado.','Shows a bar when you change the volume, even with keyboard keys.']},
+  {k:'wheelVol',t:'toggle',l:['Rueda del ratón sobre la isla','Mouse wheel over the island'],d:['Girar la rueda sobre la isla sube o baja el volumen.','Scrolling over the island raises or lowers the volume.']},
+  {k:'volSlider',t:'toggle',l:['Control deslizante con música','Slider in music view'],d:['Agrega una barra de volumen a la vista de música.','Adds a volume bar to the music view.']},
+  {k:'volStep',t:'range',min:1,max:10,step:1,m:1,u:' %',l:['Paso de volumen','Volume step'],d:['Cuánto cambia el volumen con cada giro de la rueda.','How much the volume changes with each wheel turn.']},
+  {t:'note',x:['Atajos: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>RePág</kbd> sube · <kbd>AvPág</kbd> baja · <kbd>M</kbd> silencia.','Shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>PgUp</kbd> up · <kbd>PgDn</kbd> down · <kbd>M</kbd> mute.']}
  ]},
- {id:'mascot',ic:'🐧',n:['Muñequito','Mascot'],items:[
-  {k:'mascot',t:'toggle',l:['Mostrar muñequito','Show mascot']},
-  {k:'mascotType',t:'select',l:['Personaje','Character']},
-  {k:'mascotSize',t:'range',min:.7,max:1.25,step:.05,m:100,u:'%',l:['Tamaño del muñequito','Mascot size']},
-  {k:'headphones',t:'toggle',l:['Audífonos con la música','Headphones with music']}
+ {id:'mascot',ic:'🐧',n:['Muñequito','Mascot'],i:['El personaje que acompaña a la isla y reacciona a la música y a las llamadas.','The character that accompanies the island and reacts to music and calls.'],items:[
+  {k:'mascot',t:'toggle',l:['Mostrar muñequito','Show mascot'],d:['Muestra u oculta al personaje.','Shows or hides the character.']},
+  {k:'mascotType',t:'select',l:['Personaje','Character'],d:['Pingüino, cono de tráfico o fantasma.','Penguin, traffic cone or ghost.']},
+  {k:'mascotSize',t:'range',min:.7,max:1.25,step:.05,m:100,u:'%',l:['Tamaño del muñequito','Mascot size'],d:['Qué tan grande se ve el personaje.','How big the character looks.']},
+  {k:'headphones',t:'toggle',l:['Audífonos con la música','Headphones with music'],d:['Se pone audífonos y baila cuando suena música.','Puts on headphones and dances when music plays.']}
  ]},
- {id:'info',ic:'🕒',n:['Hora y avisos','Time and alerts'],items:[
-  {k:'h24',t:'toggle',l:['Reloj de 24 horas','24-hour clock']},
-  {k:'seconds',t:'toggle',l:['Mostrar segundos','Show seconds']},
-  {k:'weather',t:'toggle',l:['Mostrar temperatura','Show temperature']},
-  {k:'unit',t:'select',l:['Unidad','Unit']},
-  {k:'city',t:'text',ph:['Automática','Automatic'],l:['Ciudad','City']},
-  {k:'timerMin',t:'number',min:1,max:600,l:['Temporizador (minutos)','Timer (minutes)']},
-  {k:'msgSecs',t:'range',min:2,max:15,step:.5,m:1,u:' s',l:['Duración de los avisos','Alert duration']},
-  {k:'sound',t:'toggle',l:['Sonido en avisos','Alert sound']},
-  {k:'cdName',t:'text',ph:['Examen, viaje…','Exam, trip…'],l:['Cuenta regresiva: nombre','Countdown: name']},
-  {k:'cdDate',t:'date',l:['Cuenta regresiva: fecha','Countdown: date']},
+ {id:'info',ic:'🕒',n:['Hora y avisos','Time and alerts'],i:['Reloj, clima, temporizador y la forma en que la isla te avisa de las cosas.','Clock, weather, timer and how the island alerts you.'],items:[
+  {k:'h24',t:'toggle',l:['Reloj de 24 horas','24-hour clock'],d:['Usa 18:30 en vez de 6:30 p. m.','Uses 18:30 instead of 6:30 PM.']},
+  {k:'seconds',t:'toggle',l:['Mostrar segundos','Show seconds'],d:['Agrega los segundos al reloj.','Adds seconds to the clock.']},
+  {k:'weather',t:'toggle',l:['Mostrar temperatura','Show temperature'],d:['Muestra el clima junto a la hora.','Shows the weather next to the time.']},
+  {k:'unit',t:'select',l:['Unidad','Unit'],d:['Grados Celsius o Fahrenheit.','Degrees Celsius or Fahrenheit.']},
+  {k:'city',t:'text',ph:['Automática','Automatic'],l:['Ciudad','City'],d:['Vacío = se detecta por tu conexión. Escribe una ciudad para fijarla.','Empty = detected from your connection. Type a city to fix it.']},
+  {k:'timerMin',t:'number',min:1,max:600,l:['Temporizador (minutos)','Timer (minutes)'],d:['Duración que usa el temporizador al iniciarlo.','Length the timer uses when started.']},
+  {k:'msgSecs',t:'range',min:2,max:15,step:.5,m:1,u:' s',l:['Duración de los avisos','Alert duration'],d:['Cuánto tiempo se queda en pantalla cada aviso.','How long each alert stays on screen.']},
+  {k:'sound',t:'toggle',l:['Sonido en avisos','Alert sound'],d:['Un tono corto al llegar un aviso o al escuchar a Cubo.','A short tone on alerts and when Cubo starts listening.']},
+  {k:'cdName',t:'text',ph:['Examen, viaje…','Exam, trip…'],l:['Cuenta regresiva: nombre','Countdown: name'],d:['Para qué cuentas los días (aparece al expandir la hora).','What you are counting days for (shown when the clock is expanded).']},
+  {k:'cdDate',t:'date',l:['Cuenta regresiva: fecha','Countdown: date'],d:['Fecha del evento, para contar los días que faltan.','Date of the event, to count the days left.']},
   {t:'btn',a:'test',b:['Probar aviso','Test alert']}
  ]},
-
-
- {id:'tools',ic:'🧰',n:['Herramientas','Tools'],items:[
-  {k:'pomoWork',t:'number',min:1,max:120,l:['Pomodoro: minutos de enfoque','Pomodoro: focus minutes']},
-  {k:'pomoBreak',t:'number',min:1,max:60,l:['Pomodoro: minutos de descanso','Pomodoro: break minutes']},
-  {k:'clipHistory',t:'toggle',l:['Historial del portapapeles','Clipboard history'],d:['Guarda solo en memoria los últimos textos copiados. No copies contraseñas con esto activo.','Keeps the last copied texts in memory only. Do not copy passwords while on.']},
-  {k:'zones',t:'text',w:1,ph:['Madrid=Europe/Madrid, Tokio=Asia/Tokyo','Madrid=Europe/Madrid, Tokyo=Asia/Tokyo'],l:['Relojes del mundo','World clocks'],d:['Hasta 3, separados por coma. Aparecen al expandir la hora','Up to 3, comma-separated. Shown when the clock is expanded']},
-  {k:'launchers',t:'area',l:['Accesos rápidos','Quick launchers'],d:['Una línea por acceso: Nombre | programa, carpeta o enlace. Máximo 8','One line per launcher: Name | program, folder or link. Up to 8']},
-  {t:'note',x:['Atajos: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>4</kbd> cronómetro · <kbd>5</kbd> pomodoro · <kbd>6</kbd> rendimiento · <kbd>7</kbd> portapapeles · <kbd>8</kbd> accesos · <kbd>K</kbd> silenciar micrófono. También con los botones al expandir la hora.','Shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>4</kbd> stopwatch · <kbd>5</kbd> pomodoro · <kbd>6</kbd> performance · <kbd>7</kbd> clipboard · <kbd>8</kbd> launchers · <kbd>K</kbd> mute microphone. Also with the buttons when the clock is expanded.']}
+ {id:'tools',ic:'🧰',n:['Herramientas','Tools'],i:['Páginas rápidas dentro de la isla: usa las flechas ‹ › para moverte entre ellas.','Quick pages inside the island: use the ‹ › arrows to move between them.'],items:[
+  {k:'pomoWork',t:'number',min:1,max:120,l:['Pomodoro: minutos de enfoque','Pomodoro: focus minutes'],d:['Tiempo de trabajo concentrado en cada ciclo.','Focused work time in each cycle.']},
+  {k:'pomoBreak',t:'number',min:1,max:60,l:['Pomodoro: minutos de descanso','Pomodoro: break minutes'],d:['Descanso entre ciclos (el largo dura el triple).','Break between cycles (the long one lasts triple).']},
+  {k:'clipHistory',t:'toggle',l:['Historial del portapapeles','Clipboard history'],d:['Guarda en memoria los últimos textos copiados para recuperarlos. No copies contraseñas con esto activo.','Keeps the last copied texts in memory to recover them. Do not copy passwords while on.']},
+  {k:'zones',t:'text',w:1,ph:['Madrid=Europe/Madrid, Tokio=Asia/Tokyo','Madrid=Europe/Madrid, Tokyo=Asia/Tokyo'],l:['Relojes del mundo','World clocks'],d:['Hasta 3 zonas, separadas por coma. Aparecen en la página de la hora.','Up to 3 zones, comma-separated. Shown on the clock page.']},
+  {k:'launchers',t:'area',l:['Accesos rápidos','Quick launchers'],d:['Una línea por acceso: Nombre | programa, carpeta o enlace. Máximo 8.','One line per launcher: Name | program, folder or link. Up to 8.']},
+  {t:'note',x:['Atajos: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>4</kbd> cronómetro · <kbd>5</kbd> pomodoro · <kbd>6</kbd> rendimiento · <kbd>7</kbd> portapapeles · <kbd>8</kbd> accesos · <kbd>9</kbd> asistentes · <kbd>K</kbd> silenciar micrófono.','Shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>4</kbd> stopwatch · <kbd>5</kbd> pomodoro · <kbd>6</kbd> performance · <kbd>7</kbd> clipboard · <kbd>8</kbd> launchers · <kbd>9</kbd> assistants · <kbd>K</kbd> mute microphone.']}
  ]},
- {id:'voice',ic:'🎙️',n:['Asistente de voz','Voice assistant'],items:[
-  {k:'voiceOn',t:'toggle',l:['Activar asistente','Enable assistant'],d:['Atajo: Ctrl+Alt+V o el botón 🎤 de la isla','Shortcut: Ctrl+Alt+V or the 🎤 button on the island']},
-  {k:'wakeWord',t:'toggle',l:['Activar con la palabra de activación','Wake word “isla”'],d:['Experimental: deja el micrófono escuchando','Experimental: keeps the microphone listening']},
-  {k:'wakeName',t:'text',ph:['cubo','cubo'],l:['Nombre / palabra de activación','Name / wake word'],d:['Por defecto “cubo”. Di “hey cubo”.','Default “cubo”. Say “hey cubo”.']},
-  {k:'voiceSpeak',t:'toggle',l:['Responder en voz alta','Speak replies']},
-  {k:'voiceName',t:'select',l:['Voz','Voice'],d:['Voces instaladas en Windows','Voices installed in Windows']},
-  {k:'voiceRate',t:'range',min:.6,max:1.6,step:.05,m:100,u:'%',l:['Velocidad de la voz','Voice speed']},
-  {k:'voicePitch',t:'range',min:.5,max:1.5,step:.05,m:100,u:'%',l:['Tono de la voz','Voice pitch']},
-  {k:'voiceVolume',t:'range',min:0,max:100,step:5,m:1,u:' %',l:['Volumen de la voz','Voice volume']},
-  {k:'voiceTimeout',t:'range',min:4,max:15,step:1,m:1,u:' s',l:['Tiempo de escucha','Listening time']},
+ {id:'voice',ic:'🎙️',n:['Asistente de voz','Voice assistant'],i:['Habla con Cubo para controlar el volumen, la música, notas, temporizadores y más. Necesita el reconocimiento de voz de Windows en tu idioma.','Talk to Cubo to control volume, music, notes, timers and more. It needs Windows speech recognition for your language.'],items:[
+  {k:'voiceOn',t:'toggle',l:['Activar asistente','Enable assistant'],d:['Activa a Cubo. Atajo: Ctrl+Alt+V o el botón Hablar de la página Asistentes.','Turns Cubo on. Shortcut: Ctrl+Alt+V or the Talk button on the Assistants page.']},
+  {k:'wakeWord',t:'toggle',l:['Activar con la palabra de activación','Activate with the wake word'],d:['Experimental: deja el micrófono escuchando para responder a “hey cubo”.','Experimental: keeps the microphone listening to answer “hey cubo”.']},
+  {k:'wakeName',t:'text',ph:['cubo','cubo'],l:['Nombre / palabra de activación','Name / wake word'],d:['La palabra que lo despierta. Por defecto “cubo”.','The word that wakes it. Default “cubo”.']},
+  {k:'voiceSpeak',t:'toggle',l:['Responder en voz alta','Speak replies'],d:['Cubo lee las respuestas, además de mostrarlas.','Cubo reads replies out loud as well as showing them.']},
+  {k:'voiceName',t:'select',l:['Voz','Voice'],d:['Voz de Windows que usa para hablar.','Windows voice it uses to speak.']},
+  {k:'voiceRate',t:'range',min:.6,max:1.6,step:.05,m:100,u:'%',l:['Velocidad de la voz','Voice speed'],d:['Qué tan rápido habla.','How fast it speaks.']},
+  {k:'voicePitch',t:'range',min:.5,max:1.5,step:.05,m:100,u:'%',l:['Tono de la voz','Voice pitch'],d:['Hace la voz más grave o más aguda.','Makes the voice deeper or higher.']},
+  {k:'voiceVolume',t:'range',min:0,max:100,step:5,m:1,u:' %',l:['Volumen de la voz','Voice volume'],d:['Qué tan fuerte habla, sin tocar el volumen de Windows.','How loud it speaks, without touching the Windows volume.']},
+  {k:'voiceTimeout',t:'range',min:4,max:15,step:1,m:1,u:' s',l:['Tiempo de escucha','Listening time'],d:['Cuánto espera a que hables antes de rendirse.','How long it waits for you to speak before giving up.']},
   {t:'btn',a:'voice',b:['Probar asistente','Test assistant']},
   {t:'btn',a:'speak',b:['Probar la voz','Test the voice']},
-  {t:'note',x:['Habla en el idioma elegido en Sistema. Ejemplos: “sube el volumen”, “volumen al 40”, “pausa”, “siguiente”, “temporizador de 10 minutos”, “anota comprar leche”, “abre las notas”, “qué hora es”, “qué temperatura hace”, “cambia el muñequito a cono”.','Speak in the language chosen under System. Examples: “volume up”, “volume to 40”, “pause”, “next”, “timer ten minutes”, “note buy milk”, “open the notes”, “what time is it”, “what is the weather”, “change the mascot to cone”.']},
-  {t:'note',x:['Necesita el reconocimiento de voz de Windows en tu idioma (Configuración de Windows > Hora e idioma > Voz).','It needs Windows speech recognition for your language (Windows Settings > Time & language > Speech).']}
+  {t:'note',x:['Ejemplos: “sube el volumen”, “volumen al 40”, “pausa”, “temporizador de 10 minutos”, “anota comprar leche”, “abre calculadora”, “qué hora es”, “pregúntale a Gemini qué es un agujero negro”.','Examples: “volume up”, “volume to 40”, “pause”, “timer ten minutes”, “note buy milk”, “open calculator”, “what time is it”, “ask Gemini what a black hole is”.']},
+  {t:'note',x:['Si no entiende tu voz: Configuración de Windows > Hora e idioma > Voz, e instala el reconocimiento para tu idioma.','If it does not understand you: Windows Settings > Time & language > Speech, and install recognition for your language.']}
  ]},
- {id:'notes',ic:'📝',n:['Notas','Notes'],items:[
-  {k:'notesOnIsland',t:'toggle',l:['Mostrar la nota fijada en la isla','Show the pinned note on the island'],d:['Al expandir la hora aparece con 📌','Shown with 📌 when the clock is expanded']},
+ {id:'ai',ic:'🤖',n:['Conexiones de IA','AI connections'],i:['Vincula a Cubo con ChatGPT, Gemini, Claude y más. Di “pregúntale a Gemini …” y Cubo lo abre o te responde dentro de la isla.','Link Cubo with ChatGPT, Gemini, Claude and more. Say “ask Gemini …” and Cubo opens it or answers inside the island.'],items:[
+  {k:'aiDefault',t:'select',l:['IA por defecto','Default AI'],d:['La que responde cuando dices “pregunta …” sin nombrar ninguna.','The one that answers when you say “ask …” without naming any.']},
+  {k:'aiMode',t:'select',l:['Cómo responde','How it answers'],d:['Navegador: abre la web con tu pregunta. Dentro de Cubo: la respuesta aparece en la isla (necesita clave de API).','Browser: opens the website with your question. Inside Cubo: the answer shows on the island (needs an API key).']},
+  {k:'aiFallback',t:'toggle',l:['Preguntar a la IA si no entiende','Ask the AI when it does not understand'],d:['Si Cubo no reconoce un comando, se lo pasa a la IA por defecto.','If Cubo does not recognize a command, it passes it to the default AI.']},
+  {t:'secret',p:'chatgpt',l:['Clave de ChatGPT (OpenAI)','ChatGPT key (OpenAI)'],d:['Se crea en platform.openai.com. Se guarda cifrada en tu PC.','Created at platform.openai.com. Stored encrypted on your PC.']},
+  {t:'secret',p:'gemini',l:['Clave de Gemini (Google)','Gemini key (Google)'],d:['Se crea en aistudio.google.com. Se guarda cifrada en tu PC.','Created at aistudio.google.com. Stored encrypted on your PC.']},
+  {t:'secret',p:'claude',l:['Clave de Claude (Anthropic)','Claude key (Anthropic)'],d:['Se crea en console.anthropic.com. Se guarda cifrada en tu PC.','Created at console.anthropic.com. Stored encrypted on your PC.']},
+  {k:'modelChatgpt',t:'text',ph:['gpt-4o-mini','gpt-4o-mini'],l:['Modelo de ChatGPT','ChatGPT model'],d:['Nombre del modelo a usar con tu clave.','Name of the model to use with your key.']},
+  {k:'modelGemini',t:'text',ph:['gemini-2.0-flash','gemini-2.0-flash'],l:['Modelo de Gemini','Gemini model'],d:['Nombre del modelo a usar con tu clave.','Name of the model to use with your key.']},
+  {k:'modelClaude',t:'text',ph:['claude-haiku-5-5','claude-haiku-5-5'],l:['Modelo de Claude','Claude model'],d:['Nombre del modelo a usar con tu clave.','Name of the model to use with your key.']},
+  {t:'note',x:['Privacidad: en modo “Dentro de Cubo” tu pregunta se envía a la empresa de la IA elegida. En modo navegador no se envía nada desde Cubo. Copilot, Perplexity y Google funcionan en modo navegador.','Privacy: in “Inside Cubo” mode your question is sent to the chosen AI company. In browser mode Cubo sends nothing. Copilot, Perplexity and Google work in browser mode.']},
+  {t:'note',x:['Gemini no acepta preguntas por enlace: Cubo la copia y la pegas con <kbd>Ctrl</kbd>+<kbd>V</kbd>. Los nombres de modelo cambian con el tiempo; puedes editarlos.','Gemini does not accept questions by link: Cubo copies it and you paste with <kbd>Ctrl</kbd>+<kbd>V</kbd>. Model names change over time; you can edit them.']}
+ ]},
+ {id:'notes',ic:'📝',n:['Notas','Notes'],i:['Tus notas rápidas, dentro de Cubo y en una ventana propia.','Your quick notes, inside Cubo and in their own window.'],items:[
+  {k:'notesOnIsland',t:'toggle',l:['Mostrar la nota fijada en la isla','Show the pinned note on the island'],d:['La nota con 📌 aparece en la página de la hora.','The note with 📌 appears on the clock page.']},
   {t:'btn',a:'notes',b:['Abrir notas','Open notes']},
-  {t:'note',x:['Atajo: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd>. También puedes decir “anota comprar leche” al asistente de voz.','Shortcut: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd>. You can also tell the voice assistant “note buy milk”.']}
+  {t:'note',x:['Atajo: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd>. También puedes decir “anota comprar leche”, o usar la página Notas de la isla para marcarlas como hechas.','Shortcut: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>N</kbd>. You can also say “note buy milk”, or use the Notes page on the island to tick them off.']}
  ]},
- {id:'sys',ic:'⚙️',n:['Sistema','System'],items:[
-  {k:'lang',t:'select',l:['Idioma','Language']},
-  {k:'login',t:'toggle',l:['Iniciar con Windows','Start with Windows']},
+ {id:'sys',ic:'⚙️',n:['Sistema','System'],i:['Idioma, inicio con Windows y restablecer todo.','Language, start with Windows and reset everything.'],items:[
+  {k:'lang',t:'select',l:['Idioma','Language'],d:['Idioma de la interfaz, del menú y del reconocimiento de voz.','Language of the interface, the menu and speech recognition.']},
+  {k:'login',t:'toggle',l:['Iniciar con Windows','Start with Windows'],d:['Abre Cubo solo al encender el PC.','Opens Cubo by itself when you turn on the PC.']},
   {t:'btn',a:'rall',b:['Restablecer todo','Reset everything']},
   {t:'note',x:['Atajos globales: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>1</kbd> música · <kbd>2</kbd> temporizador · <kbd>3</kbd> aviso de prueba · <kbd>0</kbd> reposo · <kbd>V</kbd> asistente de voz · <kbd>N</kbd> notas · <kbd>S</kbd> configuración. Clic derecho en la isla también abre esta ventana.','Global shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+ <kbd>1</kbd> music · <kbd>2</kbd> timer · <kbd>3</kbd> test alert · <kbd>0</kbd> idle · <kbd>V</kbd> voice assistant · <kbd>N</kbd> notes · <kbd>S</kbd> settings. Right-click on the island also opens this window.']}
  ]}
@@ -216,7 +259,7 @@ function mk(it){
   if(it.t==='note'){el.className='note';el.innerHTML=L(it.x);return el}
   if(it.t==='themes'){
     el.className='r full';
-    el.innerHTML=`<div class="lb"><b>${L(['Temas listos','Ready themes'])}</b><small>${L(['Un clic cambia fondo, acento y texto','One click sets background, accent and text'])}</small></div><div class="themes">${THEMES.map((t,i)=>`<button class="chip" data-th="${i}" style="background:linear-gradient(135deg,${t[1].bg} 40%,${t[1].accent})">${L(t[0])}</button>`).join('')}</div>`;
+    el.innerHTML=`<div class="lb"><b>${L(['Temas listos','Ready themes'])}</b><small>${L(['Un clic cambia fondo, acento y texto.','One click sets background, accent and text.'])}</small></div><div class="themes">${THEMES.map((t,i)=>`<button class="chip" data-th="${i}" style="background:linear-gradient(135deg,${t[1].bg} 40%,${t[1].accent})">${L(t[0])}</button>`).join('')}</div>`;
     return el;
   }
   el.className='r';
@@ -230,6 +273,7 @@ function mk(it){
   else if(it.t==='area')ctl=`<textarea data-k="${it.k}" rows="5" spellcheck="false"></textarea>`;
   else if(it.t==='number')ctl=`<input type="number" data-k="${it.k}" min="${it.min}" max="${it.max}">`;
   else if(it.t==='date')ctl=`<input type="date" data-k="${it.k}">`;
+  else if(it.t==='secret')ctl=`<div class="sk"><input type="password" data-sec="${it.p}" placeholder="${L(['Pega tu clave aquí','Paste your key here'])}" autocomplete="off"><span class="stt" data-st="${it.p}"></span></div>`;
   else if(it.t==='btn'){el.className='r full';el.innerHTML=`<button class="b" data-act="${it.a}">${L(it.b)}</button>`;return el}
   el.innerHTML=lab+ctl;
   return el;
@@ -237,12 +281,16 @@ function mk(it){
 function build(){
   $('#ttl').textContent=L(['Configuración','Settings']);
   $('#pvl').textContent=L(['Vista previa en vivo','Live preview']);
+  $('#q').placeholder=L(['Buscar una opción…','Search an option…']);
   document.title='Cubo — '+L(['Configuración','Settings']);
   document.documentElement.lang=LANG;
-  $('#side').innerHTML=`<div class="brand"><img class="logo" src="assets/logo.png" alt=""><span>Cubo</span></div>`+SECT.map(s=>`<button class="nav${s.id===active?' on':''}" data-nav="${s.id}"><i>${s.ic}</i>${L(s.n)}</button>`).join('')+`<div class="foot">${L(['Los cambios se aplican al instante y se guardan solos.','Changes apply instantly and save automatically.'])}</div>`;
+  $('#side').innerHTML=`<div class="brand"><img class="logo" src="assets/logo.png" alt=""><div><b>CUBO</b><small>${L(['ISLA DINÁMICA','DYNAMIC ISLAND'])}</small></div></div>`+SECT.map(s=>`<button class="nav${s.id===active?' on':''}" data-nav="${s.id}"><span class="ic">${s.ic}</span>${L(s.n)}</button>`).join('')+`<div class="foot">${L(['Los cambios se aplican al instante y se guardan solos.','Changes apply instantly and save automatically.'])}</div>`;
   const pane=$('#pane');pane.innerHTML='';
   SECT.forEach(s=>{
     const d=document.createElement('div');d.className='sec'+(s.id===active?' on':'');d.id='sec-'+s.id;
+    const hero=document.createElement('div');hero.className='hero';
+    hero.innerHTML=`<div class="hic">${s.ic}</div><div><h2>${L(s.n)}</h2><p>${L(s.i)}</p></div>`;
+    d.appendChild(hero);
     s.items.forEach(it=>d.appendChild(mk(it)));
     pane.appendChild(d);
   });
@@ -254,14 +302,19 @@ function valOf(el){
   if(el.dataset.num)return Number(el.value);
   return el.value;
 }
-function setVal(k,v){
-  cfg[k]=v;
-  api.setSettings({[k]:v});
-  preview();
+function setVal(k,v){cfg[k]=v;api.setSettings({[k]:v});preview()}
+function applySearch(){
+  const q=$('#q').value.trim().toLowerCase();
+  document.body.classList.toggle('searching',!!q);
+  document.querySelectorAll('.sec').forEach(sec=>{
+    let any=false;
+    sec.querySelectorAll('.r').forEach(r=>{const hit=!q||r.textContent.toLowerCase().includes(q);r.classList.toggle('hide',!hit);if(hit)any=true});
+    sec.classList.toggle('empty-s',!!q&&!any);
+  });
 }
 function wire(){
   document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{
-    active=b.dataset.nav;
+    active=b.dataset.nav;$('#q').value='';applySearch();
     document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n===b));
     document.querySelectorAll('.sec').forEach(s=>s.classList.toggle('on',s.id==='sec-'+active));
     $('#pane').scrollTop=0;
@@ -274,6 +327,9 @@ function wire(){
       setVal(el.dataset.k,v);
     });
   });
+  document.querySelectorAll('[data-sec]').forEach(el=>el.addEventListener('change',()=>{
+    api.aiSetKey(el.dataset.sec,el.value.trim());el.value='';
+  }));
   document.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{
     const t=THEMES[b.dataset.th][1];
     Object.assign(cfg,t,{borderColor:t.accent});
@@ -303,6 +359,11 @@ function fill(c){
     if(el.type==='checkbox')el.checked=!!c[k];else el.value=c[k]==null?'':c[k];
     if(el.type==='range')showVal(k,c[k]);
   });
+  document.querySelectorAll('[data-st]').forEach(s=>{
+    const ok=!!(c.aiKeys&&c.aiKeys[s.dataset.st]);
+    s.textContent=ok?L(['✓ Guardada','✓ Saved']):L(['Sin clave','No key']);
+    s.className='stt'+(ok?' ok':'');
+  });
   preview();
 }
 
@@ -327,6 +388,7 @@ function preview(){
 }
 
 try{speechSynthesis.onvoiceschanged=()=>{if(cfg){build();fill(cfg)}}}catch(e){}
+$('#q').addEventListener('input',applySearch);
 $('#bcl').onclick=()=>api.closeSettings();
 $('#bmin').onclick=()=>api.minSettings();
 api.on('settings',fill);

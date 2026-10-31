@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, globalShortcut, screen, nativeImage, ipcMain, shell, clipboard } = require('electron');
+const { app, BrowserWindow, Tray, Menu, globalShortcut, screen, nativeImage, ipcMain, shell, clipboard, safeStorage } = require('electron');
 const path = require('path'), fs = require('fs'), http = require('http'), os = require('os');
 const { spawn } = require('child_process');
 
@@ -32,6 +32,7 @@ const DEF = {
   pomoWork: 25, pomoBreak: 5, clipHistory: false, zones: '', launchers: DEF_LAUNCHERS,
   voiceOn: true, wakeWord: false, wakeName: 'cubo', voiceSpeak: true, voiceTimeout: 7, voiceName: '', voiceRate: 1, voicePitch: 1, voiceVolume: 100,
   notesOnIsland: true,
+  aiDefault: 'none', aiMode: 'web', aiFallback: true, modelChatgpt: 'gpt-4o-mini', modelGemini: 'gemini-2.0-flash', modelClaude: 'claude-haiku-5-5',
   lang: null, x: null, y: null,
 };
 const SC = {
@@ -51,8 +52,10 @@ const SC = {
   font: ['e', ['Segoe UI', 'Arial', 'Consolas', 'Georgia', 'Trebuchet MS', 'Comic Sans MS']],
   city: ['s', 60], musicIgnore: ['s', 80], cdName: ['s', 40], cdDate: ['d'], zones: ['s', 160], launchers: ['s', 700],
   wakeName: ['s', 20], voiceName: ['s', 100],
+  aiFallback: ['b'], aiDefault: ['e', ['none', 'chatgpt', 'gemini', 'claude', 'copilot', 'perplexity', 'google']], aiMode: ['e', ['web', 'api']],
+  modelChatgpt: ['s', 60], modelGemini: ['s', 60], modelClaude: ['s', 60],
 };
-let cfg = { ...DEF }, win, setWin, notesWin, tray, cfgFile, notesFile, drag = null;
+let cfg = { ...DEF }, win, setWin, notesWin, tray, cfgFile, notesFile, aiFile, drag = null;
 let notes = [], wakeP = null, kp, wx = null, fsOn = false, quitting = false;
 let clips = [], lastClip = '', prevCpu = null;
 const procs = {};
@@ -73,7 +76,67 @@ function load() {
   if (cfg.lang !== 'es' && cfg.lang !== 'en') cfg.lang = app.getLocale().toLowerCase().startsWith('es') ? 'es' : 'en';
 }
 function save() { try { fs.writeFileSync(cfgFile, JSON.stringify(cfg)); } catch (e) {} }
-const pub = () => ({ ...cfg, login: app.getLoginItemSettings().openAtLogin });
+/* ---------- conexiones con IA: las claves se guardan cifradas (DPAPI de Windows) y nunca viajan a la interfaz ---------- */
+const AI_PROVIDERS = ['chatgpt', 'gemini', 'claude'];
+function readKeys() { try { return JSON.parse(fs.readFileSync(aiFile, 'utf8')) || {}; } catch (e) { return {}; } }
+function getKey(p) {
+  const k = readKeys()[p]; if (!k) return '';
+  try { return safeStorage.decryptString(Buffer.from(k, 'base64')); } catch (e) { return ''; }
+}
+function setKey(p, key) {
+  if (!AI_PROVIDERS.includes(p)) return false;
+  const all = readKeys();
+  key = String(key || '').trim();
+  if (!key) delete all[p];
+  else {
+    if (!safeStorage.isEncryptionAvailable()) return false;
+    all[p] = safeStorage.encryptString(key).toString('base64');
+  }
+  try { fs.writeFileSync(aiFile, JSON.stringify(all)); } catch (e) { return false; }
+  return true;
+}
+const aiKeys = () => { const a = readKeys(); return { chatgpt: !!a.chatgpt, gemini: !!a.gemini, claude: !!a.claude }; };
+const AI_URL = {
+  chatgpt: ['https://chatgpt.com/', '?q='], gemini: ['https://gemini.google.com/app', null], claude: ['https://claude.ai/new', '?q='],
+  copilot: ['https://copilot.microsoft.com/', '?q='], perplexity: ['https://www.perplexity.ai/', 'search?q='], google: ['https://www.google.com/', 'search?q='],
+};
+function aiUrl(p, q) {
+  const u = AI_URL[p]; if (!u) return null;
+  return q && u[1] ? u[0] + u[1] + encodeURIComponent(q) : u[0];
+}
+async function aiAsk(p, q) {
+  q = String(q || '').slice(0, 1500);
+  const key = getKey(p);
+  if (!key) return { err: 'nokey' };
+  const sys = cfg.lang === 'en'
+    ? 'You are Cubo, a voice assistant inside a Windows dynamic island. Answer in English in at most 3 short sentences, plain text, no lists or markdown.'
+    : 'Eres Cubo, un asistente de voz dentro de una isla dinámica de Windows. Responde en español, en máximo 3 frases cortas, en texto plano, sin listas ni markdown.';
+  const ac = new AbortController(), to = setTimeout(() => ac.abort(), 30000);
+  try {
+    let res, j, text = '';
+    if (p === 'chatgpt') {
+      res = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', signal: ac.signal, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key }, body: JSON.stringify({ model: cfg.modelChatgpt || 'gpt-4o-mini', max_tokens: 300, messages: [{ role: 'system', content: sys }, { role: 'user', content: q }] }) });
+      j = await res.json();
+      text = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || '';
+    } else if (p === 'gemini') {
+      res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(cfg.modelGemini || 'gemini-2.0-flash') + ':generateContent', { method: 'POST', signal: ac.signal, headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents: [{ role: 'user', parts: [{ text: q }] }], generationConfig: { maxOutputTokens: 300 } }) });
+      j = await res.json();
+      text = ((j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || []).map((x) => x.text || '').join('');
+    } else if (p === 'claude') {
+      res = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', signal: ac.signal, headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' }, body: JSON.stringify({ model: cfg.modelClaude || 'claude-haiku-5-5', max_tokens: 300, system: sys, messages: [{ role: 'user', content: q }] }) });
+      j = await res.json();
+      text = (j.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('');
+    } else return { err: 'provider' };
+    if (!res.ok) { log('ia ' + p + ': HTTP ' + res.status); return { err: 'http ' + res.status }; }
+    text = String(text).trim();
+    return text ? { ok: true, text: text.slice(0, 1200) } : { err: 'empty' };
+  } catch (e) {
+    log('ia ' + p + ': ' + e.name);
+    return { err: e.name === 'AbortError' ? 'timeout' : 'net' };
+  } finally { clearTimeout(to); }
+}
+
+const pub = () => ({ ...cfg, login: app.getLoginItemSettings().openAtLogin, aiKeys: aiKeys() });
 function broadcast() {
   [win, setWin].forEach((w) => w && !w.isDestroyed() && w.webContents.send('settings', pub()));
 }
@@ -281,13 +344,27 @@ function wireIpc() {
   ipcMain.on('mic:toggle', () => vsend('mic'));
   ipcMain.on('shot', () => { if (process.platform === 'win32') shell.openExternal('ms-screenclip:'); });
   ipcMain.on('clip:set', (_e, t) => {
-    t = String(t || '').slice(0, 300); if (!t) return;
+    t = String(t || '').slice(0, 2000); if (!t) return;
     try { clipboard.writeText(t); } catch (e) {}
-    lastClip = t; clips = [t, ...clips.filter((x) => x !== t)].slice(0, 8);
+    lastClip = t; const h = t.slice(0, 300); clips = [h, ...clips.filter((x) => x !== h)].slice(0, 8);
     if (win) win.webContents.send('clip', clips);
   });
   ipcMain.on('clip:clear', () => { clips = []; if (win) win.webContents.send('clip', clips); });
   ipcMain.on('app:launch', (_e, i) => launch(i));
+  ipcMain.handle('ai:ask', (_e, p, q) => aiAsk(String(p), q));
+  ipcMain.handle('ai:open', (_e, p, q) => {
+    p = String(p); q = String(q || '').slice(0, 800);
+    const url = aiUrl(p, q); if (!url) return { ok: false };
+    let copied = false;
+    if (q && AI_URL[p] && !AI_URL[p][1]) { try { clipboard.writeText(q); lastClip = q; copied = true; } catch (e) {} }
+    shell.openExternal(url);
+    return { ok: true, copied };
+  });
+  ipcMain.on('ai:setkey', (_e, p, k) => {
+    const ok = setKey(String(p), String(k || ''));
+    broadcast();
+    if (!ok && win) win.webContents.send('notify', 'Cubo', cfg.lang === 'en' ? 'Could not store the key securely.' : 'No pude guardar la clave de forma segura.');
+  });
 }
 
 /* ---------- scripts de Windows ---------- */
@@ -398,16 +475,18 @@ function startServer() {
 
 /* ---------- atajos y bandeja ---------- */
 const L = {
-  es: { music: 'Música', timer: 'Temporizador', test: 'Probar aviso', sw: 'Cronómetro', pomo: 'Pomodoro', stats: 'Rendimiento', clip: 'Portapapeles', apps: 'Accesos rápidos', idle: 'Reposo', voice: 'Asistente de voz', notes: 'Notas', shot: 'Captura de pantalla', settings: 'Configuración…', rpos: 'Restablecer posición', login: 'Iniciar con Windows', dataf: 'Abrir carpeta de datos', quit: 'Salir' },
-  en: { music: 'Music', timer: 'Timer', test: 'Test alert', sw: 'Stopwatch', pomo: 'Pomodoro', stats: 'Performance', clip: 'Clipboard', apps: 'Quick launchers', idle: 'Idle', voice: 'Voice assistant', notes: 'Notes', shot: 'Screenshot', settings: 'Settings…', rpos: 'Reset position', login: 'Start with Windows', dataf: 'Open data folder', quit: 'Quit' },
+  es: { music: 'Música', timer: 'Temporizador', test: 'Probar aviso', sw: 'Cronómetro', pomo: 'Pomodoro', stats: 'Rendimiento', clip: 'Portapapeles', apps: 'Accesos rápidos', ai: 'Asistentes de IA', idle: 'Reposo', voice: 'Asistente de voz', notes: 'Notas', shot: 'Captura de pantalla', settings: 'Configuración…', rpos: 'Restablecer posición', login: 'Iniciar con Windows', dataf: 'Abrir carpeta de datos', quit: 'Salir' },
+  en: { music: 'Music', timer: 'Timer', test: 'Test alert', sw: 'Stopwatch', pomo: 'Pomodoro', stats: 'Performance', clip: 'Clipboard', apps: 'Quick launchers', ai: 'AI assistants', idle: 'Idle', voice: 'Voice assistant', notes: 'Notes', shot: 'Screenshot', settings: 'Settings…', rpos: 'Reset position', login: 'Start with Windows', dataf: 'Open data folder', quit: 'Quit' },
 };
-const ACTIONS = [['music', '1'], ['timer', '2'], ['test', '3'], ['sw', '4'], ['pomo', '5'], ['stats', '6'], ['clip', '7'], ['apps', '8'], ['idle', '0']];
+const ACTIONS = [['music', '1'], ['timer', '2'], ['test', '3'], ['sw', '4'], ['pomo', '5'], ['stats', '6'], ['clip', '7'], ['apps', '8'], ['ai', '9'], ['idle', '0']];
 function hotkeys() {
   ACTIONS.forEach(([k, n]) => globalShortcut.register('CommandOrControl+Alt+' + n, () => send(k)));
   globalShortcut.register('CommandOrControl+Alt+PageUp', () => send('volup'));
   globalShortcut.register('CommandOrControl+Alt+PageDown', () => send('voldown'));
   globalShortcut.register('CommandOrControl+Alt+M', () => send('mute'));
   globalShortcut.register('CommandOrControl+Alt+K', () => send('micmute'));
+  globalShortcut.register('CommandOrControl+Alt+Left', () => send('pgL'));
+  globalShortcut.register('CommandOrControl+Alt+Right', () => send('pgR'));
   globalShortcut.register('CommandOrControl+Alt+S', openSettings);
   globalShortcut.register('CommandOrControl+Alt+V', () => send('voice'));
   globalShortcut.register('CommandOrControl+Alt+N', openNotes);
@@ -440,6 +519,7 @@ function init() {
   try { app.setAppUserModelId('com.isla.dinamica'); } catch (e) {}
   cfgFile = path.join(app.getPath('userData'), 'settings.json');
   notesFile = path.join(app.getPath('userData'), 'notes.json');
+  aiFile = path.join(app.getPath('userData'), 'ai.json');
   load(); loadNotes();
   createWindow(); wireIpc(); hotkeys(); makeTray(); startScripts(); startServer(); startWake();
   getWeather(); setInterval(getWeather, 20 * 60 * 1000);

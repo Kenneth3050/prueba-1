@@ -36,9 +36,24 @@ transition:width var(--tw) cubic-bezier(.34,1.35,.5,1),height var(--tw) cubic-be
 svg{width:16px;height:16px;fill:currentColor}
 .mas{width:auto}
 .vr{flex:1;min-width:0;height:16px;margin:0;cursor:pointer;accent-color:var(--acc)}
+#c.out.l{transform:translateX(-40px)}#c.out.r{transform:translateX(40px)}
+.nv{all:unset;position:absolute;top:50%;margin-top:-18px;width:30px;height:36px;display:none;place-items:center;cursor:pointer;z-index:3;border-radius:12px;color:var(--fg);opacity:.75}
+.nv:hover{opacity:1;background:#ffffff22}
+.nv svg{width:16px;height:16px;fill:none;stroke:currentColor}
+#nvl{left:4px}#nvr{right:4px}
+#dots{position:absolute;left:0;right:0;bottom:7px;display:none;justify-content:center;gap:5px;z-index:3;pointer-events:none}
+#dots i{width:5px;height:5px;border-radius:50%;background:#ffffff40;transition:all .25s}
+#dots i.on{background:var(--acc);width:15px;border-radius:3px}
+#isl.hub .nv{display:grid}#isl.hub #dots{display:flex}
+#isl.hub #c{padding-left:34px;padding-right:34px}
+#isl.hub #c.col{padding:14px 34px 24px!important}
+.spin{width:18px;height:18px;border-radius:50%;border:2px solid #ffffff40;border-top-color:var(--acc);animation:sp .8s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ans{white-space:normal;font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.nt{display:flex;align-items:center;gap:10px;min-width:0}
 .ci{all:unset;cursor:pointer;display:block;box-sizing:border-box;width:100%;padding:7px 12px;border-radius:10px;background:#ffffff14;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
 .ci:hover{background:#ffffff2e}
-.ap{width:92px;height:58px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.ap{width:84px;height:54px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);animation:p 1.4s infinite;flex:none}
 @keyframes p{50%{opacity:.35}}
 .noanim,.noanim *{animation:none!important;transition:none!important}
@@ -50,13 +65,14 @@ svg{width:16px;height:16px;fill:currentColor}
 <script src="shared.js"></script>
 <script>
 const $=s=>document.querySelector(s),isl=$('#isl'),root=document.documentElement;
-isl.innerHTML='<div class="wvbox">'+WAVES+'</div><div id="c"></div>';
+isl.innerHTML='<div class="wvbox">'+WAVES+'</div><div id="c"></div><button class="nv" id="nvl" data-a="pgL"><svg viewBox="0 0 16 16"><path d="M10.500 2.500L5 8l5.500 5.500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="nv" id="nvr" data-a="pgR"><svg viewBox="0 0 16 16"><path d="M5.500 2.500L11 8l-5.500 5.500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div id="dots"></div>';
+const dots=$('#dots');
 const c=$('#c');
 const esc=s=>String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 const T={
-es:{assistant:'Cubo',stopwatch:'Cronómetro',pomodoro:'Pomodoro',stats:'Rendimiento',clipboard:'Portapapeles',apps:'Accesos rápidos',shot:'Captura',lap:'Vuelta',mic:'Micrófono',clear:'Borrar',focus:'Enfoque',rest:'Descanso',longBreak:'Descanso largo',workTime:'¡A trabajar!',breakTime:'Hora de descansar',clipOff:'Activa el historial en Configuración > Herramientas',clipEmpty:'Aún no has copiado nada',noApps:'Agrega accesos en Configuración > Herramientas',micOn:'Micrófono activado',micOff:'Micrófono silenciado',listening:'Escuchando…',notHeard:'No te escuché. Inténtalo de nuevo.',noReco:'Falta el reconocimiento de voz en tu idioma. Actívalo en Windows: Hora e idioma > Voz.',voiceErr:'No pude usar el micrófono o el reconocimiento de voz.',notes:'Notas',settings:'Configuración',noMusic:'Sin música',noTitle:'Sin título',timer:'Temporizador',timerEnd:'Se acabó el tiempo',music:'Música',nothing:'No hay nada sonando en este momento',inCall:'En llamada',testT:'Aviso de prueba',testB:'Así se verá un aviso en tu isla',clear:'Despejado',partly:'Parcialmente nublado',cloudy:'Nublado',fog:'Niebla',drizzle:'Llovizna',rain:'Lluvia',snow:'Nieve',storm:'Tormenta',prev:'Anterior',pp:'Reproducir o pausar',next:'Siguiente',tp:'Pausar o reanudar',t1:'Sumar un minuto',tr:'Reiniciar',tx:'Cerrar',mute:'Silenciar',day:'día',days:'días',locale:'es'},
-en:{assistant:'Cubo',stopwatch:'Stopwatch',pomodoro:'Pomodoro',stats:'Performance',clipboard:'Clipboard',apps:'Quick launchers',shot:'Screenshot',lap:'Lap',mic:'Microphone',clear:'Clear',focus:'Focus',rest:'Break',longBreak:'Long break',workTime:'Time to work!',breakTime:'Time for a break',clipOff:'Turn on history in Settings > Tools',clipEmpty:'You have not copied anything yet',noApps:'Add launchers in Settings > Tools',micOn:'Microphone on',micOff:'Microphone muted',listening:'Listening…',notHeard:'I did not hear you. Try again.',noReco:'Speech recognition is missing for your language. Enable it in Windows: Time & language > Speech.',voiceErr:'I could not use the microphone or speech recognition.',notes:'Notes',settings:'Settings',noMusic:'No music',noTitle:'Untitled',timer:'Timer',timerEnd:'Time is up',music:'Music',nothing:'Nothing is playing right now',inCall:'In a call',testT:'Test alert',testB:'This is how an alert looks on your island',clear:'Clear',partly:'Partly cloudy',cloudy:'Cloudy',fog:'Fog',drizzle:'Drizzle',rain:'Rain',snow:'Snow',storm:'Thunderstorm',prev:'Previous',pp:'Play or pause',next:'Next',tp:'Pause or resume',t1:'Add one minute',tr:'Reset',tx:'Close',mute:'Mute',day:'day',days:'days',locale:'en'}};
-let C={scale:1,bg:'#000000',accent:'#32d74b',fg:'#ffffff',opacity:1,shape:'round',borderW:0,borderColor:'#7c8cff',shadow:true,animSpeed:'normal',font:'Segoe UI',align:'center',hideIdle:false,hoverExpand:false,lock:false,autoMusic:true,expandSecs:3.5,coverMode:'bg',showCover:true,showBars:true,showTimes:true,musicIgnore:'',calls:true,volOSD:true,wheelVol:true,volSlider:true,volStep:2,mascot:true,mascotType:'penguin',mascotSize:1,headphones:true,h24:true,seconds:false,weather:true,unit:'C',city:'',timerMin:5,msgSecs:4.2,sound:false,cdName:'',cdDate:'',voiceOn:true,voiceSpeak:true,voiceTimeout:7,voiceName:'',voiceRate:1,voicePitch:1,voiceVolume:100,notesOnIsland:true,pomoWork:25,pomoBreak:5,clipHistory:false,zones:'',launchers:'',lang:'es'};
+es:{assistant:'Cubo',prevPage:'Página anterior',nextPage:'Página siguiente',talk:'Hablar',thinking:'Pensando con',nwin:'Abrir ventana de notas',noNotes:'Sin notas pendientes. Di “anota …”.',aiNoKey:'Falta la clave de API. Agrégala en Configuración > Conexiones de IA.',aiErr:'No pude obtener respuesta de la IA.',stopwatch:'Cronómetro',pomodoro:'Pomodoro',stats:'Rendimiento',clipboard:'Portapapeles',apps:'Accesos rápidos',shot:'Captura',lap:'Vuelta',mic:'Micrófono',clear:'Borrar',focus:'Enfoque',rest:'Descanso',longBreak:'Descanso largo',workTime:'¡A trabajar!',breakTime:'Hora de descansar',clipOff:'Activa el historial en Configuración > Herramientas',clipEmpty:'Aún no has copiado nada',noApps:'Agrega accesos en Configuración > Herramientas',micOn:'Micrófono activado',micOff:'Micrófono silenciado',listening:'Escuchando…',notHeard:'No te escuché. Inténtalo de nuevo.',noReco:'Falta el reconocimiento de voz en tu idioma. Actívalo en Windows: Hora e idioma > Voz.',voiceErr:'No pude usar el micrófono o el reconocimiento de voz.',notes:'Notas',settings:'Configuración',noMusic:'Sin música',noTitle:'Sin título',timer:'Temporizador',timerEnd:'Se acabó el tiempo',music:'Música',nothing:'No hay nada sonando en este momento',inCall:'En llamada',testT:'Aviso de prueba',testB:'Así se verá un aviso en tu isla',clear:'Despejado',partly:'Parcialmente nublado',cloudy:'Nublado',fog:'Niebla',drizzle:'Llovizna',rain:'Lluvia',snow:'Nieve',storm:'Tormenta',prev:'Anterior',pp:'Reproducir o pausar',next:'Siguiente',tp:'Pausar o reanudar',t1:'Sumar un minuto',tr:'Reiniciar',tx:'Cerrar',mute:'Silenciar',day:'día',days:'días',locale:'es'},
+en:{assistant:'Cubo',prevPage:'Previous page',nextPage:'Next page',talk:'Talk',thinking:'Thinking with',nwin:'Open notes window',noNotes:'No pending notes. Say “note …”.',aiNoKey:'The API key is missing. Add it in Settings > AI connections.',aiErr:'I could not get an answer from the AI.',stopwatch:'Stopwatch',pomodoro:'Pomodoro',stats:'Performance',clipboard:'Clipboard',apps:'Quick launchers',shot:'Screenshot',lap:'Lap',mic:'Microphone',clear:'Clear',focus:'Focus',rest:'Break',longBreak:'Long break',workTime:'Time to work!',breakTime:'Time for a break',clipOff:'Turn on history in Settings > Tools',clipEmpty:'You have not copied anything yet',noApps:'Add launchers in Settings > Tools',micOn:'Microphone on',micOff:'Microphone muted',listening:'Listening…',notHeard:'I did not hear you. Try again.',noReco:'Speech recognition is missing for your language. Enable it in Windows: Time & language > Speech.',voiceErr:'I could not use the microphone or speech recognition.',notes:'Notes',settings:'Settings',noMusic:'No music',noTitle:'Untitled',timer:'Timer',timerEnd:'Time is up',music:'Music',nothing:'Nothing is playing right now',inCall:'In a call',testT:'Test alert',testB:'This is how an alert looks on your island',clear:'Clear',partly:'Partly cloudy',cloudy:'Cloudy',fog:'Fog',drizzle:'Drizzle',rain:'Rain',snow:'Snow',storm:'Thunderstorm',prev:'Previous',pp:'Play or pause',next:'Next',tp:'Pause or resume',t1:'Add one minute',tr:'Reset',tx:'Close',mute:'Mute',day:'day',days:'days',locale:'en'}};
+let C={scale:1,bg:'#000000',accent:'#32d74b',fg:'#ffffff',opacity:1,shape:'round',borderW:0,borderColor:'#7c8cff',shadow:true,animSpeed:'normal',font:'Segoe UI',align:'center',hideIdle:false,hoverExpand:false,lock:false,autoMusic:true,expandSecs:3.5,coverMode:'bg',showCover:true,showBars:true,showTimes:true,musicIgnore:'',calls:true,volOSD:true,wheelVol:true,volSlider:true,volStep:2,mascot:true,mascotType:'penguin',mascotSize:1,headphones:true,h24:true,seconds:false,weather:true,unit:'C',city:'',timerMin:5,msgSecs:4.2,sound:false,cdName:'',cdDate:'',voiceOn:true,voiceSpeak:true,voiceTimeout:7,voiceName:'',voiceRate:1,voicePitch:1,voiceVolume:100,notesOnIsland:true,pomoWork:25,pomoBreak:5,clipHistory:false,zones:'',launchers:'',aiDefault:'none',aiMode:'web',aiFallback:true,aiKeys:{},lang:'es'};
 const tt=k=>(T[C.lang]||T.es)[k]||k;
 const I={play:'<svg viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg>',pause:'<svg viewBox="0 0 16 16"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg>',prev:'<svg viewBox="0 0 16 16"><path d="M3 2h2v12H3zM14 2v12L6 8z"/></svg>',next:'<svg viewBox="0 0 16 16"><path d="M11 2h2v12h-2zM2 2l8 6-8 6z"/></svg>',plus:'<svg viewBox="0 0 16 16"><path d="M7 2h2v5h5v2H9v5H7V9H2V7h5z"/></svg>',reset:'<svg viewBox="0 0 16 16"><path d="M8 2a6 6 0 105.700 4h-2.100A4 4 0 118 4V7l4-3.500L8 0z"/></svg>',x:'<svg viewBox="0 0 16 16"><path d="M3 1.500L8 6.500l5-5L14.500 3l-5 5 5 5L13 14.500l-5-5-5 5L1.500 13l5-5-5-5z"/></svg>',vol:'<svg viewBox="0 0 16 16"><path d="M2 6h3l4-3v10l-4-3H2z"/><path d="M11.200 5.200a4 4 0 010 5.600" fill="none" stroke="currentColor" stroke-width="1.400" stroke-linecap="round"/></svg>',mute:'<svg viewBox="0 0 16 16"><path d="M2 6h3l4-3v10l-4-3H2z"/><path d="M11 6l4 4M15 6l-4 4" fill="none" stroke="currentColor" stroke-width="1.400" stroke-linecap="round"/></svg>'};
 const mm=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
@@ -69,7 +85,7 @@ const VOL={vol:.5,mute:false,mic:false,known:false};
 let M=null,W=null,lastKey='',curKey='',dismissKey='',pausedAt=0,autoT,msgT,callT,rt,hoverT,lastSet=0,lastSlider=0;
 let coverImg='',hasCol=false,coverAcc='#e8e8f0',coverW1='#8a8a96',coverW2='#4a4a54';
 let callApp=null,callStart=0,ac=null;
-const TR=['msg','vol','listen'];
+const TR=['msg','vol','listen','think','ans'];
 let NOTES=[],voiceBusy=false;
 const SW={run:false,start:0,acc:0,laps:[]};
 const PO={phase:'work',left:25*60,run:false,n:0};
@@ -77,7 +93,17 @@ let STATS={cpu:0,ram:0,used:0,total:0},CLIPS=[];
 const swMs=()=>SW.acc+(SW.run?Date.now()-SW.start:0);
 function swFmt(){const t=Math.floor(swMs()/100),d=t%10,s=Math.floor(t/10)%60,m=Math.floor(t/600);return m+':'+String(s).padStart(2,'0')+'.'+d}
 const poLen=ph=>(ph==='work'?C.pomoWork:ph==='long'?C.pomoBreak*3:C.pomoBreak)*60;
-const VIEWS=['sw','pomo','stats','clip','apps'];
+const VIEWS=['timer','sw','pomo','stats','clip','apps','notes','ai'];
+const HUBS=['idle','music',...VIEWS];
+const AIS={chatgpt:{n:'ChatGPT',ic:'💬'},gemini:{n:'Gemini',ic:'✨'},claude:{n:'Claude',ic:'🧠'},copilot:{n:'Copilot',ic:'🪟'},perplexity:{n:'Perplexity',ic:'🔎'},google:{n:'Google',ic:'🌐'}};
+const pageList=()=>HUBS.filter(k=>k!=='music'||M);
+const isHub=()=>S.exp&&HUBS.includes(S.cur)&&(S.cur!=='music'||!!M);
+function go(dir){
+  const L=pageList(),i=Math.max(0,L.indexOf(S.cur)),k=L[(i+dir+L.length)%L.length];
+  S.cur=k;S.exp=true;S.manual=true;S.hov=false;S.dir=dir;
+  if(k==='timer'&&!S.tRun&&S.tLeft<=0)S.tLeft=C.timerMin*60;
+  render();
+}
 function launchers(){
   return String(C.launchers||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.indexOf('|');return i<0?{name:l,cmd:l}:{name:l.slice(0,i).trim(),cmd:l.slice(i+1).trim()}}).filter(a=>a.name&&a.cmd).slice(0,8);
 }
@@ -173,10 +199,8 @@ const V={
 idle:e=>{
   const w=wx(),cd=countdown();
   if(e){
-    const pin=C.notesOnIsland?NOTES.find(n=>n.p&&!n.d):null,pend=NOTES.filter(n=>!n.d).length,zl=zonesLine();
-    const tb=(a,ic,l,x='')=>`<button class="ib sm" data-a="${a}" aria-label="${esc(l)}" title="${esc(l)}"${x?` style="${x}"`:''}>${ic}</button>`;
-    return{w:440,h:122+(cd?14:0)+(pin?16:0)+(zl?14:0),r:30,col:1,html:`<div class="row"><div style="flex:none;max-width:210px"><div class="big num" id="clk" style="font-size:30px;line-height:1">${clock()}</div><div class="t2" style="margin-top:4px">${esc(dateStr())}</div>${cd?`<div class="t2" style="opacity:.9;margin-top:2px">${esc(cd)}</div>`:''}${zl?`<div class="t2" id="znl" style="opacity:.9;margin-top:2px">🌍 ${esc(zl)}</div>`:''}${pin?`<div class="t2" style="opacity:.95;margin-top:2px">📌 ${esc(pin.t)}</div>`:''}</div>${w?`<div style="min-width:0;flex:1;text-align:right"><div class="t1" style="font-size:22px">${w.ic} ${w.t}</div><div class="t2">${esc(w.desc)}${w.city?' · '+esc(w.city):''}</div></div>`:'<span class="sp"></span>'}${mascot(40,mcls())}</div>
-<div class="row" style="gap:6px">${C.voiceOn?tb('voice','🎤',tt('assistant')):''}${tb('notes','📝',tt('notes'),'width:auto;min-width:28px;padding:0 9px;font-size:13px').replace('📝</button>','📝'+(pend?' '+pend:'')+'</button>')}${tb('sw','⏱',tt('stopwatch'))}${tb('pomo','🍅',tt('pomodoro'))}${tb('stats','📊',tt('stats'))}${tb('clip','📋',tt('clipboard'))}${tb('apps','🚀',tt('apps'))}${tb('shot','📸',tt('shot'))}${tb('gear','⚙️',tt('settings'))}</div>`};
+    const pin=C.notesOnIsland?NOTES.find(n=>n.p&&!n.d):null,zl=zonesLine();
+    return{w:440,h:84+(cd?14:0)+(pin?16:0)+(zl?14:0),r:30,col:1,html:`<div class="row"><div style="flex:none;max-width:210px"><div class="big num" id="clk" style="font-size:30px;line-height:1">${clock()}</div><div class="t2" style="margin-top:4px">${esc(dateStr())}</div>${cd?`<div class="t2" style="opacity:.9;margin-top:2px">${esc(cd)}</div>`:''}${zl?`<div class="t2" id="znl" style="opacity:.9;margin-top:2px">🌍 ${esc(zl)}</div>`:''}${pin?`<div class="t2" style="opacity:.95;margin-top:2px">📌 ${esc(pin.t)}</div>`:''}</div>${w?`<div style="min-width:0;flex:1;text-align:right"><div class="t1" style="font-size:22px">${w.ic} ${w.t}</div><div class="t2">${esc(w.desc)}${w.city?' · '+esc(w.city):''}</div></div>`:'<span class="sp"></span>'}${mascot(40,mcls())}</div>`};
   }
   const mw=C.mascot?Math.round(28*C.mascotSize)+10:0;
   return{w:24+(C.seconds?64:42)+(w?52:0)+48+mw+10,h:36,r:18,html:`<span class="num" id="clk">${clock()}</span>${w?`<span class="t2" style="opacity:.9">${w.ic} ${w.t}</span>`:''}<span class="t2" id="dts" style="opacity:.8">${esc(shortDate())}</span><span class="sp"></span>${mascot(28,mcls())}`};
@@ -196,6 +220,21 @@ call:e=>{
   return e?{w:390,h:96,r:32,html:`<div class="cov" style="width:50px;height:50px;border-radius:50%;background:${cover(n)};display:grid;place-items:center;font-weight:800;font-size:20px">${esc(n.slice(0,1))}</div><div style="min-width:0;flex:1"><div class="t1">${esc(n)}</div><div class="t2 num" style="display:flex;align-items:center;gap:6px"><span class="dot"></span><span id="cl">${tt('inCall')} · ${mm(el)}</span></div></div><button class="ib sm" data-a="mic" id="mb" aria-label="${tt('mic')}">${VOL.mic?'🔇':'🎙️'}</button>${mascot(44,'on call'+(listening()?' dance':''))}`}:
   {w:(C.mascot?270:220)+(C.mascot?Math.round(28*(C.mascotSize-1)):0),h:40,r:20,html:`<span class="dot"></span><div class="t1" style="font-size:13px;min-width:0">${esc(n)}</div><span class="sp"></span><span class="num" id="cl" style="color:var(--green)">${mm(el)}</span>${mascot(28,'on call')}`};
 },
+notes:e=>{
+  const pend=NOTES.filter(n=>!n.d).sort((a,b)=>(b.p-a.p)||(b.ts-a.ts)),list=pend.slice(0,4);
+  if(!e)return{w:170,h:40,r:20,html:`<span>📝</span><span class="sp"></span><span class="num">${pend.length}</span>`};
+  const rows=list.length?list.map(n=>`<div class="nt"><button class="ib sm" data-a="nt" data-id="${esc(n.id)}" aria-label="ok">○</button><span class="t1" style="font-size:13px;font-weight:600;flex:1;min-width:0">${n.p?'📌 ':''}${esc(n.t)}</span></div>`).join(''):`<div class="t2" style="text-align:center;padding:6px 0">${tt('noNotes')}</div>`;
+  return{w:420,h:list.length?70+list.length*36:100,r:30,col:1,html:`<div class="row"><span class="t1" style="font-size:14px">📝 ${tt('notes')}</span><span class="sp"></span><button class="ib sm" data-a="nwin" aria-label="${tt('nwin')}" title="${tt('nwin')}">↗</button><button class="ib sm" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div>${rows}`};
+},
+ai:e=>{
+  if(!e)return{w:150,h:40,r:20,html:`<span>🤖</span><span class="sp"></span><span class="t2">Cubo</span>`};
+  const T1=(a,ic,nm,x='')=>`<button class="ib ap" data-a="${a}"${x} title="${esc(nm)}"><span style="font-size:20px;line-height:1">${ic}</span><span class="t2" style="opacity:.9;max-width:78px">${esc(nm)}</span></button>`;
+  const tiles=[...(C.voiceOn?[T1('voice','🎤',tt('talk'))]:[]),...['chatgpt','gemini','claude','copilot','google'].map(p=>T1('aip',AIS[p].ic,AIS[p].n,` data-p="${p}"`)),T1('shot','📸',tt('shot')),T1('gear','⚙️',tt('settings'))];
+  const rows=Math.ceil(tiles.length/4);
+  return{w:420,h:64+rows*54+(rows-1)*8,r:30,col:1,html:`<div class="row"><span class="t1" style="font-size:14px">🤖 Cubo</span><span class="sp"></span><button class="ib sm" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div><div style="display:flex;flex-wrap:wrap;gap:8px">${tiles.join('')}</div>`};
+},
+think:()=>({w:320,h:56,r:28,html:`<span class="spin"></span><div class="t1" style="font-size:14px">${tt('thinking')} ${esc(S.think||'IA')}…</div>`}),
+ans:()=>{const a=S.ans||{p:'',q:'',t:''},p=AIS[a.p]||{n:'IA',ic:'🤖'};return{w:430,h:112,r:30,col:1,html:`<div class="row"><span class="t1" style="font-size:14px">${p.ic} ${esc(p.n)}</span><span class="sp"></span><span class="t2" style="max-width:240px">${esc(String(a.q).slice(0,50))}</span></div><div class="ans" data-a="anscopy" title="${esc(tt('clipboard'))}">${esc(a.t)}</div>`}},
 sw:e=>{
   const n=SW.laps.length,l=SW.laps.slice(-2).map((x,i)=>'#'+(n-Math.min(2,n)+i+1)+' '+x).join(' · ');
   return e?{w:360,h:132+(n?18:0),r:34,col:1,html:`<div class="row"><span class="big num" id="swt" style="font-size:36px">${swFmt()}</span><span class="sp"></span><span class="t2">${tt('stopwatch')}</span></div><div class="ctl"><button class="ib" data-a="swp" aria-label="${tt('tp')}">${SW.run?I.pause:I.play}</button><button class="ib" data-a="swl" aria-label="${tt('lap')}">🚩</button><button class="ib" data-a="swr" aria-label="${tt('tr')}">${I.reset}</button><button class="ib" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div>${n?`<div class="t2" style="text-align:center">${esc(l)}</div>`:''}`}:
@@ -214,8 +253,8 @@ stats:e=>{
 clip:e=>{
   const n=CLIPS.length;
   if(!e)return{w:150,h:40,r:20,html:`<span>📋</span><span class="sp"></span><span class="num">${n}</span>`};
-  const list=n?CLIPS.slice(0,5).map((t,i)=>`<button class="ci" data-a="clipi" data-i="${i}" title="${esc(t)}">${esc(t.replace(/\s+/g,' ').slice(0,70))}</button>`).join(''):`<div class="t2" style="text-align:center;padding:6px 0">${tt(C.clipHistory?'clipEmpty':'clipOff')}</div>`;
-  return{w:420,h:(n?64+Math.min(n,5)*38:100),r:30,col:1,html:`<div class="row"><span class="t1" style="font-size:14px">📋 ${tt('clipboard')}</span><span class="sp"></span>${n?`<button class="ib sm" data-a="clipx" aria-label="${tt('clear')}">🗑️</button>`:''}<button class="ib sm" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div>${list}`};
+  const list=n?CLIPS.slice(0,4).map((t,i)=>`<button class="ci" data-a="clipi" data-i="${i}" title="${esc(t)}">${esc(t.replace(/\s+/g,' ').slice(0,70))}</button>`).join(''):`<div class="t2" style="text-align:center;padding:6px 0">${tt(C.clipHistory?'clipEmpty':'clipOff')}</div>`;
+  return{w:420,h:(n?64+Math.min(n,4)*38:100),r:30,col:1,html:`<div class="row"><span class="t1" style="font-size:14px">📋 ${tt('clipboard')}</span><span class="sp"></span>${n?`<button class="ib sm" data-a="clipx" aria-label="${tt('clear')}">🗑️</button>`:''}<button class="ib sm" data-a="vx" aria-label="${tt('tx')}">${I.x}</button></div>${list}`};
 },
 apps:e=>{
   const Ls=launchers(),n=Ls.length;
@@ -234,12 +273,16 @@ vol:()=>{const p=Math.round(VOL.vol*100);return{w:300,h:50,r:25,html:`<span id="
 const view=()=>V[S.cur](S.exp);
 
 function render(){
-  const v=view();
+  const v=view(),hub=isHub();
+  if(hub){v.w=Math.max(v.w,440);v.h+=14}
   isl.style.width=v.w+'px';isl.style.height=v.h+'px';isl.style.borderRadius=rad(v.r)+'px';
   isl.classList.toggle('ghost',S.cur==='idle'&&C.hideIdle);
+  isl.classList.toggle('hub',hub);
+  if(hub)dots.innerHTML=pageList().map(k=>`<i class="${k===S.cur?'on':''}"></i>`).join('');
   colors();
-  c.classList.add('out');clearTimeout(rt);
-  rt=setTimeout(()=>{const v2=view();c.className=v2.col?'col out':'out';c.innerHTML=v2.html;requestAnimationFrame(()=>c.classList.remove('out'))},C.animSpeed==='off'?0:150);
+  const dir=S.dir||0;S.dir=0;
+  c.classList.add('out');c.classList.toggle('l',dir>0);c.classList.toggle('r',dir<0);clearTimeout(rt);
+  rt=setTimeout(()=>{const v2=view();c.className=(v2.col?'col ':'')+'out'+(dir>0?' r':dir<0?' l':'');c.innerHTML=v2.html;requestAnimationFrame(()=>c.classList.remove('out','l','r'))},C.animSpeed==='off'?0:150);
 }
 function refreshMusic(){
   if(!M||S.cur!=='music')return;
@@ -403,7 +446,30 @@ function onHeard(r){
   if(r.err){replyTo('',{text:r.err==='norecognizer'?tt('noReco'):tt('voiceErr')});return}
   const text=(r.text||'').trim();
   if(!text){replyTo('',{text:tt('notHeard')});return}
-  replyTo(text,runIntent(text));
+  const res=runIntent(text);
+  if(res.ai){handleAI(text,res.ai);return}
+  replyTo(text,res);
+}
+const aiName=p=>AIS[p]?AIS[p].n:String(p);
+const canApi=p=>C.aiMode==='api'&&['chatgpt','gemini','claude'].includes(p)&&!!(C.aiKeys&&C.aiKeys[p]);
+async function handleAI(heard,o){
+  const p=o.p,q=o.q||'',n=aiName(p);
+  if(q&&canApi(p)){
+    S.think=n;transient('think',65000);
+    let r;try{r=await api.aiAsk(p,q)}catch(e){r={err:'net'}}
+    if(r&&r.ok){S.ans={p,q,t:r.text};transient('ans',Math.max(12,C.msgSecs*2)*1000);speak(r.text.slice(0,600));return}
+    replyTo(heard,{text:r&&r.err==='nokey'?tt('aiNoKey'):tt('aiErr')});return;
+  }
+  let r;try{r=await api.aiOpen(p,q)}catch(e){r={ok:false}}
+  if(!r||!r.ok){replyTo(heard,{text:tt('aiErr')});return}
+  replyTo(heard,{text:q?(r.copied?say('Abrí '+n+'. Copié tu pregunta: pégala con Ctrl+V.','Opened '+n+'. I copied your question: paste it with Ctrl+V.'):say('Preguntando en '+n+'…','Asking '+n+'…')):say('Abriendo '+n+'.','Opening '+n+'.')});
+}
+const AI_RE=[['chatgpt',/\b(chat ?gpt|gpt|open ?ai)\b/],['gemini',/\b(gemini|geminis)\b/],['claude',/\bclaude\b/],['copilot',/\bcopilot\b/],['perplexity',/\bperplexity\b/],['google',/\bgoogle\b/]];
+function findAI(t){for(const[p,re]of AI_RE)if(re.test(t))return p;return null}
+function cleanQ(s){
+  return String(s).replace(/^(?:por favor\s+)?(?:preg[uú]ntale|pregunta(?:le)?|dile|dime|consulta(?:le)?|investiga|busca(?:r)?|ask|tell|search(?: for)?|look up)\s+/i,'')
+    .replace(/\b(?:a|en|con|to|in|on|with|de|from)?\s*\b(?:chat ?gpt|gpt|open ?ai|g[eé]minis?|claude|copilot|perplexity|google)\b/ig,' ')
+    .replace(/\s+/g,' ').replace(/^(?:que|qué|sobre|acerca de|about|if|:|,)\s+/i,'').trim();
 }
 function runIntent(raw){
   const orig=raw.trim(),t=norm(raw);
@@ -412,6 +478,14 @@ function runIntent(raw){
   if(/\b(borra|elimina|quita|delete|remove)\b.*\b(ultima|last)\b.*\b(nota|note)\b/.test(t)){
     if(!NOTES.length)return{text:say('No tienes notas.','You have no notes.')};
     NOTES=NOTES.slice(1);api.setNotes(NOTES);return{text:say('Última nota borrada.','Last note deleted.')};
+  }
+  {
+    const prov=findAI(t);
+    if(prov){
+      if(/\b(pregunta|preguntale|dile|dime|consulta|consultale|investiga|busca|buscar|ask|tell|search)\b/.test(t)){const q=cleanQ(orig);if(q)return{ai:{p:prov,q}}}
+      if(/^(abre|abrir|open|lanza|ve a|go to)\b/.test(t))return{ai:{p:prov,q:''}};
+    }
+    if(/^(pregunta|preguntale|ask)\b/.test(t)&&C.aiDefault&&C.aiDefault!=='none'){const q=cleanQ(orig);if(q)return{ai:{p:C.aiDefault,q}}}
   }
   if(/\b(abre|abrir|muestra|muestrame|ver|open|show)\b.*\b(notas?|notes?)\b/.test(t)&&!/bloc de notas|notepad/.test(t)){api.openNotes();return{text:say('Abriendo tus notas.','Opening your notes.')}}
   if(/munequito|mascota|mascot|personaje|character/.test(t)){
@@ -467,8 +541,9 @@ function runIntent(raw){
   }
   if(/\b(accesos|aplicaciones|launcher|launchers)\b/.test(t))return{text:say('Aquí están tus accesos.','Here are your launchers.'),keep:['apps',true]};
   if(/\b(oculta|esconde|hide|reposo|idle)\b/.test(t)){if(M)dismissKey=M.t+'|'+M.a;return{text:say('Listo.','Done.'),keep:[callApp?'call':'idle',false]}}
-  if(/\b(ayuda|help)\b|que puedes hacer|what can you do/.test(t))return{text:say('Puedo controlar el volumen y la música, poner temporizadores, cronómetro y pomodoro, tomar notas, abrir tus accesos y decirte la hora o el clima.','I can control volume and music, set timers, stopwatch and pomodoro, take notes, open your launchers and tell you the time or weather.')};
+  if(/\b(ayuda|help)\b|que puedes hacer|what can you do/.test(t))return{text:say('Puedo controlar el volumen y la música, poner temporizadores, cronómetro y pomodoro, tomar notas, abrir tus accesos, preguntarle a ChatGPT, Gemini o Claude y decirte la hora o el clima.','I can control volume and music, set timers, stopwatch and pomodoro, take notes, open your launchers, ask ChatGPT, Gemini or Claude and tell you the time or weather.')};
   if(/^(hola|hello|hi|hey)\b/.test(t))return{text:say('¡Hola! ¿En qué te ayudo?','Hi! How can I help?')};
+  if(C.aiFallback&&C.aiDefault&&C.aiDefault!=='none'&&t.split(' ').length>=3)return{ai:{p:C.aiDefault,q:orig}};
   return{text:say('No entendí eso. Prueba con “sube el volumen” o “anota comprar leche”. Di “ayuda” para ver qué puedo hacer.','I did not get that. Try “volume up” or “note buy milk”.')};
 }
 
@@ -489,6 +564,11 @@ function micToggle(){
   if(S.cur!=='call')notify(tt('mic'),VOL.mic?tt('micOff'):tt('micOn'));
 }
 function act(a,b){
+  if(a==='pgL'||a==='pgR'){go(a==='pgR'?1:-1);return}
+  if(a==='nwin'){api.openNotes();return}
+  if(a==='nt'){const n=NOTES.find(x=>x.id===(b&&b.dataset.id));if(n){n.d=true;api.setNotes(NOTES.slice());render()}return}
+  if(a==='aip'){handleAI('',{p:b&&b.dataset.p,q:''});return}
+  if(a==='anscopy'){if(S.ans)api.clipSet(S.ans.t);return}
   if(VIEWS.includes(a)){openView(a);return}
   if(a==='vx'){base();return}
   if(a==='shot'){api.shot();return}
@@ -530,6 +610,7 @@ api.on('show',k=>{
   else if(k==='mute')volMute();
   else if(k==='voice')startVoice();
   else if(VIEWS.includes(k)){if(S.cur===k)base();else openView(k)}
+  else if(k==='pgL'||k==='pgR'){if(isHub())go(k==='pgR'?1:-1);else{S.cur=(S.cur==='music'&&M)?'music':'idle';S.exp=true;S.manual=true;render()}}
   else if(k==='micmute')micToggle();
   else if(k==='speaktest')speak(say('Hola, soy Cubo. Así sueno.','Hi, I am Cubo. This is how I sound.'));
   else if(k==='idle'){
@@ -578,7 +659,9 @@ isl.addEventListener('input',e=>{
   const v=e.target.value/100;
   VOL.vol=v;VOL.mute=false;lastSet=lastSlider=Date.now();api.volSet(v);syncSlider();
 });
+let navT=0;
 isl.addEventListener('wheel',e=>{
+  if(isHub()&&Math.abs(e.deltaX)>Math.abs(e.deltaY)&&Math.abs(e.deltaX)>20){e.preventDefault();if(Date.now()-navT>400){navT=Date.now();go(e.deltaX>0?1:-1)}return}
   if(!C.wheelVol)return;
   e.preventDefault();volStep(e.deltaY<0?1:-1);
 },{passive:false});
